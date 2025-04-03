@@ -1,7 +1,11 @@
+<script setup>
+// import HelloWorld from './components/HelloWorld.vue'
+</script>
 <template>
   <component :is="layout">
     <router-view></router-view>
   </component>
+<router-view></router-view>
 </template>
 
 <script>
