@@ -1,7 +1,7 @@
 <template>
     <div class="w-screen h-[80px] flex flex-row p-2 border">
         <div class="h-full flex">
-            <img class="" src="/img/logo.png" alt="Logo">
+            <img class="" src="/imageicon/logo.png" alt="Logo">
         </div>
         <div class="h-full flex flex-row justify-end items-center flex-1">
             <div class="flex h-full bg-gray-200 justify-center items-center relative rounded-2xl me-20 p-5">

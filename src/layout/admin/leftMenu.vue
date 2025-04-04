@@ -3,7 +3,7 @@
         <div
             class="text-white flex flex-row gap-2 bg-red-500 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
-                <img class="w-12 h-12 object-cover" src="/img/home icon.png" alt="">
+                <img class="w-12 h-12 object-cover" src="/imageicon/home icon.png" alt="">
             </div>
             <p>
                 Trang chủ
@@ -12,7 +12,7 @@
         <div
             class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
-                <img class="w-12 h-12 object-cover" src="/img/food icon.png" alt="">
+                <img class="w-12 h-12 object-cover" src="/imageicon/food icon.png" alt="">
             </div>
             <p>
                 Món ăn
@@ -21,7 +21,7 @@
         <div
             class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
-                <img class="w-12 h-12 object-cover" src="/img/category icon.png" alt="">
+                <img class="w-12 h-12 object-cover" src="/imageicon/category icon.png" alt="">
             </div>
             <p>
                 Loại
@@ -30,7 +30,7 @@
         <div
             class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
-                <img class="w-12 h-12 object-cover" src="/img/category icon.png" alt="">
+                <img class="w-12 h-12 object-cover" src="/imageicon/category icon.png" alt="">
             </div>
             <p>
                 Kiểu
@@ -39,7 +39,7 @@
         <div
             class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
-                <img class="w-12 h-12 object-cover" src="/img/table icon.png" alt="">
+                <img class="w-12 h-12 object-cover" src="/imageicon/table icon.png" alt="">
             </div>
             <p>
                 Bàn
@@ -48,7 +48,7 @@
         <div
             class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
-                <img class="w-12 h-12 object-cover" src="/img/customer icon.png" alt="">
+                <img class="w-12 h-12 object-cover" src="/imageicon/customer icon.png" alt="">
             </div>
             <p>
                 Khách hàng
@@ -57,7 +57,7 @@
         <div
             class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
-                <img class="w-12 h-12 object-cover" src="/img/staff icon.png" alt="">
+                <img class="w-12 h-12 object-cover" src="/imageicon/staff icon.png" alt="">
             </div>
             <p>
                 Nhân viên
@@ -66,7 +66,7 @@
         <div
             class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
-                <img class="w-12 h-12 object-cover" src="/img/role icon.png" alt="">
+                <img class="w-12 h-12 object-cover" src="/imageicon/role icon.png" alt="">
             </div>
             <p>
                 Phân quyền
@@ -75,7 +75,7 @@
         <div
             class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
-                <img class="w-12 h-12 object-cover" src="/img/warehouse icon.png" alt="">
+                <img class="w-12 h-12 object-cover" src="/imageicon/warehouse icon.png" alt="">
             </div>
             <p>
                 Kho
