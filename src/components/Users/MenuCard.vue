@@ -128,25 +128,41 @@
   <div class="title">
   <p>
     <strong>
-      <i class="fa-solid fa-star"></i>  Người Dùng Đánh Giá
+      <i class="fa-solid fa-star"></i>  Top Bảng Xếp Hạng Đánh Giá Trong Tuần
       <i class="fa-solid fa-star"></i>
     </strong>
   </p>
 </div>
 
-<div class="review-section">
-  <div class="review-card" v-for="(review, index) in danhSachDanhGia" :key="index">
-    <div class="review-content">
-      <h3>{{ review.ten }}</h3>
-      <p>{{ review.noiDung }}</p>
-    </div>
-    <div class="review-image">
-      <img :src="review.hinh" alt="Ảnh người dùng" />
-    </div>
+<Swiper
+    class="review-section"
+    :modules="[Autoplay]"
+    :slides-per-view="3"
+    :space-between="30"
+    :autoplay="{ delay: 0, disableOnInteraction: false , pauseOnMouseEnter: true }"
+    :loop="true"
+    :speed="3000"  
+  >
+    <SwiperSlide
+      v-for="(review, index) in danhSachDanhGia"
+      :key="'review-' + index"
+    >
+      <div class="review-card">
+        <div class="review-content">
+          <h3>{{ review.ten }}</h3>
+          <div class="sao-danh-gia">
+    <span v-for="i in 5" :key="i">
+      <i class="fa" :class="i <= soSao ? 'fa-star' : 'fa-star-o'"></i>
+    </span>
   </div>
-</div>
-
-  <router-view></router-view>
+          <p>{{ review.noiDung }}</p>
+        </div>
+        <div class="review-image">
+          <img :src="review.hinh" alt="Ảnh người dùng" />
+        </div>
+      </div>
+    </SwiperSlide>
+  </Swiper>
 </template>
 
 <script setup>
@@ -164,7 +180,7 @@ import { Pagination, Autoplay } from 'swiper/modules'
 onMounted(() => {
   Aos.init()
 })
-
+const soSao = 4 // số sao đánh giá từ 1 đến 5
 const currentTab = ref(0)
 
 
@@ -191,26 +207,15 @@ const xemThemMon = () => {
   }
 }
 const danhSachDanhGia = [
-  {
-    ten: 'Nguyễn Văn A',
-    noiDung: 'Món ăn rất ngon, phục vụ chu đáo, không gian sạch sẽ!',
-    hinh: '/imageicon/user1.png',
-  },
-  {
-    ten: 'Trần Thị B',
-    noiDung: 'Thực đơn đa dạng, giá cả hợp lý. Sẽ quay lại lần nữa!',
-    hinh: '/imageicon/user2.png',
-  },
-  {
-    ten: 'Lê Văn C',
-    noiDung: 'Mình rất thích món lẩu ở đây, nước lẩu đậm đà, ngon tuyệt.',
-    hinh: '/imageicon/user3.png',
-  },
-]
+  { ten: 'Người dùng 1', noiDung: 'Đánh giá sản phẩm tuyệt vời!', hinh: '/imageicon/user1.png' },
+  { ten: 'Người dùng 2', noiDung: 'Dịch vụ rất tốt, tôi rất hài lòng.', hinh: '/imageicon/user1.png' },
+  { ten: 'Người dùng 3', noiDung: 'Sản phẩm rất chất lượng, sẽ quay lại!', hinh: '/imageicon/user1.png' },
+  { ten: 'Người dùng 4', noiDung: 'Dịch vụ tốt, nhưng cần cải thiện giao hàng.', hinh: '/imageicon/user1.png' },
+];
 
 const danhSachMonDayDu = ref([
   { ten: 'Cơm Gà Hải Nam',  noiDung: 'Cơm gà thơm ngon chuẩn vị Singapore', hinh: '/imageicon/comga.png' },
-  { ten: 'Bún Bò Huế', noiDung: 'Bún bò đậm đà chuẩn vị Huế', hinh: '/imageicon/bunbo.png' },
+  { ten: 'Bún Bò Huế', noiDung: 'Bún bò đậm đà chuẩn vị Huế', hinh: '/imageicon/comga.png' },
   { ten: 'Pizza Hải Sản', noiDung: 'Pizza thơm phức với tôm, mực, phô mai', hinh: '/imageicon/bunbo.png' },
   { ten: 'Lẩu Thái', noiDung: 'Lẩu cay chua đúng chất Thái Lan', hinh: '/imageicon/lauthai.png' },
   { ten: 'Mì Ý Bò Bằm', noiDung: 'Mì Ý với sốt bò bằm truyền thống', hinh: '/imageicon/lauthai.png' },
