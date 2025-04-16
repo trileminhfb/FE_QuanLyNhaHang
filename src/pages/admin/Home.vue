@@ -1,5 +1,5 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] mt-[80px] ms-[300px] flex flex-col p-2">
+    <div class="fixed w-[calc(100vw-300px)] h-[calc(100vh-100px)] mt-20 z-0 ms-[300px] flex flex-col p-2">
         <div class="flex flex-row gap-2 w-full h-[150px]">
             <div class="h-full w-full bg-gray-300 flex flex-row justify-center items-center">
                 <div class="overflow-hidden w-full">
