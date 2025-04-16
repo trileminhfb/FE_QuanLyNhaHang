@@ -1,5 +1,5 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] mt-[80px] ms-[300px] flex flex-col p-2">
+    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
         <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2">
             <div
                 class="w-44 h-10 font-bold text-2xl rounded-lg border-gray-400 border-2 hover:bg-blue-200 hover:cursor-pointer">
