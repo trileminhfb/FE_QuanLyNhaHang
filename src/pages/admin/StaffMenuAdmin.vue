@@ -7,7 +7,7 @@
                 class="w-fit h-10 font-bold text-2xl rounded-lg px-2 border-gray-400 border-2 hover:bg-blue-200 hover:cursor-pointer">
                 + Thêm nhân viên</div>
         </div>
-        <div class="w-full h-full border-t border-gray-400 px-2 pt-2">
+        <div class="w-full h-fit border-t border-gray-400 px-2 pt-2">
             <table class="w-full h-[30vw] table-auto font-semibold text-2xl ">
                 <thead>
                     <tr class="border-2 border-gray-300">
