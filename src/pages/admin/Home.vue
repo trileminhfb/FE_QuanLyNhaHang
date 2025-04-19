@@ -38,14 +38,27 @@
         <div class="flex flex-col w-full h-screen mt-4">
             <div class="flex flex-row w-full h-10 items-center gap-2 font-bold text-2xl">
                 <p>Tổng doanh thu tháng</p>
-                <input class="h-8 w-16 border-2 ps-2" type="number" name="month" id="month" value="1" min="1" max="12">
-                <p>Năm</p>
-                <input class="h-8 w-28 border-2 ps-2" type="number" name="year" id="year" value="2025" min="1">
-                <p>Tổng doanh thu (VNĐ)</p>
-                <div class="h-8 w-28 bg-red-500"></div>
-            </div>
+                <select class="h-10 w-fit border-2 ps-2" name="month" id="month">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12">12</option>
+                </select>
 
-            <div class="border-2 w-full h-full"></div>
+                <p>Năm</p>
+                <input class="h-10 w-24 border-2 ps-2" type="number" name="year" id="year" value="2025" min="1">
+                <p>Tổng doanh thu (VNĐ)</p>
+                <div class="h-10 w-24 bg-red-500"></div>
+            </div>
+            <div class="border-2 mt-2 w-full h-full"></div>
         </div>
     </div>
 </template>

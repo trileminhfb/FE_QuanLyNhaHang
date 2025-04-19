@@ -5,9 +5,9 @@
         </div>
 
         <div class="h-full flex flex-row justify-end items-center flex-1">
-            <div
-                class="flex h-full bg-gray-200 justify-center items-center relative rounded-2xl me-20 p-5 hover:cursor-pointer hover:bg-gray-500">
-                <div class="flex flex-row justify-center items-center text-2xl ">
+            <div class="flex h-full bg-gray-200 justify-center items-center relative rounded-2xl me-20 p-5 hover:cursor-pointer hover:bg-gray-500"
+                @click="goOrder">
+                <div class="flex flex-row justify-center items-center text-2xl">
                     <svg class="w-10 h-10 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                         fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -46,5 +46,9 @@ const router = useRouter()
 
 function goHome() {
     router.push('/admin')
+}
+
+function goOrder() {
+    router.push('/admin/orders')
 }
 </script>

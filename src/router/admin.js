@@ -14,14 +14,19 @@ const admin = [
         component: () => import("../pages/admin/FoodMenuAdmin.vue"),
       },
       {
-        path: "roles",
-        name: "admin-roles",
-        component: () => import("../pages/admin/RoleMenuAdmin.vue"),
-      },
-      {
         path: "staffs",
         name: "admin-staffs",
         component: () => import("../pages/admin/StaffMenuAdmin.vue"),
+      },
+      {
+        path: "orders",
+        name: "admin-orders",
+        component: () => import("../pages/admin/OrderAdmin.vue"),
+      },
+      {
+        path: "details-orders",
+        name: "admin-details-orders",
+        component: () => import("../pages/admin/DetailOrderAdmin.vue"),
       },
       {
         path: "tables",
