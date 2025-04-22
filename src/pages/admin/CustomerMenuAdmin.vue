@@ -1,9 +1,7 @@
 <template>
     <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
-        <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
+        <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2">
             <Search v-model="searchQuery" />
-            <AddButton />
-
         </div>
         <div class="w-full h-full border-t border-gray-400 px-2 pt-2">
             <table class="w-full h-[30vw] table-auto font-semibold text-2xl ">
@@ -11,20 +9,19 @@
                     <tr class="border-2 border-gray-300">
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <SortButton @sort="key => sortBy('name', key)" />
-                                <p class="text-start w-full">Tên kiểu</p>
+                                <Sort @sort="direction => sortBy('name', direction)" />
+                                <p class="text-start w-full">Họ tên</p>
                             </div>
                         </th>
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <SortButton @sort="direction => sortBy('qty_food', direction)" />
-                                <p>Số lượng món</p>
+                                <Sort @sort="direction => sortBy('point', direction)" />
+                                <p>Điểm</p>
                             </div>
                         </th>
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <SortButton @sort="direction => sortBy('qty_category', direction)" />
-                                <p>Số lượng loại</p>
+                                <p>Ranking</p>
                             </div>
                         </th>
                         <th>Thao tác</th>
@@ -37,24 +34,27 @@
                                 <div class="overflow-hidden flex flex-row justify-center items-center">
                                     <img class="hover:cursor-pointer overflow-auto object-cover h-32 w-24"
                                         src="/imageicon/food 1 icon.jpg" alt="">
-                                    <div class="ps-5 flex flex-col gap-5">
-                                        <p class="hover:cursor-pointer">{{ item.name }}</p>
-                                        <div class="flex flex-row gap-2 items-center">
-                                            <div v-if="item.status === 1"
-                                                class="hover:cursor-pointer w-16 h-8 flex rounded-full border-2 border-black justify-end items-center p-1">
-                                                <div class="w-6 h-6 bg-green-500 rounded-full"></div>
-                                            </div>
-                                            <div v-else
-                                                class="hover:cursor-pointer w-16 h-8 flex rounded-full border-2 border-black justify-start items-center p-1">
-                                                <div class="w-6 h-6 bg-red-500 rounded-full"></div>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    <p class="ps-5 hover:cursor-pointer">{{ item.name }}</p>
                                 </div>
                             </div>
                         </td>
-                        <td class="text-center">{{ item.qty_food }}</td>
-                        <td class="text-center">{{ item.qty_category }}</td>
+                        <td class="text-center">{{ item.point }}</td>
+                        <td class="text-center">
+                            <div v-if="item.point >= 200" class="w-full flex justify-center">
+                                <p class="bg-blue-300 px-2">Diamond</p>
+                            </div>
+                            <div v-else-if="item.point >= 150" class="w-full flex justify-center">
+                                <p class="bg-yellow-300 px-2">Gold</p>
+                            </div>
+                            <div v-else-if="item.point >= 100" class="w-full flex justify-center">
+                                <p class="bg-gray-300 px-2">Sliver</p>
+                            </div>
+                            <div v-else class="w-full flex justify-center">
+                                <p class="bg-red-700 px-2">Bronze</p>
+                            </div>
+                        </td>
+
+
                         <td class="text-center">
                             <div class="flex justify-center items-center h-full">
                                 <div
@@ -66,7 +66,7 @@
                                     </svg>
                                     <div
                                         class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailTypes">
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailCategory">
                                             Chi
                                             tiết</p>
                                         <p class="hover:bg-gray-500 text-start w-full h-full">Chỉnh sửa</p>
@@ -89,9 +89,8 @@
 
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import Sort from '../../components/Admin/SortButton.vue'
 import Search from '../../components/Admin/Search.vue'
-import AddButton from '../../components/Admin/AddButton.vue'
-import SortButton from '../../components/Admin/SortButton.vue'
 import Pagination from '../../components/Admin/Pagination.vue'
 
 const router = useRouter()
@@ -131,21 +130,21 @@ const filteredItems = computed(() => {
 
 
 const allItems = ref([
-    { name: 'Name 1', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 2', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 3', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 4', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 5', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 6', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 7', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 8', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 9', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 10', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 11', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 12', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 13', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 14', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 15', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 1', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 2', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 3', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 4', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 5', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 6', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 7', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 8', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 9', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 10', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 11', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 12', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 13', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 14', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 15', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
 ])
 
 // Giải thích:
@@ -170,7 +169,7 @@ function changePage(page) {
     if (page >= 1 && page <= totalPages.value) { currentPage.value = page }
 }
 
-function goDetailTypes() {
-    router.push('/admin/types/details-types')
+function goDetailCustomers() {
+    router.push('/admin/customers/details-customers')
 }
 </script>

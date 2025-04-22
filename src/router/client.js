@@ -1,6 +1,6 @@
 const users = [
   {
-    path: "/users",
+    path: "/",
     component: () => import("../layout/client/index.vue"),
     children: [
       {

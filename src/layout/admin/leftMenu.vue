@@ -20,7 +20,7 @@
             </p>
         </div>
         <div class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2 hover:bg-gray-500 hover:cursor-pointer"
-            @click="goType">
+            @click="goCategory">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
                 <img class="w-12 h-12 object-cover" src="/imageicon/category icon.png" alt="">
             </div>
@@ -29,7 +29,7 @@
             </p>
         </div>
         <div class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2 hover:bg-gray-500 hover:cursor-pointer"
-            @click="goCategory">
+            @click="goType">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
                 <img class="w-12 h-12 object-cover" src="/imageicon/category icon.png" alt="">
             </div>
@@ -47,7 +47,7 @@
             </p>
         </div>
         <div class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2 hover:bg-gray-500 hover:cursor-pointer"
-            @click="goUser">
+            @click="goCustomer">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
                 <img class="w-12 h-12 object-cover" src="/imageicon/customer icon.png" alt="">
             </div>
@@ -56,7 +56,7 @@
             </p>
         </div>
         <div class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2 hover:bg-gray-500 hover:cursor-pointer"
-            @click="goStaff">
+            @click="goUser">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
                 <img class="w-12 h-12 object-cover" src="/imageicon/staff icon.png" alt="">
             </div>
@@ -87,16 +87,24 @@ function goHome() {
 function goFood() {
     router.push('/admin/foods')
 }
-function goStaff() {
-    router.push('/admin/staffs')
+
+function goUser() {
+    router.push('/admin/users')
 }
+
 function goTable() {
     router.push('/admin/tables')
 }
+
 function goType() {
     router.push('/admin/types')
 }
-function goUser() {
-    router.push('/admin/users')
+
+function goCategory() {
+    router.push('/admin/categories')
+}
+
+function goCustomer() {
+    router.push('/admin/customer')
 }
 </script>

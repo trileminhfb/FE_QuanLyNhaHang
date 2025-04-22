@@ -298,6 +298,13 @@
                                     </div>
                                 </div>
                                 <div class="flex flex-row justify-between w-full">
+                                    <p class="font-medium">Giảm giá</p>
+                                    <div class="flex flex-row font-normal">
+                                        <p>500,000</p>
+                                        <p class="text-sm">VNĐ</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row justify-between w-full">
                                     <p class="font-medium">Điểm nhận được</p>
                                     <p class="font-normal">25</p>
                                 </div>
@@ -305,7 +312,7 @@
                             <div class="flex flex-row gap-2 justify-between border rounded-lg p-2">
                                 <p>Tổng thanh toán</p>
                                 <div class="flex flex-row text-red-500">
-                                    <p>12,132,750</p>
+                                    <p>11,632,750</p>
                                     <p class="text-sm">VNĐ</p>
                                 </div>
                             </div>
@@ -338,4 +345,5 @@ const router = useRouter()
 function goBack() {
     router.push('/admin/orders')
 }
+
 </script>
