@@ -14,19 +14,14 @@ const admin = [
         component: () => import("../pages/admin/FoodMenuAdmin.vue"),
       },
       {
-        path: "staffs",
-        name: "admin-staffs",
-        component: () => import("../pages/admin/StaffMenuAdmin.vue"),
+        path: "users",
+        name: "admin-users",
+        component: () => import("../pages/admin/UserMenuAdmin.vue"),
       },
       {
         path: "orders",
         name: "admin-orders",
         component: () => import("../pages/admin/OrderAdmin.vue"),
-      },
-      {
-        path: "details-orders",
-        name: "admin-details-orders",
-        component: () => import("../pages/admin/DetailOrderAdmin.vue"),
       },
       {
         path: "tables",
@@ -39,9 +34,29 @@ const admin = [
         component: () => import("../pages/admin/TypeMenuAdmin.vue"),
       },
       {
-        path: "users",
-        name: "admin-users",
-        component: () => import("../pages/admin/UsersMenuAdmin.vue"),
+        path: "categories",
+        name: "admin-categories",
+        component: () => import("../pages/admin/CategoryMenuAdmin.vue"),
+      },
+      {
+        path: "customer",
+        name: "admin-customer",
+        component: () => import("../pages/admin/CustomerMenuAdmin.vue"),
+      },
+      {
+        path: "orders/details-orders",
+        name: "admin-details-orders",
+        component: () => import("../pages/admin/DetailOrderAdmin.vue"),
+      },
+      {
+        path: "foods/details-foods",
+        name: "admin-details-foods",
+        component: () => import("../pages/admin/DetailFoodAdmin.vue"),
+      },
+      {
+        path: "categories/details-categories",
+        name: "admin-details-categories",
+        component: () => import("../pages/admin/DetailCategoryAdmin.vue"),
       },
     ],
   },
