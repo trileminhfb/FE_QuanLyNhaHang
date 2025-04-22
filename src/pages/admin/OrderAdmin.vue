@@ -128,7 +128,6 @@
                                     </div>
                                 </td>
                             </tr>
-
                         </tbody>
                     </table>
                     <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
