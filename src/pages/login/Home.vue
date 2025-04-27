@@ -5,8 +5,8 @@
                 class="w-[50vw] h-full bg-blue-500 rounded-e-[500px] rounded-s-[50px] flex flex-col justify-center items-center gap-4 text-white">
                 <h1 class="text-3xl font-bold ">Hello, Welcome!</h1>
                 <p class="text-sm">Don't have an account?</p>
-                <button class="rounded-xl bg-blue-500 h-12 w-32 border-2 border-white font-bold"
-                    type="button">Register</button>
+                <button class="rounded-xl bg-blue-500 h-12 w-32 border-2 border-white font-bold" type="button"
+                    @click="goRegister">Register</button>
             </div>
             <div
                 class="w-[50vw] h-full bg-white rounded-e-[50px] flex flex-col gap-4 justify-center items-center text-black">
@@ -37,15 +37,21 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-sm">Forgot Password?</p>
+                <p class="text-sm hover:text-blue-500 hover:cursor-pointer">Forgot Password?</p>
                 <button class="rounded-xl bg-blue-500 h-12 w-[15vw] text-white font-bold" type="button">Login</button>
 
             </div>
         </div>
     </div>
 </template>
-<script>
-export default {
 
+<script setup>
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+function goRegister() {
+    router.push("/account/register");
 }
 </script>
