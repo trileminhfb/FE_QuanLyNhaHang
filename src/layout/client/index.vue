@@ -1,6 +1,8 @@
 <template>
     <Header></Header>
-    <router-view></router-view>
+    <div :style="{minHeight: 'calc(110vh - 50px - 352px)' }">
+        <router-view></router-view>
+    </div>
     <Footer></Footer>
 </template>
 <script setup>
@@ -16,4 +18,5 @@ onMounted(() => {
     AOS.init()
 })
 </script>
-<style></style>
+<style>
+</style>
