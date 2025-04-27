@@ -60,7 +60,7 @@
 <div class="title">
       <p>
         <strong>
-          <i class="fa-solid fa-utensils"></i>  Thực Đơn Của Chúng Tôi
+          <i class="fa-solid fa-utensils"></i>  Danh Sách Menu
           <i class="fa-solid fa-utensils"></i>
         </strong>
       </p>
@@ -91,13 +91,23 @@
       <div class="info-card">
         <div class="card-name"><strong>{{ mon.ten }}</strong></div>
         <div class="card-title">{{ mon.moTa }}</div>
-      </div>
-    </div>
-  </div>
-      </div>
-    </div>
-  </div>
+        <div class="btn-wrapper">
+          <button class="btn-oder">Đặt Hàng </button>
+          <button class="btn-add" >
+  Thêm vào giỏ <i class="fas fa-shopping-cart"></i>
+</button>
 
+          <div class="gio-hang-icon">
+   
+      <span class="so-luong" v-if="soLuong > 0">{{ soLuong }}</span>
+    </div>
+        </div>
+      </div>
+    </div>
+  </div>
+      </div>
+    </div>
+  </div>
  <div class="title">
       <p>
         <strong>
@@ -170,6 +180,7 @@ import Aos from 'aos'
 import { onMounted, ref, computed } from 'vue'
 
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'aos/dist/aos.css'
 
 import 'swiper/css'
 import 'swiper/css/pagination'
@@ -180,10 +191,15 @@ import { Pagination, Autoplay } from 'swiper/modules'
 onMounted(() => {
   Aos.init()
 })
+
 const soSao = 4 // số sao đánh giá từ 1 đến 5
 const currentTab = ref(0)
 
+const soLuonggiohang = ref(0)
 
+function datMon() {
+  soLuonggiohang.value++
+}
 
 // Số lượng món hiển thị ban đầu
 const soMonHienTai = ref(3)
@@ -192,9 +208,7 @@ const soMonHienTai = ref(3)
 const daXemThem = ref(false)
 
 // Danh sách món hiện tại tuỳ theo số lượng hiển thị
-const danhSachMonHienTai = computed(() => {
-  return danhSachMonDayDu.value.slice(0, soMonHienTai.value)
-})
+
 
 // Hàm xử lý khi nhấn "Xem thêm" hoặc "Ẩn bớt"
 const xemThemMon = () => {
@@ -221,7 +235,9 @@ const danhSachMonDayDu = ref([
   { ten: 'Mì Ý Bò Bằm', noiDung: 'Mì Ý với sốt bò bằm truyền thống', hinh: '/imageicon/lauthai.png' },
   { ten: 'Súp Cua', noiDung: 'Súp cua bổ dưỡng, phù hợp cho trẻ nhỏ', hinh: '/imageicon/lauthai.png' },
 ])
-
+const danhSachMonHienTai = computed(() => {
+  return danhSachMonDayDu.value.slice(0, soMonHienTai.value)
+})
 
 const tabs = ref([
   {
@@ -312,6 +328,7 @@ const danhSachMonAn = [
 
 
 <style>
+
 
 
 </style>
