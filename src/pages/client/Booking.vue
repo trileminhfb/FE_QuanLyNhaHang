@@ -50,7 +50,7 @@
                 </button>
             </div>
             <div class="col-right">
-                <img src="/public/imageicon/bunbo.png" alt="Hình ảnh" />
+                <img src="/imageicon/bunbo.png" alt="Hình ảnh" />
             </div>
         </div>
     </div>
