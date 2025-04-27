@@ -3,28 +3,21 @@
         <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
             <Search v-model="searchQuery" />
             <AddButton />
-
         </div>
         <div class="w-full h-full border-t border-gray-400 px-2 pt-2">
-            <table class="w-full h-[30vw] table-auto font-semibold text-2xl ">
+            <table class="w-full h-fit table-auto font-semibold text-2xl ">
                 <thead>
                     <tr class="border-2 border-gray-300">
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <SortButton @sort="key => sortBy('name', key)" />
-                                <p class="text-start w-full">Tên kiểu</p>
+                                <SortButton @sort="direction => sortBy('name', direction)" />
+                                <p class="text-start w-full">Tên loại</p>
                             </div>
                         </th>
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <SortButton @sort="direction => sortBy('qty_food', direction)" />
+                                <SortButton @sort="direction => sortBy('qty', direction)" />
                                 <p>Số lượng món</p>
-                            </div>
-                        </th>
-                        <th>
-                            <div class="flex flex-row justify-center items-center gap-2">
-                                <SortButton @sort="direction => sortBy('qty_category', direction)" />
-                                <p>Số lượng loại</p>
                             </div>
                         </th>
                         <th>Thao tác</th>
@@ -53,8 +46,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="text-center">{{ item.qty_food }}</td>
-                        <td class="text-center">{{ item.qty_category }}</td>
+                        <td class="text-center">{{ item.qty }}</td>
                         <td class="text-center">
                             <div class="flex justify-center items-center h-full">
                                 <div
@@ -66,7 +58,8 @@
                                     </svg>
                                     <div
                                         class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailTypes">
+                                        <p class="hover:bg-gray-500 text-start w-full h-full"
+                                            @click="goDetailCategories">
                                             Chi
                                             tiết</p>
                                         <p class="hover:bg-gray-500 text-start w-full h-full">Chỉnh sửa</p>
@@ -79,8 +72,6 @@
                 </tbody>
             </table>
             <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
-
-
         </div>
     </div>
 </template>
@@ -89,10 +80,12 @@
 
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import Search from '../../components/Admin/Search.vue'
-import AddButton from '../../components/Admin/AddButton.vue'
-import SortButton from '../../components/Admin/SortButton.vue'
-import Pagination from '../../components/Admin/Pagination.vue'
+import Search from '../../../components/Admin/Search.vue'
+import AddButton from '../../../components/Admin/AddButton.vue'
+import SortButton from '../../../components/Admin/SortButton.vue'
+import Pagination from '../../../components/Admin/Pagination.vue'
+
+
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -131,21 +124,22 @@ const filteredItems = computed(() => {
 
 
 const allItems = ref([
-    { name: 'Name 1', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 2', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 3', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 4', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 5', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 6', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 7', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 8', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 9', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 10', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 11', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 12', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 13', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 14', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 15', qty_food: Math.floor(Math.random() * 100) + 1, qty_category: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 1', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 2', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 3', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 4', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 5', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 6', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 7', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 8', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 9', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 10', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 11', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 12', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 13', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 14', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 15', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { name: 'Name 16', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
 ])
 
 // Giải thích:
@@ -170,7 +164,7 @@ function changePage(page) {
     if (page >= 1 && page <= totalPages.value) { currentPage.value = page }
 }
 
-function goDetailTypes() {
-    router.push('/admin/types/details-types')
+function goDetailCategories() {
+    router.push({ name: 'admin-details-categories' })
 }
 </script>

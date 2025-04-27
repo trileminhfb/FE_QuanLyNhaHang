@@ -17,7 +17,6 @@
                         </svg>
                     </div>
                 </div>
-
                 <div class="flex flex-col w-[15vw] h-[5vh]">
                     <div class="relative w-full h-full">
                         <input class="rounded-xl bg-gray-200 p-3 w-[15vw]" type="text" name="username" id="username"
@@ -52,14 +51,20 @@
                 class="w-[50vw] h-full bg-blue-500 rounded-s-[500px] rounded-e-[100px] flex flex-col justify-center items-center gap-4 text-white">
                 <h1 class="text-3xl font-bold ">Welcome Back!</h1>
                 <p class="text-sm">Already have an account?</p>
-                <button class="rounded-xl bg-blue-500 h-12 w-32 border-2 border-white font-bold"
-                    type="button">Login</button>
+                <button class="rounded-xl bg-blue-500 h-12 w-32 border-2 border-white font-bold" type="button"
+                    @click="goLogin">Login</button>
             </div>
         </div>
     </div>
 </template>
-<script>
-export default {
 
+<script setup>
+import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+function goLogin() {
+    router.push("/account/login");
 }
 </script>

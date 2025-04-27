@@ -1,27 +1,29 @@
 <template>
     <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
-        <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2">
+        <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
             <Search v-model="searchQuery" />
+            <AddButton />
         </div>
         <div class="w-full h-full border-t border-gray-400 px-2 pt-2">
-            <table class="w-full h-[30vw] table-auto font-semibold text-2xl ">
+            <table class="w-full h-fit table-auto font-semibold text-2xl ">
                 <thead>
                     <tr class="border-2 border-gray-300">
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <Sort @sort="direction => sortBy('name', direction)" />
-                                <p class="text-start w-full">Họ tên</p>
+                                <SortButton @sort="direction => sortBy('name', direction)" />
+                                <p class="text-start w-full">Tên bàn</p>
                             </div>
                         </th>
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <Sort @sort="direction => sortBy('point', direction)" />
-                                <p>Điểm</p>
+                                <SortButton @sort="direction => sortBy('status', direction)" />
+                                <p>Trạng thái</p>
                             </div>
                         </th>
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <p>Ranking</p>
+                                <SortButton @sort="direction => sortBy('time', direction)" />
+                                <p>Thời gian đặt</p>
                             </div>
                         </th>
                         <th>Thao tác</th>
@@ -34,27 +36,22 @@
                                 <div class="overflow-hidden flex flex-row justify-center items-center">
                                     <img class="hover:cursor-pointer overflow-auto object-cover h-32 w-24"
                                         src="/imageicon/food 1 icon.jpg" alt="">
-                                    <p class="ps-5 hover:cursor-pointer">{{ item.name }}</p>
+                                    <div class="ps-5 flex flex-col gap-5">
+                                        <p class="hover:cursor-pointer">{{ item.name }}</p>
+
+                                    </div>
                                 </div>
                             </div>
                         </td>
-                        <td class="text-center">{{ item.point }}</td>
-                        <td class="text-center">
-                            <div v-if="item.point >= 200" class="w-full flex justify-center">
-                                <p class="bg-blue-300 px-2">Diamond</p>
-                            </div>
-                            <div v-else-if="item.point >= 150" class="w-full flex justify-center">
-                                <p class="bg-yellow-300 px-2">Gold</p>
-                            </div>
-                            <div v-else-if="item.point >= 100" class="w-full flex justify-center">
-                                <p class="bg-gray-300 px-2">Sliver</p>
-                            </div>
-                            <div v-else class="w-full flex justify-center">
-                                <p class="bg-red-700 px-2">Bronze</p>
-                            </div>
+                        <td class="flex justify-center items-center w-full h-full">
+                            <p v-if="item.status === 1" class="bg-yellow-500 w-24 text-center p-2 rounded-md">Đã đặt
+                            </p>
+                            <p v-else-if="item.status === 2" class="bg-green-500 w-24 text-center p-2 rounded-md">Có
+                                sẵn</p>
+                            <p v-else-if="item.status === 0" class="bg-red-500 w-24 text-center p-2 rounded-md">Đã đặt
+                            </p>
                         </td>
-
-
+                        <td class="text-center">{{ item.time }}</td>
                         <td class="text-center">
                             <div class="flex justify-center items-center h-full">
                                 <div
@@ -66,7 +63,7 @@
                                     </svg>
                                     <div
                                         class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailCategory">
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailTables">
                                             Chi
                                             tiết</p>
                                         <p class="hover:bg-gray-500 text-start w-full h-full">Chỉnh sửa</p>
@@ -80,7 +77,6 @@
             </table>
             <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
 
-
         </div>
     </div>
 </template>
@@ -89,9 +85,10 @@
 
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import Sort from '../../components/Admin/SortButton.vue'
-import Search from '../../components/Admin/Search.vue'
-import Pagination from '../../components/Admin/Pagination.vue'
+import Search from '../../../components/Admin/Search.vue'
+import AddButton from '../../../components/Admin/AddButton.vue'
+import SortButton from '../../../components/Admin/SortButton.vue'
+import Pagination from '../../../components/Admin/Pagination.vue'
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -130,29 +127,15 @@ const filteredItems = computed(() => {
 
 
 const allItems = ref([
-    { name: 'Name 1', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 2', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 3', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 4', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 5', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 6', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 7', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 8', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 9', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 10', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 11', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 12', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 13', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 14', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 15', point: Math.floor(Math.random() * 210) + 1, status: Math.round(Math.random()) },
+    { name: 'bàn 1', time: '01:12:12', status: 1 },
+    { name: 'bàn 2', time: '02:12:12', status: 2 },
+    { name: 'bàn 3', time: '03:12:12', status: 0 },
+    { name: 'bàn 4', time: '11:12:12', status: 2 },
+    { name: 'bàn 5', time: '12:12:12', status: 1 },
+    { name: 'bàn 6', time: '21:12:12', status: 0 },
+    { name: 'bàn 7', time: '23:12:12', status: 2 },
+    { name: 'bàn 8', time: '13:12:12', status: 1 },
 ])
-
-// Giải thích:
-// - Math.random(): Tạo ra một số thập phân ngẫu nhiên từ 0 (bao gồm) đến 1 (không bao gồm).
-// - Math.floor(Math.random() * 100): Tạo ra một số nguyên ngẫu nhiên từ 0 đến 99.
-// - Math.floor(Math.random() * 100) + 1: Tạo ra một số nguyên ngẫu nhiên từ 1 đến 100 (cho qty).
-// - Math.round(Math.random()): Làm tròn số ngẫu nhiên (0 đến <1) thành 0 hoặc 1 (cho status).
-// - `loại ngẫu nhiên ${index}`: Tạo tên ngẫu nhiên đơn giản.
 
 const itemsPerPage = 5
 const currentPage = ref(1)
@@ -169,7 +152,7 @@ function changePage(page) {
     if (page >= 1 && page <= totalPages.value) { currentPage.value = page }
 }
 
-function goDetailCustomers() {
-    router.push('/admin/customers/details-customers')
+function goDetailTables() {
+    router.push({ name: 'admin-details-tables' })
 }
 </script>
