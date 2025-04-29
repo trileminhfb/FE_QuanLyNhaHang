@@ -44,7 +44,6 @@
                 <th>
                   <div class="flex flex-row justify-center items-center gap-2">
                     <SortButton @sort="(direction) => sortBy('time_start', direction)" />
-
                     <p>Thời gian đặt</p>
                   </div>
                 </th>
@@ -138,6 +137,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
@@ -293,13 +293,6 @@ const allItems = ref([
     total: (Math.floor(Math.random() * 10000) + 1) * 1000,
   },
 ]);
-
-// Giải thích:
-// - Math.random(): Tạo ra một số thập phân ngẫu nhiên từ 0 (bao gồm) đến 1 (không bao gồm).
-// - Math.floor(Math.random() * 100): Tạo ra một số nguyên ngẫu nhiên từ 0 đến 99.
-// - Math.floor(Math.random() * 100) + 1: Tạo ra một số nguyên ngẫu nhiên từ 1 đến 100 (cho qty).
-// - Math.round(Math.random()): Làm tròn số ngẫu nhiên (0 đến <1) thành 0 hoặc 1 (cho status).
-// - `loại ngẫu nhiên ${index}`: Tạo tên ngẫu nhiên đơn giản.
 
 const itemsPerPage = 8;
 const currentPage = ref(1);

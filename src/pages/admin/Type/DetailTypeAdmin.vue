@@ -7,7 +7,6 @@
             <div class="w-[70vw] h-full flex justify-center items-start text-xl">
                 <div class="w-full border h-fit flex flex-col">
                     <div class="flex-1 border flex flex-row">
-
                         <div class="border flex flex-[2] flex-col p-2">
                             <p class="text-2xl ">Nướng</p>
                             <p class="font-normal">

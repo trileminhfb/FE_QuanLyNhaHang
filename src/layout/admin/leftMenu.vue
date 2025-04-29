@@ -56,6 +56,24 @@
             </p>
         </div>
         <div class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2 hover:bg-gray-500 hover:cursor-pointer"
+            @click="goRank">
+            <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
+                <img class="w-full h-full object-cover" src="/imageicon/rank icon.png" alt="">
+            </div>
+            <p>
+                Rank
+            </p>
+        </div>
+        <div class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2 hover:bg-gray-500 hover:cursor-pointer"
+            @click="goSale">
+            <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
+                <img class="w-12 h-12 object-cover" src="/imageicon/sale icon.png" alt="">
+            </div>
+            <p>
+                Sale
+            </p>
+        </div>
+        <div class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2 hover:bg-gray-500 hover:cursor-pointer"
             @click="goUser">
             <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
                 <img class="w-12 h-12 object-cover" src="/imageicon/staff icon.png" alt="">
@@ -81,30 +99,38 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 function goHome() {
-    router.push('/admin')
+    router.push({ name: 'home' })
 }
 
 function goFood() {
-    router.push('/admin/foods')
+    router.push({ name: 'admin-foods' })
 }
 
 function goUser() {
-    router.push('/admin/users')
+    router.push({ name: 'admin-users' })
 }
 
 function goTable() {
-    router.push('/admin/tables')
+    router.push({ name: 'admin-tables' })
 }
 
 function goType() {
-    router.push('/admin/types')
+    router.push({ name: 'admin-types' })
 }
 
 function goCategory() {
-    router.push('/admin/categories')
+    router.push({ name: 'admin-categories' })
+}
+
+function goSale() {
+    router.push({ name: 'admin-sales' })
+}
+
+function goRank() {
+    router.push({ name: 'admin-ranks' })
 }
 
 function goCustomer() {
-    router.push('/admin/customer')
+    router.push({ name: 'admin-customers' })
 }
 </script>
