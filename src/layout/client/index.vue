@@ -1,8 +1,10 @@
 <template>
     <Header></Header>
-    <div :style="{minHeight: 'calc(110vh - 50px - 352px)' }">
+    <div :style="{ minHeight: 'calc(110vh - 50px - 352px)' }">
         <router-view></router-view>
     </div>
+    <!-- <ChatBox></ChatBox> -->
+    <ChatBot></ChatBot>
     <Footer></Footer>
 </template>
 <script setup>
@@ -13,10 +15,11 @@ import AOS from 'aos'
 import 'aos/dist/aos.css'
 
 import { onMounted } from 'vue'
+import ChatBox from './ChatBox.vue';
+import ChatBot from './ChatBot.vue';
 
 onMounted(() => {
     AOS.init()
 })
 </script>
-<style>
-</style>
+<style></style>

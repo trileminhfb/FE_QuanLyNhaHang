@@ -5,7 +5,7 @@ const admin = [
     children: [
       {
         path: "",
-        name: "admin-home",
+        name: "home",
         component: () => import("../pages/admin/Home.vue"),
       },
       //user
@@ -49,10 +49,22 @@ const admin = [
         component: () =>
           import("../pages/admin/Category/DetailCategoryAdmin.vue"),
       },
+      //sale
+      {
+        path: "sale",
+        name: "admin-sales",
+        component: () => import("../pages/admin/Sale/SaleMenuAdmin.vue"),
+      },
+      //rank
+      {
+        path: "rank",
+        name: "admin-ranks",
+        component: () => import("../pages/admin/Rank/RankMenuAdmin.vue"),
+      },
       //customer
       {
-        path: "customer",
-        name: "admin-customer",
+        path: "customers",
+        name: "admin-customers",
         component: () =>
           import("../pages/admin/Customer/CustomerMenuAdmin.vue"),
       },

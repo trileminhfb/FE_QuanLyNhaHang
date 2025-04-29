@@ -49,8 +49,8 @@
                             <p class="font-normal">{{ foodData.detail }}</p>
 
                             <div class="flex flex-row gap-2 p-2">
-                                <div
-                                    class="bg-green-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:text-black hover:bg-green-300">
+                                <div class="bg-green-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:text-black hover:bg-green-300"
+                                    @click="goEdit">
                                     Chỉnh sửa
                                 </div>
                                 <div
@@ -117,9 +117,7 @@
                     </div>
                 </div>
             </div>
-
         </div>
-
     </div>
 </template>
 
@@ -131,6 +129,10 @@ const route = useRoute()
 
 function goBack() {
     router.push({ name: 'admin-foods' })
+}
+
+function goEdit() {
+    router.push({ name: 'admin-edit-foods' })
 }
 
 const foodId = route.params.id;

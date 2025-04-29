@@ -27,10 +27,8 @@
                     <tr v-for="(item, index) in paginatedItems" :key="index" class="border-2 border-gray-300">
                         <td>
                             <div class="h-full flex flex-row justify-start items-center">
-                                <div class="overflow-hidden flex flex-row justify-center items-center">
-                                    <img class="hover:cursor-pointer overflow-auto object-cover h-32 w-24"
-                                        src="/imageicon/food 1 icon.jpg" alt="">
-                                    <div class="ps-5 flex flex-col gap-5">
+                                <div class="flex flex-row justify-center items-center h-20">
+                                    <div class="ps-5 flex flex-row gap-5">
                                         <p class="hover:cursor-pointer">{{ item.name }}</p>
                                         <div class="flex flex-row gap-2 items-center">
                                             <div v-if="item.status === 1"
@@ -141,13 +139,6 @@ const allItems = ref([
     { name: 'Name 15', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
     { name: 'Name 16', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
 ])
-
-// Giải thích:
-// - Math.random(): Tạo ra một số thập phân ngẫu nhiên từ 0 (bao gồm) đến 1 (không bao gồm).
-// - Math.floor(Math.random() * 100): Tạo ra một số nguyên ngẫu nhiên từ 0 đến 99.
-// - Math.floor(Math.random() * 100) + 1: Tạo ra một số nguyên ngẫu nhiên từ 1 đến 100 (cho qty).
-// - Math.round(Math.random()): Làm tròn số ngẫu nhiên (0 đến <1) thành 0 hoặc 1 (cho status).
-// - `loại ngẫu nhiên ${index}`: Tạo tên ngẫu nhiên đơn giản.
 
 const itemsPerPage = 5
 const currentPage = ref(1)
