@@ -3,7 +3,7 @@
     <div :style="{ minHeight: 'calc(110vh - 50px - 352px)' }">
         <router-view></router-view>
     </div>
-    <!-- <ChatBox></ChatBox> -->
+    <ChatBox></ChatBox>
     <ChatBot></ChatBot>
     <Footer></Footer>
 </template>

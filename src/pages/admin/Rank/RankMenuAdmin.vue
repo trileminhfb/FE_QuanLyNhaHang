@@ -1,9 +1,12 @@
 <template>
     <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
+        <!-- Thanh tìm kiếm và nút thêm -->
         <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
             <Search v-model="searchQuery" />
-            <AddButton></AddButton>
+            <AddButton />
         </div>
+
+        <!-- Bảng dữ liệu -->
         <div class="w-full h-full border-t border-gray-400 px-2 pt-2">
             <table class="w-full h-fit table-auto font-semibold text-2xl">
                 <thead>
@@ -15,13 +18,13 @@
                         </th>
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <Sort @sort="(direction) => sortBy('point', direction)" />
+                                <Sort @sort="(direction) => sortBy('necessaryPoint', direction)" />
                                 <p>Điểm</p>
                             </div>
                         </th>
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <Sort @sort="(direction) => sortBy('point', direction)" />
+                                <Sort @sort="(direction) => sortBy('saleRank', direction)" />
                                 <p>Giảm giá</p>
                             </div>
                         </th>
@@ -29,18 +32,20 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, index) in paginatedItems" :key="index" class="border-2 border-gray-300">
+                    <tr v-for="(item, index) in paginatedItems" :key="`${item.id}-${index}`"
+                        class="border-2 border-gray-300">
                         <td>
                             <div class="h-full flex flex-row justify-start items-center">
                                 <div class="overflow-hidden flex flex-row justify-center items-center">
-                                    <img class="hover:cursor-pointer overflow-hidden object-cover h-32 w-24 rounded-lg shadow-md border"
-                                        :src="`/picture/rank/${item.picture}`" alt="Ảnh nhân viên" />
+                                    <img v-if="item.image"
+                                        class="hover:cursor-pointer overflow-hidden object-cover h-32 w-24 rounded-lg shadow-md border"
+                                        :src="`/picture/rank/${item.image}`" alt="Ảnh rank" />
                                     <p class="ps-5 hover:cursor-pointer">{{ item.nameRank }}</p>
                                 </div>
                             </div>
                         </td>
-                        <td class="text-center">{{ item.necessaryPoints }}</td>
-                        <td class="text-center">{{ item.saleRank }}% </td>
+                        <td class="text-center">{{ item.necessaryPoint }}</td>
+                        <td class="text-center">{{ item.saleRank }}%</td>
                         <td class="text-center">
                             <div class="flex justify-center items-center h-full">
                                 <div
@@ -52,15 +57,10 @@
                                     </svg>
                                     <div
                                         class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailCategory">
-                                            Chi tiết
-                                        </p>
-                                        <p class="hover:bg-gray-500 text-start w-full h-full">
-                                            Chỉnh sửa
-                                        </p>
-                                        <p class="hover:bg-gray-500 text-start w-full h-full">
-                                            Xoá
-                                        </p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailRank">Chi
+                                            tiết</p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full">Chỉnh sửa</p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full">Xoá</p>
                                     </div>
                                 </div>
                             </div>
@@ -68,23 +68,38 @@
                     </tr>
                 </tbody>
             </table>
+
+            <!-- Phân trang -->
             <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
         </div>
     </div>
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
+import axios from "axios";
 import { useRouter } from "vue-router";
 import Sort from "../../../components/Admin/SortButton.vue";
 import Search from "../../../components/Admin/Search.vue";
 import Pagination from "../../../components/Admin/Pagination.vue";
-import AddButton from "../../../components/Admin/AddButton.vue";
 
 const router = useRouter();
 const searchQuery = ref("");
-const sortKey = ref(""); // 'name' hoặc 'qty'
-const sortDirection = ref(""); // 'asc' | 'desc'
+const sortKey = ref("");
+const sortDirection = ref("");
+const allItems = ref([]);
+
+async function fetchRanks() {
+    try {
+        const response = await axios.get("http://127.0.0.1:8000/api/admin/ranks");
+        allItems.value = response.data; // Sửa tại đây
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu rank:", error);
+    }
+}
+
+
+onMounted(fetchRanks);
 
 function sortBy(key, direction) {
     sortKey.value = key;
@@ -94,52 +109,41 @@ function sortBy(key, direction) {
 const filteredItems = computed(() => {
     let result = [...allItems.value];
 
-    // Lọc theo search nếu có
     if (searchQuery.value) {
         result = result.filter((item) =>
-            item.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+            item.nameRank.toLowerCase().includes(searchQuery.value.toLowerCase())
         );
     }
 
-    // Sắp xếp nếu có key và direction
     if (sortKey.value && sortDirection.value) {
         result.sort((a, b) => {
-            if (sortDirection.value === "asc") {
-                return a[sortKey.value] > b[sortKey.value] ? 1 : -1;
-            } else {
-                return a[sortKey.value] < b[sortKey.value] ? 1 : -1;
+            const aVal = a[sortKey.value];
+            const bVal = b[sortKey.value];
+
+            if (typeof aVal === "string") {
+                return sortDirection.value === "asc"
+                    ? aVal.localeCompare(bVal)
+                    : bVal.localeCompare(aVal);
             }
+            return sortDirection.value === "asc" ? aVal - bVal : bVal - aVal;
         });
     }
 
     return result;
 });
 
-const allItems = ref([
-    { picture: "rank_dong.png", nameRank: "Đồng", necessaryPoints: 50, saleRank: 10 },
-    { picture: "rank_bac.png", nameRank: "Bạc", necessaryPoints: 100, saleRank: 20 },
-    { picture: "rank_vang.png", nameRank: "Vàng", necessaryPoints: 150, saleRank: 25 },
-    { picture: "rank_kimcuong.png", nameRank: "Kim cương", necessaryPoints: 200, saleRank: 30 },
-]);
-
-// Giải thích:
-// - Math.random(): Tạo ra một số thập phân ngẫu nhiên từ 0 (bao gồm) đến 1 (không bao gồm).
-// - Math.floor(Math.random() * 100): Tạo ra một số nguyên ngẫu nhiên từ 0 đến 99.
-// - Math.floor(Math.random() * 100) + 1: Tạo ra một số nguyên ngẫu nhiên từ 1 đến 100 (cho qty).
-// - Math.round(Math.random()): Làm tròn số ngẫu nhiên (0 đến <1) thành 0 hoặc 1 (cho status).
-// - `loại ngẫu nhiên ${index}`: Tạo tên ngẫu nhiên đơn giản.
-
 const itemsPerPage = 5;
 const currentPage = ref(1);
+const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
 
-const totalPages = computed(() =>
-    Math.ceil(filteredItems.value.length / itemsPerPage)
-);
+// Reset về trang 1 nếu lọc làm mất dữ liệu ở trang hiện tại
+watch([filteredItems, totalPages], () => {
+    if (currentPage.value > totalPages.value) currentPage.value = 1;
+});
 
 const paginatedItems = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    return filteredItems.value.slice(start, end);
+    return filteredItems.value.slice(start, start + itemsPerPage);
 });
 
 function changePage(page) {
@@ -148,7 +152,7 @@ function changePage(page) {
     }
 }
 
-function goDetailCustomers() {
-    router.push({ name: "admin-detail-customer" });
+function goDetailRank() {
+    router.push({ name: "admin-details-ranks" });
 }
 </script>
