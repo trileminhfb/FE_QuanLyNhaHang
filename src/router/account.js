@@ -14,6 +14,11 @@ const account = [
         name: "register",
         component: () => import("../pages/register/Home.vue"),
       },
+      {
+        path: "forgot-password",
+        name: "forgot-password",
+        component: () => import("../pages/ForgotPassword/Home.vue"),
+      },
     ],
   },
 ];

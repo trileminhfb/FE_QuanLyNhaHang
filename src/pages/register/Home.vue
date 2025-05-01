@@ -1,8 +1,11 @@
 <template>
     <div class="bg-blue-200 w-full h-screen flex flex-row justify-center items-center">
-        <div class="w-[50vw] h-[50vh] bg-white rounded-[50px] flex flex-row">
+        <div class="w-[50vw] h-[50vh] bg-white rounded-[50px] flex flex-row shadow-lg">
             <div
                 class="w-[50vw] h-full bg-white rounded-s-[50px] flex flex-col gap-4 justify-center items-center text-black">
+                <div class="w-24 h-24 flex justify-center items-center rounded-full overflow-hidden">
+                    <img class="object-cover" src="/imageicon/phefood.png" alt="icon quên mật khẩu">
+                </div>
                 <h1 class="text-3xl font-bold">Registration</h1>
                 <div class="flex flex-col w-[15vw] h-[5vh]">
                     <div class="relative w-full h-full">
@@ -65,6 +68,7 @@ import { useRouter } from "vue-router";
 const router = useRouter();
 
 function goLogin() {
-    router.push("/account/login");
+    router.push({ name: 'login' });
 }
+
 </script>
