@@ -1,31 +1,36 @@
 <template>
     <div class="fixed right-10 bottom-10 h-16 w-16 bg-blue-500 rounded-full flex justify-center items-center">
-        <svg class="w-12 h-12 text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
-            fill="none" viewBox="0 0 24 24">
+        <!-- ICON mở chat -->
+        <svg @click="isOpen = true" class="w-12 h-12 text-white hover:cursor-pointer" aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
             <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M16 10.5h.01m-4.01 0h.01M8 10.5h.01M5 5h14a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1h-6.6a1 1 0 0 0-.69.275l-2.866 2.723A.5.5 0 0 1 8 18.635V17a1 1 0 0 0-1-1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />
         </svg>
-        <div class="fixed right-28 rounded-xl bottom-10 h-[500px] w-[400px] bg-white border flex flex-col">
+
+        <!-- Hộp chat -->
+        <div v-if="isOpen"
+            class="fixed right-28 rounded-xl bottom-10 h-[500px] w-[400px] bg-white border flex flex-col">
             <div class="w-full border h-20 flex flex-row bg-blue-400 rounded-t-xl">
                 <div class="flex-[5] flex flex-row items-center px-2 gap-2">
                     <div class="w-16 h-16 rounded-full bg-white overflow-hidden flex justify-center items-center">
                         <img class="w-12 h-12" src="/imageicon/customer icon.png" alt="user image">
                     </div>
-                    <p class="text-white font-semibold text-xl">Chat với nhân viên tư vấn
-                    </p>
+                    <p class="text-white font-semibold text-xl">Chat với nhân viên tư vấn</p>
                 </div>
+                <!-- ICON đóng chat -->
                 <div class="flex flex-1 justify-center items-center">
-                    <svg class="w-8 h-8 text-white hover:cursor-pointer" aria-hidden="true"
+                    <svg @click="isOpen = false" class="w-8 h-8 text-white hover:cursor-pointer" aria-hidden="true"
                         xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18 17.94 6M18 18 6.06 6" />
                     </svg>
                 </div>
             </div>
-            <!-- chat -->
-            <div class=""></div>
-            <div
-                class="fixed bottom-10 h-auto w-[400px] border rounded-b-xl flex flex-row justify-start items-center p-2 bg-white">
+            <!-- chat content -->
+            <div class="flex-1 overflow-y-auto p-2">
+                <!-- Tin nhắn có thể hiển thị ở đây -->
+            </div>
+            <div class="h-auto w-full border-t rounded-b-xl flex flex-row justify-start items-center p-2 bg-white">
                 <textarea v-model="message" ref="textareaRef" rows="1" placeholder="Nhập tin nhắn..."
                     class="resize-none overflow-hidden w-full ps-2 focus:outline-none" @input="autoResize"></textarea>
                 <div class="h-[50px] w-[50px] flex justify-center items-center hover:cursor-pointer">
@@ -39,11 +44,13 @@
         </div>
     </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
 
 const message = ref('')
 const textareaRef = ref(null)
+const isOpen = ref(false) // <- Thêm dòng này
 
 const autoResize = () => {
     const textarea = textareaRef.value

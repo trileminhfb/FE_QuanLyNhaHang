@@ -117,7 +117,7 @@
                       </svg>
                       <div
                         class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailOrders">
+                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailBooking">
                           Chi tiết
                         </p>
                         <p class="hover:bg-gray-500 text-start w-full h-full">
@@ -311,7 +311,7 @@ function changePage(page) {
   }
 }
 
-function goDetailOrders() {
-  router.push({ name: 'admin-details-orders' })
+function goDetailBooking() {
+  router.push({ name: 'admin-details-booking' })
 }
 </script>

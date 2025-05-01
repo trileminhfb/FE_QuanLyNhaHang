@@ -68,16 +68,23 @@ const admin = [
         component: () =>
           import("../pages/admin/Customer/CustomerMenuAdmin.vue"),
       },
-      //order
       {
-        path: "orders",
-        name: "admin-orders",
-        component: () => import("../pages/admin/Order/OrderAdmin.vue"),
+        path: "customers/details-customers",
+        name: "admin-details-customers",
+        component: () =>
+          import("../pages/admin/Customer/DetailCustomerAdmin.vue"),
+      },
+      //booking
+      {
+        path: "booking",
+        name: "admin-booking",
+        component: () => import("../pages/admin/Booking/BookingAdmin.vue"),
       },
       {
-        path: "orders/details-orders",
-        name: "admin-details-orders",
-        component: () => import("../pages/admin/Order/DetailOrderAdmin.vue"),
+        path: "booking/details-booking",
+        name: "admin-details-booking",
+        component: () =>
+          import("../pages/admin/Booking/DetailBookingAdmin.vue"),
       },
       //food
       {
