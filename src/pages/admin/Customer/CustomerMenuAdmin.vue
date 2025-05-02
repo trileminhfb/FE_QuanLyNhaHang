@@ -9,7 +9,7 @@
           <tr class="border-2 border-gray-300">
             <th>
               <div class="flex flex-row justify-center items-center gap-2">
-                <Sort @sort="(direction) => sortBy('name', direction)" />
+                <Sort @sort="(direction) => sortBy('FullName', direction)" />
                 <p class="text-start w-full">Họ tên</p>
               </div>
             </th>
@@ -33,27 +33,17 @@
               <div class="h-full flex flex-row justify-start items-center">
                 <div class="overflow-hidden flex flex-row justify-center items-center">
                   <img class="hover:cursor-pointer overflow-auto object-cover h-32 w-24 rounded-lg shadow-md border"
-                    :src="`/picture/profile/${item.picture}`" alt="Ảnh nhân viên" />
-                  <p class="ps-5 hover:cursor-pointer">{{ item.name }}</p>
+                    :src="`/picture/profile/${item.image}`" alt="Ảnh nhân viên" />
+                  <p class="ps-5 hover:cursor-pointer">{{ item.FullName }}</p>
                 </div>
               </div>
             </td>
             <td class="text-center">{{ item.point }}</td>
             <td class="text-center">
-              <div v-if="item.point >= 200" class="w-full flex justify-center">
-                <p class="bg-blue-300 w-32 p-2 rounded-md">Diamond</p>
-              </div>
-              <div v-else-if="item.point >= 150" class="w-full flex justify-center">
-                <p class="bg-yellow-300 w-32 rounded-md p-2">Gold</p>
-              </div>
-              <div v-else-if="item.point >= 100" class="w-full flex justify-center">
-                <p class="bg-gray-300 w-32 rounded-md p-2">Sliver</p>
-              </div>
-              <div v-else class="w-full flex justify-center">
-                <p class="bg-red-700 text-white rounded-md w-32 p-2">Bronze</p>
+              <div class="w-full flex justify-center">
+                <p>{{ item.rank.nameRank }}</p>
               </div>
             </td>
-
             <td class="text-center">
               <div class="flex justify-center items-center h-full">
                 <div class="w-10 h-10 text-gray-800 hover:bg-gray-400 hover:cursor-pointer rounded-lg relative group">
@@ -63,7 +53,7 @@
                   </svg>
                   <div
                     class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                    <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailCategory">
+                    <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailCustomers">
                       Chi tiết
                     </p>
                     <p class="hover:bg-gray-500 text-start w-full h-full">Chỉnh sửa</p>
@@ -81,7 +71,8 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import axios from "axios";
 import { useRouter } from "vue-router";
 import Sort from "../../../components/Admin/SortButton.vue";
 import Search from "../../../components/Admin/Search.vue";
@@ -89,8 +80,20 @@ import Pagination from "../../../components/Admin/Pagination.vue";
 
 const router = useRouter();
 const searchQuery = ref("");
-const sortKey = ref(""); // 'name' hoặc 'qty'
+const sortKey = ref(""); // 'FullName' hoặc 'point'
 const sortDirection = ref(""); // 'asc' | 'desc'
+const allItems = ref([]);
+
+async function fetchCustomers() {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/api/admin/customers");
+    allItems.value = response.data.customers;
+  } catch (error) {
+    console.error("Lỗi khi lấy dữ liệu khách hàng:", error);
+  }
+}
+
+onMounted(fetchCustomers);
 
 function sortBy(key, direction) {
   sortKey.value = key;
@@ -99,137 +102,30 @@ function sortBy(key, direction) {
 
 const filteredItems = computed(() => {
   let result = [...allItems.value];
-
-  // Lọc theo search nếu có
   if (searchQuery.value) {
     result = result.filter((item) =>
-      item.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+      item.FullName.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   }
 
-  // Sắp xếp nếu có key và direction
   if (sortKey.value && sortDirection.value) {
     result.sort((a, b) => {
-      if (sortDirection.value === "asc") {
-        return a[sortKey.value] > b[sortKey.value] ? 1 : -1;
-      } else {
-        return a[sortKey.value] < b[sortKey.value] ? 1 : -1;
+      const aVal = a[sortKey.value];
+      const bVal = b[sortKey.value];
+
+      if (typeof aVal === 'string') {
+        return sortDirection.value === 'asc'
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal);
       }
+      return sortDirection.value === 'asc' ? aVal - bVal : bVal - aVal;
     });
   }
-
   return result;
 });
 
-const allItems = ref([
-  {
-    picture: "user1.png",
-    name: "Name 1",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user2.png",
-    name: "Name 2",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user3.png",
-    name: "Name 3",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user4.png",
-    name: "Name 4",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user5.png",
-    name: "Name 5",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 6",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 7",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 8",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 9",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 10",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 11",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 12",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 13",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 14",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 15",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    picture: "user1.png",
-    name: "Name 16",
-    point: Math.floor(Math.random() * 210) + 1,
-    status: Math.round(Math.random()),
-  },
-]);
-
-// Giải thích:
-// - Math.random(): Tạo ra một số thập phân ngẫu nhiên từ 0 (bao gồm) đến 1 (không bao gồm).
-// - Math.floor(Math.random() * 100): Tạo ra một số nguyên ngẫu nhiên từ 0 đến 99.
-// - Math.floor(Math.random() * 100) + 1: Tạo ra một số nguyên ngẫu nhiên từ 1 đến 100 (cho qty).
-// - Math.round(Math.random()): Làm tròn số ngẫu nhiên (0 đến <1) thành 0 hoặc 1 (cho status).
-// - `loại ngẫu nhiên ${index}`: Tạo tên ngẫu nhiên đơn giản.
-
 const itemsPerPage = 5;
 const currentPage = ref(1);
-
 const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
 
 const paginatedItems = computed(() => {
@@ -245,6 +141,6 @@ function changePage(page) {
 }
 
 function goDetailCustomers() {
-  router.push({ name: 'admin-detail-customer' });
+  router.push({ name: 'admin-details-customers' });
 }
 </script>

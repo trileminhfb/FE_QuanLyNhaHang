@@ -44,7 +44,6 @@
                 <th>
                   <div class="flex flex-row justify-center items-center gap-2">
                     <SortButton @sort="(direction) => sortBy('time_start', direction)" />
-
                     <p>Thời gian đặt</p>
                   </div>
                 </th>
@@ -118,7 +117,7 @@
                       </svg>
                       <div
                         class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailOrders">
+                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailBooking">
                           Chi tiết
                         </p>
                         <p class="hover:bg-gray-500 text-start w-full h-full">
@@ -138,6 +137,7 @@
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
@@ -294,13 +294,6 @@ const allItems = ref([
   },
 ]);
 
-// Giải thích:
-// - Math.random(): Tạo ra một số thập phân ngẫu nhiên từ 0 (bao gồm) đến 1 (không bao gồm).
-// - Math.floor(Math.random() * 100): Tạo ra một số nguyên ngẫu nhiên từ 0 đến 99.
-// - Math.floor(Math.random() * 100) + 1: Tạo ra một số nguyên ngẫu nhiên từ 1 đến 100 (cho qty).
-// - Math.round(Math.random()): Làm tròn số ngẫu nhiên (0 đến <1) thành 0 hoặc 1 (cho status).
-// - `loại ngẫu nhiên ${index}`: Tạo tên ngẫu nhiên đơn giản.
-
 const itemsPerPage = 8;
 const currentPage = ref(1);
 
@@ -318,7 +311,7 @@ function changePage(page) {
   }
 }
 
-function goDetailOrders() {
-  router.push({ name: 'admin-details-orders' })
+function goDetailBooking() {
+  router.push({ name: 'admin-details-booking' })
 }
 </script>
