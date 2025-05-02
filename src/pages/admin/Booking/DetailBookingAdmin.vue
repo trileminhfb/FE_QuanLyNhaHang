@@ -343,7 +343,7 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 
 function goBack() {
-    router.push({ name: 'admin-orders' })
+    router.push({ name: 'admin-booking' })
 }
 
 </script>
