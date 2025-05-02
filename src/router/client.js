@@ -38,7 +38,16 @@ const users = [
                 name: "users-pay",
                 component: () => import("../pages/client/pay.vue")
             }, 
-             
+            {
+                path: "category", 
+                name: "users-category",
+                component: () => import("../pages/client/categoryappetizer.vue")
+            }, 
+            {
+                path: "personalinformation", 
+                name: "users-personalinformation",
+                component: () => import("../pages/client/personalinformation.vue")
+            }, 
         ]
     }
 ];

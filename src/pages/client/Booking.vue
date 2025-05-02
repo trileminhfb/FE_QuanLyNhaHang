@@ -11,42 +11,48 @@
                 <div class="input-text">
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Tên Của Bạn</label>
-                            <input type="text" placeholder="Nhập tên của bạn..." />
+                            <label>Id khách hàng</label>
+                            <input type="text" v-model="form.customer_name" placeholder="Teen khách hàng..." />
+
                         </div>
                         <div class="form-group">
-                            <label>Email của bạn</label>
-                            <input type="email" placeholder="Nhập email của bạn..." />
+                            <label>Id bàn</label>
+                            <input type="text" v-model="form.table_number" placeholder="ID bàn..." />
                         </div>
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
+                        <!-- <div class="form-group">
                             <label>Số Điện Thoại</label>
-                            <input type="text" placeholder="Nhập số điện thoại..." />
-                        </div>
+                            <input type="text" placeholder="Nhập số điện thoại..." v-model="form.phone"/>
+                        </div> -->
                         <div class="form-group">
-                            <label>Bạn có thể đến ngày nào? </label>
-                            <input type="date" />
+                            <label>Món ăn </label>
+                            <input type="text" v-model="form.food_name" placeholder="Món ăn..." />
                         </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Bạn đi mấy người?</label>
-                            <input type="text" placeholder="Nhập số người..." />
+                            <label>Số Lượng</label>
+                            <input type="number" v-model="form.quantity" placeholder="Số lượng..." />
+
                         </div>
                         <div class="form-group">
                             <label>Thời gian bạn đến?</label>
-                            <input type="time" />
+                            <input type="datetime-local" v-model="form.timeBooking" />
                         </div>
                     </div>
                 </div>
                 <div class="oder-introduce">
-                  <p>Khác có thể đặt tiệc hội nghị , liên hoan vui lòng gọi trực tiếp:
-                    <strong class="number-phone"> 1900 2345 </strong>
-                  </p>
+                    <p>Khác có thể đặt tiệc hội nghị , liên hoan vui lòng gọi trực tiếp:
+                        <strong class="number-phone"> 1900 2345 </strong>
+                    </p>
                 </div>
                 <button class="oder-btn">
-<strong>Đặt Bàn Ngay</strong>
+                    <strong @click="createBooking">Đặt Bàn Ngay</strong>
+                    <p v-if="errors.length" class="error-message">
+                        Vui lòng kiểm tra lại thông tin.
+                    </p>
+
                 </button>
             </div>
             <div class="col-right">
@@ -57,7 +63,32 @@
 </template>
 
 <script setup>
+import api from '../../services/api';
+import { useRouter } from 'vue-router';
 import '../../assets/css/Booking.css'
+import { ref, reactive } from 'vue';
+const errors = ref({});
+const router = useRouter();
+const form = reactive({
+    table_number: '',
+    timeBooking: '',
+    food_name: '',
+    quantity: '',
+    customer_name: ''
+});
+const createBooking = () => {
+    api.post("/admin/bookings/create", form)
+        .then((response) => {
+            
+            if (response.status == 201) { // http code khi tạo thành công là 201, nào mà update, delete... thành công mới dùng 200
+                alert('Đặt bàn thành công!');
+            }
+        })
+        .catch((error) => { 
+            console.log('error', error)
+            // errors.value = error.response.data.errors;
+        })
+}
 </script>
 
 <style scoped>
@@ -145,28 +176,32 @@ input {
     transition: border-color 0.3s ease;
 }
 
-.oder-introduce{
+.oder-introduce {
     margin-top: 15px;
     text-align: center;
 }
-.oder-introduce p{
-    
+
+.oder-introduce p {
+
     font-size: 16px;
     color: white;
 }
-.number-phone{
+
+.number-phone {
     color: yellow;
 }
-.oder-btn{
-    background:white;
-width: 200px;
-display: flex;
-justify-content: center;
-margin: 20px auto 0;
-border-radius: 10px;
-font-size: 25px;
+
+.oder-btn {
+    background: white;
+    width: 200px;
+    display: flex;
+    justify-content: center;
+    margin: 20px auto 0;
+    border-radius: 10px;
+    font-size: 25px;
 }
-.oder-btn:hover{
+
+.oder-btn:hover {
     background: yellow;
 }
 </style>

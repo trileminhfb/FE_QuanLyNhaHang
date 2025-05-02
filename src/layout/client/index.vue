@@ -1,6 +1,6 @@
 <template>
-    <Header></Header>
-    <div :style="{ minHeight: 'calc(110vh - 50px - 352px)' }">
+    <Header style="position: sticky; top: 0;  z-index: 1000;" ></Header>
+    <div :style="{minHeight: 'calc(110vh - 50px - 352px)' }">
         <router-view></router-view>
     </div>
     <ChatBox></ChatBox>
