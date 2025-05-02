@@ -27,14 +27,18 @@
               <div class="menu-row">
                 <div class="menu-list">
                   <div class="row-menu">
+                 
                     <div class="col-6" @mouseover="currentImage = '/imageicon/lauthai.png'">
+                      <router-link :to="{name:'users-category'}">
                       <p class="title-header">Khai vị </p>
                       <ul>
                         <li><a href=""><i class="fa-solid fa-circle-dollar-to-slot"></i> Spot</a></li>
                         <li><a href=""><i class="fa-solid fa-jet-fighter"></i> Margin vị akjddâddâda</a></li>
                         <li><a href="P2P.html"><i class="fa-solid fa-credit-card"></i> P2P</a></li>
-                      </ul>
+                      </ul></router-link>
+                   
                     </div>
+              
 
                     <div class="col-6" @mouseover="currentImage = '/imageicon/bunbo.png'">
                       <p class="title-header">Món chính</p>
@@ -48,6 +52,7 @@
 
                   <div class="row-menu">
                     <div class="col-6" @mouseover="currentImage = '/imageicon/comga.png'">
+                      <router-link :to="{name: 'users-category'}"></router-link>
                       <p class="title-header">Đồ uống</p>
                       <ul>
                         <li><a href="#"><i class="fa-solid fa-mug-hot"></i> Cà phê</a></li>
@@ -85,12 +90,9 @@
         </li>
         <div class="flex-1 justify-end flex me-10 items-center">
           <li>
-            <div class="search-container">
-              <div :class="isSearch ? 'w-[200px] search-box' : 'w-[40px] search-box'"
-
-              @click="handleOpenSearch()"
-          >
-                <input type="text" placeholder="Tìm Món ..." name="" id="">
+            <div class="search-container " @click="handleClickOutside">
+              <div :class="isSearch ? 'w-[200px] search-box ' : 'w-[40px] search-box '" @click="handleOpenSearch()">
+                <input type="text" @blur="handleBlur" placeholder="Tìm Món ..." name="" id="">
                 <div>
                   <i class=" fas  fa-solid fa-magnifying-glass"></i>
                 </div>
@@ -103,18 +105,61 @@
         <input type="text" placeholder="Tìm món ăn..." />
       </div> -->
             </div>
+
           </li>
           <li>
             <div class="cart-shopping">
               <router-link :to="{ name: 'users-shoppingCart' }">
                 <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count" v-if="cartCount > 0">{{ cartCount }}</span>
               </router-link>
 
             </div>
           </li>
           <li>
-            <div class="user">
-              <i class="fa-solid fa-user"></i>
+
+            <input type="checkbox" id="menu-toggle" hidden>
+
+            <label for="menu-toggle" class="menu-toggle">
+
+              <i class="fa-solid fa-bars"></i>
+
+            </label>
+
+            <div class="user-menu">
+              <div class="menu-header">
+                <i class="fa-solid fa-bars"></i>
+
+
+                <h2>Menu</h2>
+              </div>
+
+              <router-link :to="{ name: 'users-home' }">
+                <div class="menu-item">
+
+                  <i class="fa-solid fa-house"></i>
+
+                  <h2>Home</h2>
+                </div>
+              </router-link>
+
+              <div class="menu-item">
+                <i class="fa-solid fa-user"></i>
+<router-link :to="{name: 'users-personalinformation'}">
+ Acoount
+</router-link>
+              
+              </div>
+              <div class="menu-item">
+                <i class="fa-solid fa-user"></i>
+
+                <h2>Setting</h2>
+              </div>
+              <div class="menu-item">
+                <i class="fa-solid fa-wrench"></i>
+
+                <h2>Help</h2>
+              </div>
             </div>
           </li>
         </div>
@@ -129,12 +174,36 @@
 <script setup>
 import { ref } from 'vue';
 import '../../assets/css/Header.css'
+import { cartCount } from '../../stores/cartStore';
 const currentImage = ref('/imageicon/food icon.png')
 const isSearch = ref(false);
 
 const handleOpenSearch = () => {
-  isSearch.value = true
-}
+  isSearch.value = true;
+};
+
+// Khi nhấn ra ngoài, ô tìm kiếm sẽ thu lại
+const handleClickOutside = (event) => {
+  if (!event.target.closest('.search-box')) {
+    isSearch.value = false;
+  }
+};
+
+// Khi mất focus (blur) ra ngoài ô input, ô tìm kiếm sẽ thu lại
+const handleBlur = () => {
+  if (isSearch.value) {
+    isSearch.value = false;
+  }
+};
+//  document.addEventListener("click", function (event) {
+//     const toggle = document.getElementById("menu-toggle");
+//     const menu = document.querySelector(".menu");
+//     const icon = document.querySelector(".menu-icon");
+
+//     if (!menu.contains(event.target) && !icon.contains(event.target)) {
+//       toggle.checked = false;
+//     }
+//   });
 
 </script>
 <style scoped>
@@ -173,5 +242,69 @@ const handleOpenSearch = () => {
 
 .search-box:hover i {
   color: #007bff;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  transition: all 0.1s;
+  cursor: pointer;
+  color: #333;
+  gap: 20px;
+}
+
+.menu-item:hover {
+  background: #eee;
+}
+
+.menu-item i {
+  text-align: center;
+  width: 20px;
+  font-size: 22px;
+}
+
+.menu-item span {
+  font-weight: 500;
+  margin-right: 20px;
+}
+
+.user-menu {
+  position: fixed;
+  top: 0;
+  right: 0px;
+  height: 100%;
+  width: 260px;
+  padding: 20px;
+  background: white;
+  display: flex;
+  z-index: 1;
+  flex-direction: column;
+  gap: 20px;
+  transition: transform 0.3s;
+  transform: translateX(100%);
+}
+
+.menu-header {
+  font-size: 20px;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #cccc;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-left: 15px;
+  font-weight: bold;
+}
+
+#menu-toggle:checked~.user-menu {
+  transform: translateX(0);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+#menu-toggle:checked~.menu-header i {
+  transform: translateX(200px);
+  color: #333;
 }
 </style>
