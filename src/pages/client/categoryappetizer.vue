@@ -1,6 +1,7 @@
 <template>
     <div class="container-cartegoryaooetizer">
    <h1>Danh Sách  Món Khai Vị</h1>
+
   
       <div class="categories">
         <button
@@ -220,7 +221,7 @@
   }
   .btn-oder,
   .btn-add {
-    margin: 0.2rem;
+   margin: 0.2rem;
     padding: 15px;
     border: none;
     border-radius: 4px;
