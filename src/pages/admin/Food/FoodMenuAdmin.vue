@@ -89,7 +89,7 @@
                     <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailFoods(item)">
                       Chi tiết
                     </p>
-                    <p class="hover:bg-gray-500 text-start w-full h-full">Chỉnh sửa</p>
+                    <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEditFoods(item)">Chỉnh sửa</p>
                     <p class="hover:bg-gray-500 text-start w-full h-full">Xoá</p>
                   </div>
                 </div>
@@ -170,6 +170,18 @@ function changePage(page) {
 function goDetailFoods(item) {
   router.push({
     name: 'admin-details-foods',
+    params: {
+      id: item.id,
+    },
+    query: {
+      data: JSON.stringify(item)
+    }
+  });
+}
+
+function goEditFoods(item) {
+  router.push({
+    name: 'admin-edit-foods',
     params: {
       id: item.id,
     },

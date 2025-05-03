@@ -5,7 +5,7 @@ const admin = [
     children: [
       {
         path: "",
-        name: "admin-home",
+        name: "home",
         component: () => import("../pages/admin/Home.vue"),
       },
       //user
@@ -49,23 +49,42 @@ const admin = [
         component: () =>
           import("../pages/admin/Category/DetailCategoryAdmin.vue"),
       },
+      //sale
+      {
+        path: "sale",
+        name: "admin-sales",
+        component: () => import("../pages/admin/Sale/SaleMenuAdmin.vue"),
+      },
+      //rank
+      {
+        path: "rank",
+        name: "admin-ranks",
+        component: () => import("../pages/admin/Rank/RankMenuAdmin.vue"),
+      },
       //customer
       {
-        path: "customer",
-        name: "admin-customer",
+        path: "customers",
+        name: "admin-customers",
         component: () =>
           import("../pages/admin/Customer/CustomerMenuAdmin.vue"),
       },
-      //order
       {
-        path: "orders",
-        name: "admin-orders",
-        component: () => import("../pages/admin/Order/OrderAdmin.vue"),
+        path: "customers/details-customers",
+        name: "admin-details-customers",
+        component: () =>
+          import("../pages/admin/Customer/DetailCustomerAdmin.vue"),
+      },
+      //booking
+      {
+        path: "booking",
+        name: "admin-booking",
+        component: () => import("../pages/admin/Booking/BookingAdmin.vue"),
       },
       {
-        path: "orders/details-orders",
-        name: "admin-details-orders",
-        component: () => import("../pages/admin/Order/DetailOrderAdmin.vue"),
+        path: "booking/details-booking",
+        name: "admin-details-booking",
+        component: () =>
+          import("../pages/admin/Booking/DetailBookingAdmin.vue"),
       },
       //food
       {

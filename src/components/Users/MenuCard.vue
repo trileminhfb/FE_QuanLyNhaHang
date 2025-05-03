@@ -60,7 +60,7 @@
 <div class="title">
       <p>
         <strong>
-          <i class="fa-solid fa-utensils"></i>  Danh Sách Menu
+          <i class="fa-solid fa-utensils"></i>  Danh Sách Menu Nổi Bật Trong Tuần
           <i class="fa-solid fa-utensils"></i>
         </strong>
       </p>
@@ -93,7 +93,7 @@
         <div class="card-title">{{ mon.moTa }}</div>
         <div class="btn-wrapper">
           <button class="btn-oder">Đặt Hàng </button>
-          <button class="btn-add" >
+          <button class="btn-add" @click="addToCart">
   Thêm vào giỏ <i class="fas fa-shopping-cart"></i>
 </button>
 
@@ -178,7 +178,7 @@
 <script setup>
 import Aos from 'aos'
 import { onMounted, ref, computed } from 'vue'
-
+import { addToCart } from '../../stores/cartStore'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'aos/dist/aos.css'
 

@@ -1,9 +1,9 @@
 <template>
     <div class="fixed w-[calc(100vw-300px)] h-[calc(100vh-100px)] mt-20 z-0 ms-[300px] flex flex-col p-2">
         <div class="flex flex-row gap-2 w-full h-[150px]">
-            <div class="h-full w-full bg-gray-300 flex flex-row justify-center items-center">
+            <div class="h-32 w-full bg-gray-300 flex flex-row justify-center items-center px-5">
                 <div class="overflow-hidden w-full">
-                    <img class="h-32 w-32 overflow-auto object-cover" src="/imageicon/box icon.png" alt="">
+                    <img class="h-20 w-20 overflow-auto object-cover" src="/imageicon/box icon.png" alt="">
                 </div>
 
                 <div class="w-full flex flex-col justify-center items-center">
@@ -12,9 +12,9 @@
                 </div>
             </div>
 
-            <div class="h-full w-full bg-gray-300 flex flex-row justify-center items-center">
+            <div class="h-32 w-full bg-gray-300 flex flex-row justify-center items-center px-5">
                 <div class="overflow-hidden w-full">
-                    <img class="h-32 w-32 overflow-auto object-cover" src="/imageicon/staff icon.png" alt="">
+                    <img class="h-20 w-20 overflow-auto object-cover" src="/imageicon/staff icon.png" alt="">
                 </div>
 
                 <div class="w-full flex flex-col justify-center items-center">
@@ -23,9 +23,9 @@
                 </div>
             </div>
 
-            <div class="h-full w-full bg-gray-300 flex flex-row justify-center items-center">
+            <div class="h-32 w-full bg-gray-300 flex flex-row justify-center items-center px-5">
                 <div class="overflow-hidden w-full">
-                    <img class="h-32 w-32 overflow-auto object-cover" src="/imageicon/cash icon.png" alt="">
+                    <img class="h-20 w-20 overflow-auto object-cover" src="/imageicon/cash icon.png" alt="">
                 </div>
 
                 <div class="w-full flex flex-col justify-center items-center">

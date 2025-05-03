@@ -28,10 +28,8 @@
           <tr v-for="(item, index) in paginatedItems" :key="index" class="border-2 border-gray-300">
             <td>
               <div class="h-full flex flex-row justify-start items-center">
-                <div class="overflow-hidden flex flex-row justify-center items-center">
-                  <img class="hover:cursor-pointer overflow-auto object-cover h-32 w-24"
-                    src="/imageicon/food 1 icon.jpg" alt="" />
-                  <div class="ps-5 flex flex-col gap-5">
+                <div class="h-20 flex flex-row justify-center items-center">
+                  <div class="ps-5 flex flex-row gap-5">
                     <p class="hover:cursor-pointer">{{ item.name }}</p>
                     <div class="flex flex-row gap-2 items-center">
                       <div v-if="item.status === 1"
