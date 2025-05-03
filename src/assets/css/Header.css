@@ -76,8 +76,9 @@ body {
     width: 30%;
     display: flex;
     justify-content: center;
-    height: 200px;
+    height: 250px;
     margin-top: 60px;
+    padding-right: 30px;
   }
   
   .menu-image img {

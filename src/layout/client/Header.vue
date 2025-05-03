@@ -31,7 +31,7 @@
                     <div class="col-6" @mouseover="currentImage = '/imageicon/lauthai.png'">
                       <router-link :to="{name:'users-category'}">
                       <p class="title-header">Khai vị </p>
-                      <ul>
+                      <ul class="List">
                         <li><a href=""><i class="fa-solid fa-circle-dollar-to-slot"></i> Spot</a></li>
                         <li><a href=""><i class="fa-solid fa-jet-fighter"></i> Margin vị akjddâddâda</a></li>
                         <li><a href="P2P.html"><i class="fa-solid fa-credit-card"></i> P2P</a></li>
@@ -42,7 +42,7 @@
 
                     <div class="col-6" @mouseover="currentImage = '/imageicon/bunbo.png'">
                       <p class="title-header">Món chính</p>
-                      <ul>
+                      <ul  class="List">
                         <li><a href="botGiaoDich.html"><i class="fa-solid fa-robot"></i> Bot giao dịch</a></li>
                         <li><a href="saochepgiaodich.html"><i class="fa-solid fa-copy"></i> Sao chép giao dịch</a></li>
                         <li><a href=""><i class="fa-solid fa-lock"></i> Cơm gà </a></li>
@@ -54,16 +54,16 @@
                     <div class="col-6" @mouseover="currentImage = '/imageicon/comga.png'">
                       <router-link :to="{name: 'users-category'}"></router-link>
                       <p class="title-header">Đồ uống</p>
-                      <ul>
-                        <li><a href="#"><i class="fa-solid fa-mug-hot"></i> Cà phê</a></li>
-                        <li><a href="#"><i class="fa-solid fa-wine-glass"></i> Rượu vang</a></li>
-                        <li><a href="#"><i class="fa-solid fa-glass-water"></i> Nước lọc</a></li>
+                      <ul  class="List">
+                        <li><a href="#"><i class="fa-solid fa-mug-hot"></i> Cà phêdddddd</a></li>
+                        <li><a href="#"><i class="fa-solid fa-wine-glass"></i> Nước ép cam </a></li>
+                        <li><a href="#"><i class="fa-solid fa-glass-water"></i> Nước ép thơm</a></li>
                       </ul>
                     </div>
 
                     <div class="col-6" @mouseover="currentImage = '/imageicon/lautuxuyen.png'">
                       <p class="title-header">Món tráng miệng</p>
-                      <ul>
+                      <ul  class="List">
                         <li><a href="#"><i class="fa-solid fa-ice-cream"></i> Kem</a></li>
                         <li><a href="#"><i class="fa-solid fa-cake-candles"></i> Bánh ngọt</a></li>
                         <li><a href="#"><i class="fa-solid fa-cookie-bite"></i> Cookie</a></li>
@@ -207,6 +207,11 @@ const handleBlur = () => {
 
 </script>
 <style scoped>
+.List li:hover a {
+  transform: scale(1.1); 
+  transition: transform 0.2s ease; /* độ mượt */
+}
+
 .search-box {
   position: relative;
   display: flex;

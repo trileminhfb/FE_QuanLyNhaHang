@@ -1,151 +1,248 @@
 <template>
-    <div class="container-personalinformation">
-      <div class="rank-box">
-        <div class="member-info">
-          <img src="/imageicon/logo.png" class="avatar" />
-          <div class="member-details">
-            <h3>Le Minh Tri</h3>
-            <p>69 Stars</p>
-          </div>
+
+  <div class="container-personalinformation">
+    <div class="rank-box">
+      <div class="member-info">
+        <img src="/imageicon/logo.png" class="avatar" />
+        <div class="member-details">
+          <h3>Le Minh Tri</h3>
+          <p>69 Stars</p>
         </div>
-  
-        <div class="total-spending">
-            
-          <p class="label">
-           <span> Total Spending <strong style="color: aqua;">2025</strong> </span>
-          
+      </div>
+
+      <div class="total-spending">
+        <p class="label">
+          <span>Total Spending <strong style="color: aqua;">2025</strong></span>
           <span class="amount">5.787.000 đ</span>
-            
-          </p>
-  
-          <div class="progress-bar">
-            <div class="milestone">
-              <span>0 đ</span>
-              <div class="icon start"></div>
-            </div>
-            <div class="milestone">
-              <span>2.000.000 đ</span>
-              <div class="icon mid"></div>
-            </div>
-            <div class="milestone">
-              <span>4.000.000 đ</span>
-              <div class="icon current"></div>
-            </div>
+        </p>
+
+        <div class="progress-bar">
+          <div class="milestone">
+            <span>0 đ</span>
+            <div class="icon start"></div>
+          </div>
+          <div class="milestone">
+            <span>2.000.000 đ</span>
+            <div class="icon mid"></div>
+          </div>
+          <div class="milestone">
+            <span>4.000.000 đ</span>
+            <div class="icon current"></div>
           </div>
         </div>
       </div>
-  
-      <div class="info-box">
-        <div class="category-container">
- 
-    <div class="tab-wrapper">
-    <ul class="tab-links">
-      <li
-        v-for="(tab, index) in tabs"
-        :key="index"
-        :class="['tab-link', 'has-content', { current: currentTab === index }]"
-        @click="currentTab = index"
-      >
-        {{ tab.ten }}
+    </div>
+
+    <div class="info-box">
+      <div class="category-container">
+        <div class="tab-wrapper">
+          <ul class="tab-links">
+            <li
+              v-for="(tab, index) in tabs"
+              :key="index"
+              :class="['tab-link', { current: currentTab === index }]"
+              @click="currentTab = index"
+            >
+              {{ tab.ten }}
+            </li>
+          </ul>
+
+          <div class="tab-contents">
+            <div
+              v-for="(tab, index) in tabs"
+              :key="'content-' + index"
+              v-show="currentTab === index"
+              class="tab-content"
+            >
+              <div v-if="tab.ten === 'Thông báo'">
+                <ul class="notification-list">
+                  <li class="notification-item">
+                    <strong>🎉 Chúc mừng!</strong> Bạn vừa đạt
+                    <strong>69 sao</strong> trong hệ thống tích điểm của chúng
+                    tôi. Hãy tiếp tục mua sắm để đạt các mốc quà tặng hấp dẫn
+                    tiếp theo như phiếu giảm giá, thẻ thành viên VIP và nhiều ưu
+                    đãi độc quyền khác.
+                  </li>
+                  <li class="notification-item">
+                    <strong>🔥 Ưu đãi tháng 5:</strong> Giảm ngay
+                    <strong>20%</strong> cho đơn hàng từ <strong>500.000đ</strong>
+                    trở lên, chỉ áp dụng trong tháng này. Nhanh tay kẻo lỡ vì số
+                    lượng có hạn!
+                  </li>
+                  <li class="notification-item">
+                    <strong>📢 Lời nhắc:</strong> Vui lòng cập nhật đầy đủ
+                    <strong>thông tin cá nhân</strong> để đảm bảo quyền lợi thành
+                    viên, nhận ưu đãi sinh nhật và các thông báo quan trọng từ
+                    chúng tôi. Cập nhật ngay trong mục "Thông tin cá nhân".
+                  </li>
+                </ul>
+              </div>
+
+              <div v-else-if="tab.ten === 'Thông tin cá nhân'">
+                <div class="information-personal">
+                  <div class="input-information">
+                    <div class="row-information">
+                      <div class="group-information">
+                        Họ và tên
+                        <i class="fa fa-user"></i>
+                        <input type="text" v-model="informationpersonal.hoTen" />
+                      </div>
+                      <div class="group-information">
+                        Ngày sinh
+                        <input type="date" v-model="informationpersonal.ngaySinh"  />
+                      </div>
+                    </div>
+
+                    <div class="row-information">
+                      <div class="group-information">
+                        Số điện thoại
+                        <i class="fa fa-phone"></i>
+                        <input type="number"   v-model="informationpersonal.soDienThoai"/>
+                      </div>
+                      <div class="group-information">
+                        Email
+                        <i class="fa fa-envelope"></i>
+                        <input type="email"  v-model="informationpersonal.email"/>
+                      </div>
+                    </div>
+
+                    <div class="row-information">
+                      <div class="group-radio">
+                        <input type="radio" name="gender" id="male"  value="Nam" v-model="informationpersonal.gioiTinh" />
+                        <label for="male">Nam</label>
+                        <input type="radio" name="gender" id="female" value="Nữ" v-model="informationpersonal.gioiTinh" />
+                        <label for="female">Nữ</label>
+                      </div>
+                      <div style="margin-left: 318px;" class="group-information">
+                        Địa chỉ
+                        <i class="fa fa-map-marker"></i>
+                        <input type="text"  v-model="informationpersonal.diaChi"/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div v-else-if="tab.ten === 'Quà tặng'">
+  <div v-if="tab.danhSachQuaTang.length === 0">
+    <p>Hiện tại bạn chưa có quà tặng nào.</p>
+  </div>
+  <div v-else>
+    <ul class="gift-list">
+      <li v-for="(gift, index) in tab.danhSachQuaTang" :key="index" class="gift-item">
+        <div class="gift-header">
+          <strong>{{ gift.ten }}</strong>
+          <span class="gift-description">{{ gift.moTa }}</span>
+        </div>
+        <button class="claim-gift-btn">Nhận quà</button>
       </li>
     </ul>
-    <div class="tab-contents">
-      <div
-        v-for="(tab, index) in tabs"
-        :key="'content-' + index"
-        v-show="currentTab === index"
-        
-        class="tab-content" >
-       <p> {{ tab.noiDung }}
-      </p>
-  <div class="information-personal">
-   
-   <div class="input-information">
-    <div class="row-information">
-      <div class="group-information">
-      Họ và tên
-      <i class="fa fa-user"></i>
-        
-        <input type="text" name="" id="">
-      </div>
-      <div class="group-information">
-    Ngày sinh
-
-
-        <input type="date" name="" id="">
-      </div>
-    </div>
-    <div class="row-information">
-      <div class="group-information">
-     số điện thoại
-      <i class="fa fa-user"></i>
-        <input type="number" name="" id="">
-      </div>
-      <div class="group-information">
-      Họ và tên
-      <i class="fa fa-user"></i>
-
-        <input type="text" name="" id="">
-      </div>
-    </div>
-    <div class="row-information">
-      <div class="group-radio">
-        
-        <input type="radio" name="0" id="">Nam
-        <input type="radio" name="0" id="">Nữ
-
-      </div>
-      <div style="margin-left: 313px;" class="group-information">
-      Họ và tên
-      <i class="fa fa-user"></i>
-
-        <input type="text" name="" id="">
-      </div>
-    </div>
-   </div>
-  </div>
-      </div>
-    </div>
   </div>
 </div>
+
+
+              <div v-else>
+                <p>{{ tab.noiDung }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-  </template>
-  <script setup>
+  </div>
+</template>
+
+<script setup>
 import { ref } from 'vue'
-    import { addToCart as addToCartFormStore } from '../../stores/cartStore'
+import { Codemirror } from 'vue-codemirror'
+import { javascript } from '@codemirror/lang-javascript'
+const informationpersonal = ref({
+  hoTen: 'Trần Văn Khánh',
+  ngaySinh: '2003-12-23',
+  soDienThoai: '0912345678',
+  email: 'leminhtri@example.com',
+  gioiTinh: 'Nam',
+  diaChi: '123 Nguyễn Văn Linh, Đà Nẵng',
+});
+
 const tabs = ref([
-{
+  {
     ten: 'Lịch sử giao dịch',
-    noiDung: 'Nội dung Món Khai',
-   
+    noiDung: 'Bạn chưa có giao dịch nào.',
   },
   {
     ten: 'Thông tin cá nhân',
-    noiDung: 'Nội dung Món Chính',
-   
+    noiDung: '',
   },
   {
     ten: 'Thông báo',
-    noiDung: 'Nội dung Món Pizza',
-  
+    noiDung: '',
   },
   {
     ten: 'Quà tặng',
-    noiDung: 'Nội dung Món Pizza',
-  
+    noiDung: '',
+    danhSachQuaTang: [
+      {
+        ten: 'Phiếu giảm giá 20%',
+        moTa: 'Giảm ngay 20% cho đơn hàng từ 500.000đ',
+      },
+      {
+        ten: 'Thẻ thành viên VIP',
+        moTa: 'Thẻ VIP cho ưu đãi đặc biệt',
+      },
+    ]
   },
   {
     ten: 'Chính sách ',
-    noiDung: 'Nội dung Món Tráng Miệng',
- 
+    noiDung: 'Đây là nội dung về chính sách thành viên.',
   },
-  
 ])
+
 const currentTab = ref(0)
+
 
 </script>
   <style scoped>
+.gift-list {
+  list-style: none;
+  padding: 0;
+}
+
+.gift-item {
+  background-color: #f9f9f9;
+  padding: 15px;
+  margin: 10px 0;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.gift-item .gift-header {
+  font-size: 1.2em;
+  margin-bottom: 10px;
+}
+
+.gift-item .gift-description {
+  font-size: 1em;
+  color: #666;
+}
+
+.claim-gift-btn {
+  padding: 8px 16px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.claim-gift-btn:hover {
+  background-color: #45a049;
+}
+  
+
+
+
 
   .input-information{
     display: flex;
@@ -304,11 +401,6 @@ const currentTab = ref(0)
   .title p {
     font-family: "Dancing Script", cursive;
   }
-
-  
-  
- 
-  
   
   .tab-links {
     display: flex;

@@ -60,7 +60,7 @@
 <div class="title">
       <p>
         <strong>
-          <i class="fa-solid fa-utensils"></i>  Danh Sách Menu
+          <i class="fa-solid fa-utensils"></i>  Danh Sách Menu Nổi Bật Trong Tuần
           <i class="fa-solid fa-utensils"></i>
         </strong>
       </p>
