@@ -96,6 +96,9 @@ const chitiet = ref([
     chitiet: [
       { ten: 'Món ăn 1', hinh: '/imageicon/bunbo.png', noiDung: '...' },
       { ten: 'Món ăn 2', hinh: '/imageicon/bunbo.png', noiDung: '...' },
+      { ten: 'Món ăn 2', hinh: '/imageicon/bunbo.png', noiDung: '...' },
+      { ten: 'Món ăn 2', hinh: '/imageicon/bunbo.png', noiDung: '...' },
+
     ]
   }
 ])

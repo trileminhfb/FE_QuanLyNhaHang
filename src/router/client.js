@@ -48,6 +48,11 @@ const users = [
                 name: "users-personalinformation",
                 component: () => import("../pages/client/personalinformation.vue")
             }, 
+            {
+                path: "evaluation", 
+                name: "users-evaluation",
+                component: () => import("../pages/client/evaluation.vue")
+            }, 
         ]
     }
 ];

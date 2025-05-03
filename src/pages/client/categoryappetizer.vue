@@ -1,6 +1,6 @@
 <template>
     <div class="container-cartegoryaooetizer">
-      <h1>Food Categories</h1>
+   <h1>Danh Sách  Món Khai Vị</h1>
   
       <div class="categories">
         <button
@@ -151,6 +151,8 @@
   h1 {
     text-align: center;
     color: #4caf50;
+    font-size: 50px;
+    margin-bottom: 20px;
   }
   .categories {
     display: flex;
@@ -219,13 +221,13 @@
   .btn-oder,
   .btn-add {
     margin: 0.2rem;
-    padding: 10px;
+    padding: 15px;
     border: none;
     border-radius: 4px;
     background: #4caf50;
     color: white;
     cursor: pointer;
-    font-size: 10px;
+    font-size: 11px;
   }
   .gio-hang-icon {
     margin-top: 0.4rem;
