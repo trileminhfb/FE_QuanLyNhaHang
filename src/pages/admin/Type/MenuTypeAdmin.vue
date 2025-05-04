@@ -14,13 +14,12 @@
                 <p class="text-start w-full">Tên kiểu</p>
               </div>
             </th>
-
-            <th>
+            <!-- <th>
               <div class="flex flex-row justify-center items-center gap-2">
                 <SortButton @sort="(direction) => sortBy('qty_category', direction)" />
                 <p>Số lượng loại</p>
               </div>
-            </th>
+            </th> -->
             <th>Thao tác</th>
           </tr>
         </thead>
@@ -45,8 +44,8 @@
                 </div>
               </div>
             </td>
-            <td class="text-center">{{ item.qty_food }}</td>
-            <td class="text-center">{{ item.qty_category }}</td>
+            <!-- <td class="text-center">{{ item.qty_food }}</td> -->
+            <!-- <td class="text-center">{{ item.qty_category }}</td> -->
             <td class="text-center">
               <div class="flex justify-center items-center h-full">
                 <div class="w-10 h-10 text-gray-800 hover:bg-gray-400 hover:cursor-pointer rounded-lg relative group">
@@ -116,31 +115,7 @@ const filteredItems = computed(() => {
 
 const allItems = ref([
   {
-    name: "Lẩu",
-    qty_food: Math.floor(Math.random() * 100) + 1,
-    qty_category: Math.floor(Math.random() * 100) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    name: "Nướng",
-    qty_food: Math.floor(Math.random() * 100) + 1,
-    qty_category: Math.floor(Math.random() * 100) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    name: "Xào",
-    qty_food: Math.floor(Math.random() * 100) + 1,
-    qty_category: Math.floor(Math.random() * 100) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    name: "Hấp",
-    qty_food: Math.floor(Math.random() * 100) + 1,
-    qty_category: Math.floor(Math.random() * 100) + 1,
-    status: Math.round(Math.random()),
-  },
-  {
-    name: "Luộc",
+    name: "Thức ăn",
     qty_food: Math.floor(Math.random() * 100) + 1,
     qty_category: Math.floor(Math.random() * 100) + 1,
     status: Math.round(Math.random()),
