@@ -48,9 +48,9 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 
+const isOpen = ref(false) // <- Thêm dòng này
 const message = ref('')
 const textareaRef = ref(null)
-const isOpen = ref(false) // <- Thêm dòng này
 
 const autoResize = () => {
     const textarea = textareaRef.value
