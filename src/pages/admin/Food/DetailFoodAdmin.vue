@@ -22,8 +22,12 @@
                                 <p class="text-red-500">{{ foodData.cost.toLocaleString() }} VNĐ</p>
                             </div>
                             <div class="flex flex-row gap-2 items-center">
+                                <p>Thể loại:</p>
                                 <p class="bg-red-500 text-white text-center border w-fit p-2 rounded-lg">
                                     {{ foodData.id_category }}</p>
+                            </div>
+                            <div class="flex flex-row gap-2 items-center">
+                                <p>Kiểu món ăn:</p>
                                 <p class="bg-red-500 text-white text-center border w-fit p-2 rounded-lg">
                                     {{ foodData.id_type }}</p>
                             </div>
@@ -50,13 +54,15 @@
 
                             <div class="flex flex-row gap-2 p-2">
                                 <div class="bg-green-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:text-black hover:bg-green-300"
-                                    @click="goEdit">
+                                    @click="goEdit(foodData)">
                                     Chỉnh sửa
                                 </div>
-                                <div
-                                    class="bg-red-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:text-black hover:bg-red-300">
+                                <div class="bg-red-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:text-black hover:bg-red-300"
+                                    @click="goDelete">
                                     Xoá
                                 </div>
+                                <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
+
                                 <div class=" rounded-lg border p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-gray-300"
                                     @click="goBack">
                                     Trở lại
@@ -122,19 +128,44 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue';
 
 const router = useRouter()
 const route = useRoute()
+const foodData = route.query.data ? JSON.parse(route.query.data) : null;
+const showConfirm = ref(false)
 
 function goBack() {
     router.push({ name: 'admin-foods' })
 }
 
-function goEdit() {
-    router.push({ name: 'admin-edit-foods' })
+function goEdit(item) {
+    router.push({
+        name: 'admin-edit-foods',
+        params: {
+            id: item.id,
+        },
+        query: {
+            data: JSON.stringify(item)
+        }
+    });
 }
 
-const foodId = route.params.id;
-const foodData = route.query.data ? JSON.parse(route.query.data) : null;
+function goDelete() {
+    showConfirm.value = true
+}
+
+function confirmDelete() {
+    showConfirm.value = false
+
+    console.log('Đã xác nhận xoá món ăn')
+    router.push({ name: 'admin-foods' })
+}
+
+function cancelDelete() {
+    showConfirm.value = false
+}
+
 </script>
