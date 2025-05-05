@@ -17,9 +17,8 @@
                 <div class="flex items-center gap-4">
                     <label class="w-32">Kiểu món ăn:</label>
                     <select class="border rounded px-4 py-2 w-[200px]" id="type-category">
-                        <option value="monchinh">Món chính</option>
-                        <option value="monchay">Món chay</option>
-                        <option value="trangmieng">Tráng miệng</option>
+                        <option value="1">Thức ăn</option>
+                        <option value="2">Nước</option>
                     </select>
                 </div>
 
@@ -27,14 +26,6 @@
                 <div class="flex items-center gap-4">
                     <label class="w-32">Trạng thái:</label>
                     <SwitchButton :status="categoryData?.status" @toggle="() => toggleField('status')" />
-                </div>
-
-                <!-- Mô tả -->
-                <div>
-                    <label class="block mb-1">Mô tả:</label>
-                    <textarea id="detail-category" :value="categoryData?.detail"
-                        placeholder="Nhập mô tả món ăn tại đây..."
-                        class="w-full border rounded px-4 py-3 h-24 resize-none"></textarea>
                 </div>
 
                 <!-- Danh sách món ăn -->

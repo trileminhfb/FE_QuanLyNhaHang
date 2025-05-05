@@ -139,10 +139,10 @@ const filteredItems = computed(() => {
 })
 
 const allItems = ref([
-    { id: 1, name: 'Canh chua', qty: 2, detail: "ookkF", status: 1 },
-    { id: 2, name: 'Canh rau củ', qty: 3, detail: "ookkF", status: 0 },
-    { id: 3, name: 'Thịt/Hải sản chiên', qty: 3, detail: "ookkF", status: 0 },
-    { id: 4, name: 'Rau củ/Bánh chiên', qty: 3, detail: "ookkF", status: 0 },
+    { id: 1, name: 'Canh chua', qty: 2, status: 1 },
+    { id: 2, name: 'Canh rau củ', qty: 3, status: 0 },
+    { id: 3, name: 'Thịt/Hải sản chiên', qty: 3, status: 0 },
+    { id: 4, name: 'Rau củ/Bánh chiên', qty: 3, status: 0 },
 ])
 
 const itemsPerPage = 5

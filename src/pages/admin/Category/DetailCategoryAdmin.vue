@@ -26,10 +26,6 @@
                                     Đang đóng
                                 </p>
                             </div>
-                            <div class="flex flex-row gap-2 px-5">
-                                <p>Mô tả:</p>
-                                <p class=" font-normal"> {{ categoryData.detail }} </p>
-                            </div>
                             <div class="border p-2 h-96 flex flex-col gap-2 ">
                                 <p>Danh sách các món</p>
                                 <div class="overflow-y-auto max-h-full">
@@ -110,8 +106,6 @@ function confirmDelete() {
 function cancelDelete() {
     showConfirm.value = false
 }
-
-
 
 function goEdit(item) {
     router.push({
