@@ -2,7 +2,7 @@
     <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
         <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
             <Search v-model="searchQuery" />
-            <AddButton />
+            <AddButton @add="goAdd" />
         </div>
         <div class="w-full h-full border-t border-gray-400 px-2 pt-2">
             <table class="w-full h-fit table-auto font-semibold text-2xl ">
@@ -14,12 +14,12 @@
                                 <p class="text-start w-full">Tên loại</p>
                             </div>
                         </th>
-                        <th>
+                        <!-- <th>
                             <div class="flex flex-row justify-center items-center gap-2">
                                 <SortButton @sort="direction => sortBy('qty', direction)" />
                                 <p>Số lượng món</p>
                             </div>
-                        </th>
+                        </th> -->
                         <th>Thao tác</th>
                     </tr>
                 </thead>
@@ -44,7 +44,7 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="text-center">{{ item.qty }}</td>
+                        <!-- <td class="text-center">{{ item.qty }}</td> -->
                         <td class="text-center">
                             <div class="flex justify-center items-center h-full">
                                 <div
@@ -56,12 +56,14 @@
                                     </svg>
                                     <div
                                         class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                                        <p class="hover:bg-gray-500 text-start w-full h-full"
-                                            @click="goDetailCategories">
-                                            Chi
-                                            tiết</p>
-                                        <p class="hover:bg-gray-500 text-start w-full h-full">Chỉnh sửa</p>
-                                        <p class="hover:bg-gray-500 text-start w-full h-full">Xoá</p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetail(item)">
+                                            Chi tiết</p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEdit(item)">
+                                            Chỉnh sửa
+                                        </p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDelete">Xoá</p>
+                                        <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete"
+                                            @cancel="cancelDelete" />
                                     </div>
                                 </div>
                             </div>
@@ -82,6 +84,7 @@ import Search from '../../../components/Admin/Search.vue'
 import AddButton from '../../../components/Admin/AddButton.vue'
 import SortButton from '../../../components/Admin/SortButton.vue'
 import Pagination from '../../../components/Admin/Pagination.vue'
+import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue'
 
 
 
@@ -89,12 +92,27 @@ const router = useRouter()
 const searchQuery = ref('')
 const sortKey = ref('') // 'name' hoặc 'qty'
 const sortDirection = ref('') // 'asc' | 'desc'
+const showConfirm = ref(false)
 
 function sortBy(key, direction) {
     sortKey.value = key
     sortDirection.value = direction
 }
 
+function goDelete() {
+    showConfirm.value = true
+}
+
+function confirmDelete() {
+    showConfirm.value = false
+
+    console.log('Đã xác nhận xoá loại món ăn')
+    router.push({ name: 'admin-categories' })
+}
+
+function cancelDelete() {
+    showConfirm.value = false
+}
 
 const filteredItems = computed(() => {
     let result = [...allItems.value]
@@ -120,24 +138,11 @@ const filteredItems = computed(() => {
     return result
 })
 
-
 const allItems = ref([
-    { name: 'Name 1', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 2', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 3', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 4', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 5', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 6', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 7', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 8', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 9', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 10', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 11', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 12', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 13', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 14', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 15', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 16', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
+    { id: 1, name: 'Canh chua', qty: 2, status: 1 },
+    { id: 2, name: 'Canh rau củ', qty: 3, status: 0 },
+    { id: 3, name: 'Thịt/Hải sản chiên', qty: 3, status: 0 },
+    { id: 4, name: 'Rau củ/Bánh chiên', qty: 3, status: 0 },
 ])
 
 const itemsPerPage = 5
@@ -155,7 +160,33 @@ function changePage(page) {
     if (page >= 1 && page <= totalPages.value) { currentPage.value = page }
 }
 
-function goDetailCategories() {
-    router.push({ name: 'admin-details-categories' })
+function goDetail(item) {
+    router.push({
+        name: 'admin-details-categories',
+        params: {
+            id: item.id,
+        },
+        query: {
+            data: JSON.stringify(item)
+        }
+    });
+}
+
+function goAdd() {
+    router.push({
+        name: 'admin-add-categories',
+    })
+}
+
+function goEdit(item) {
+    router.push({
+        name: 'admin-edit-categories',
+        params: {
+            id: item.id,
+        },
+        query: {
+            data: JSON.stringify(item)
+        }
+    });
 }
 </script>

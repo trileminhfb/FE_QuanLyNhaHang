@@ -1,5 +1,5 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-10 mt-20 ms-[300px] flex flex-col p-2">
+    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
         <div class="h-full w-full flex flex-col font-semibold">
             <div class=" uppercase font-bold text-2xl">
                 Chỉnh sửa món ăn
@@ -9,33 +9,33 @@
                     <div class="border flex-col gap-2 p-5 flex flex-[2] rounded-s-lg">
                         <div class="w-full">
                             <p>Tên món ăn</p>
-                            <input class="border w-full h-12 ps-2" :placeholder=foodData.name type="text"
-                                name="name-food" id="name">
+                            <input class="border w-full h-12 ps-2" placeholder="Tên món" type="text" name="name-food"
+                                id="name">
                         </div>
                         <div class="w-full">
                             <p>Giá món ăn (VNĐ)</p>
-                            <input class="w-full border h-12 px-2" :placeholder=foodData.cost type="text"
-                                id="cost-food">
+                            <input class="w-full border h-12 px-2" placeholder='Giá' type="text" id="cost-food">
                         </div>
                         <div class="w-full flex flex-row gap-5">
                             <div class="flex flex-row gap-5">
                                 <p>Best Seller</p>
-                                <!-- <SwitchButton :status="foodData.best_seller" @toggle="toggleStatus(item)" /> -->
-                                <SwitchButton :status="foodData.best_seller"
-                                    @toggle="() => toggleField('best_seller')" />
+                                <SwitchButton />
+                            </div>
+                            <div class="flex flex-row gap-5">
+                                <p>Best Seller</p>
+                                <SwitchButton />
+
                             </div>
                             <div class="flex flex-row gap-5">
                                 <p>Mở bán</p>
-                                <!-- <SwitchButton :status="foodData.status" @toggle="toggleStatus(item)" /> -->
-                                <SwitchButton :status="foodData.status" @toggle="() => toggleField('status')" />
+                                <SwitchButton />
 
                             </div>
                         </div>
                         <div class="w-full">
                             <p>Mô tả món ăn</p>
-                            <textarea class="w-full border mt-2 h-[300px] px-2 py-2 resize-none"
-                                :value="foodData.detail" id="detail-food"
-                                placeholder="Nhập mô tả món ăn tại đây...">    </textarea>
+                            <textarea class="w-full border mt-2 h-[300px] px-2 py-2 resize-none" sid="detail-food"
+                                placeholder="Nhập mô tả món ăn tại đây..."></textarea>
                         </div>
 
                     </div>
@@ -51,13 +51,13 @@
                         </div>
                         <div class="w-[300px]">
                             <p>Kiểu món ăn</p>
-                            <select class="h-10 w-full border-2 ps-2" name="month" id="month"
-                                v-model="foodData.id_type">
+                            <select class="h-10 w-full border-2 ps-2" name="month" id="month">
                                 <option value="2">2</option>
                                 <option value="1">1</option>
                             </select>
                         </div>
-                        <div class="w-[300px]">
+
+                        <div class="h-[500px] w-[300px]">
                             <div class="mb-2">Thể loại</div>
                             <div class="border overflow-y-auto text-sm flex flex-wrap gap-2 p-2 max-h-[200px]">
                                 <div
@@ -73,9 +73,6 @@
                         <div class="flex flex-row gap-5">
                             <input class="bg-green-400 rounded-md w-24 h-12 text-2xl" type="button" value="Lưu"
                                 id="save" @click="goSave">
-                            <input class="bg-red-500 rounded-md w-24 h-12 text-white text-2xl" type="button" value="Xoá"
-                                id="delelte" @click="goDelete">
-                            <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
                             <input class="rounded-md w-24 border border-black h-12 text-2xl" type="button"
                                 value="Trở lại" id="save" @click="goBack">
                         </div>
@@ -90,38 +87,21 @@
 import { useRoute, useRouter } from 'vue-router'
 import { ref } from 'vue'
 import SwitchButton from '../../../components/Admin/SwitchButton.vue';
-import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue'
 
 const router = useRouter()
 const route = useRoute()
-const showConfirm = ref(false)
-const foodData = route.query.data ? JSON.parse(route.query.data) : null;
 
 const allItems = ref([
     { name: 'Lẩu' }, { name: 'Món mặn hấp' }, { name: 'Hải sản hấp' }, { name: 'Canh chua' }, { name: 'Canh chua' },
     { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' },
     { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' },])
 
-function toggleField(field) {
-    foodData[field] = foodData[field] === 1 ? 0 : 1
+const toggleStatus = (item) => {
+    item.status = item.status === 1 ? 0 : 1
 }
 
 function goBack() {
     router.push({ name: 'admin-foods' })
 }
 
-function goDelete() {
-    showConfirm.value = true
-}
-
-function confirmDelete() {
-    showConfirm.value = false
-
-    console.log('Đã xác nhận xoá món ăn')
-    router.push({ name: 'admin-foods' })
-}
-
-function cancelDelete() {
-    showConfirm.value = false
-}
 </script>
