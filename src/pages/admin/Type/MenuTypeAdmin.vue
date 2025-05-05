@@ -119,10 +119,10 @@ const filteredItems = computed(() => {
 
 const allItems = ref([
   {
-    id: 1, name: "Thức ăn", detail: "ok", status: 1,
+    id: 1, name: "Thức ăn", status: 1,
   },
   {
-    id: 2, name: "Nước", detail: "oke", status: 0,
+    id: 2, name: "Nước", status: 0,
   },
 ]);
 

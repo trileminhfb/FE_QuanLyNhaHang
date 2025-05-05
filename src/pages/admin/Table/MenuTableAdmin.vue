@@ -2,7 +2,7 @@
     <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
         <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
             <Search v-model="searchQuery" />
-            <AddButton />
+            <AddButton @add="goAdd" />
         </div>
         <div class="w-full h-full border-t border-gray-400 px-2 pt-2">
             <table class="w-full h-fit table-auto font-semibold text-2xl ">
@@ -10,7 +10,7 @@
                     <tr class="border-2 border-gray-300">
                         <th>
                             <div class="flex flex-row justify-center items-center gap-2">
-                                <SortButton @sort="direction => sortBy('name', direction)" />
+                                <SortButton @sort="key => sortBy('name', key)" />
                                 <p class="text-start w-full">Tên bàn</p>
                             </div>
                         </th>
@@ -44,11 +44,14 @@
                             </div>
                         </td>
                         <td class="flex justify-center items-center w-full h-full">
-                            <p v-if="item.status === 1" class="bg-yellow-500 w-24 text-center p-2 rounded-md">Đã đặt
+                            <p v-if="item.status === 1" class="bg-green-500 w-44 text-center p-2 rounded-md">Đang trống
                             </p>
-                            <p v-else-if="item.status === 2" class="bg-green-500 w-24 text-center p-2 rounded-md">Có
-                                sẵn</p>
-                            <p v-else-if="item.status === 0" class="bg-red-500 w-24 text-center p-2 rounded-md">Đã đặt
+                            <p v-else-if="item.status === 2" class="bg-yellow-500 w-44 text-center p-2 rounded-md">
+                                Đang sử dụng
+                            </p>
+                            <p v-else-if="item.status === 3" class="bg-red-500 w-44 text-center p-2 rounded-md">Đã đặt
+                            </p>
+                            <p v-else class="bg-red-500 w-44 text-center p-2 rounded-md">Bị đóng
                             </p>
                         </td>
                         <td class="text-center">{{ item.time }}</td>
@@ -63,11 +66,16 @@
                                     </svg>
                                     <div
                                         class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailTables">
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetail(item)">
                                             Chi
                                             tiết</p>
-                                        <p class="hover:bg-gray-500 text-start w-full h-full">Chỉnh sửa</p>
-                                        <p class="hover:bg-gray-500 text-start w-full h-full">Xoá</p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEdit(item)">
+                                            Chỉnh sửa
+                                        </p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDelete">Xoá</p>
+                                        <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete"
+                                            @cancel="cancelDelete" />
+
                                     </div>
                                 </div>
                             </div>
@@ -89,17 +97,18 @@ import Search from '../../../components/Admin/Search.vue'
 import AddButton from '../../../components/Admin/AddButton.vue'
 import SortButton from '../../../components/Admin/SortButton.vue'
 import Pagination from '../../../components/Admin/Pagination.vue'
+import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue'
 
 const router = useRouter()
 const searchQuery = ref('')
 const sortKey = ref('') // 'name' hoặc 'qty'
 const sortDirection = ref('') // 'asc' | 'desc'
+const showConfirm = ref(false)
 
 function sortBy(key, direction) {
     sortKey.value = key
     sortDirection.value = direction
 }
-
 
 const filteredItems = computed(() => {
     let result = [...allItems.value]
@@ -125,16 +134,17 @@ const filteredItems = computed(() => {
     return result
 })
 
-
 const allItems = ref([
-    { name: 'bàn 1', time: '01:12:12', status: 1 },
-    { name: 'bàn 2', time: '02:12:12', status: 2 },
-    { name: 'bàn 3', time: '03:12:12', status: 0 },
-    { name: 'bàn 4', time: '11:12:12', status: 2 },
-    { name: 'bàn 5', time: '12:12:12', status: 1 },
-    { name: 'bàn 6', time: '21:12:12', status: 0 },
-    { name: 'bàn 7', time: '23:12:12', status: 2 },
-    { name: 'bàn 8', time: '13:12:12', status: 1 },
+    { id: 1, name: 'bàn 1', time: '01:12:12', status: 1 },
+    { id: 2, name: 'bàn 2', time: '02:12:12', status: 2 },
+    { id: 3, name: 'bàn 3', time: '03:12:12', status: 0 },
+    { id: 4, name: 'bàn 4', time: '11:12:12', status: 2 },
+    { id: 5, name: 'bàn 5', time: '12:12:12', status: 1 },
+    { id: 6, name: 'bàn 6', time: '21:12:12', status: 0 },
+    { id: 7, name: 'bàn 7', time: '23:12:12', status: 2 },
+    { id: 8, name: 'bàn 8', time: '13:12:12', status: 1 },
+    { id: 9, name: 'bàn 9', time: '13:12:12', status: 3 },
+    { id: 10, name: 'bàn 10', time: '13:12:12', status: 3 },
 ])
 
 const itemsPerPage = 5
@@ -152,7 +162,49 @@ function changePage(page) {
     if (page >= 1 && page <= totalPages.value) { currentPage.value = page }
 }
 
-function goDetailTables() {
-    router.push({ name: 'admin-details-tables' })
+function goDelete() {
+    showConfirm.value = true
 }
+
+function confirmDelete() {
+    showConfirm.value = false
+
+    console.log('Đã xác nhận xoá bàn')
+    router.push({ name: 'admin-tables' })
+}
+
+function cancelDelete() {
+    showConfirm.value = false
+}
+
+function goDetail(item) {
+    router.push({
+        name: 'admin-details-tables',
+        params: {
+            id: item.id,
+        },
+        query: {
+            data: JSON.stringify(item)
+        }
+    });
+}
+
+function goEdit(item) {
+    router.push({
+        name: 'admin-edit-tables',
+        params: {
+            id: item.id,
+        },
+        query: {
+            data: JSON.stringify(item)
+        }
+    });
+}
+
+function goAdd() {
+    router.push({
+        name: 'admin-add-tables'
+    })
+}
+
 </script>
