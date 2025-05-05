@@ -3,62 +3,162 @@
         <div class="container-shoppingCart">
             <div class="col-left">
                 <div class="order-cart">
-                    <h3 class="order-title"><strong>Giỏ Hàng Của Bạn</strong> </h3>
-<div v-if="orderItem.length === 0">
-    Chưa có mặt hàng nào 
+                    <h3 style="font-size: 30px;" class="order-title"><strong>Giỏ Hàng Của Bạn</strong></h3>
+                    <div v-if="cartItems.length === 0">
+                        Chưa có mặt hàng nào
+                    </div>
+                    <div v-else>
+                        <div>
+                            <ul class="header-cart">
+                                <li>
+                                    Thông tin sản phẩm
+                                </li>
+                                <li>
+                                    Đơn giá
+                                </li>
+                                <li>
+                                    Số lượng
+                                </li>
+                                <li>
+                                    Thành tiền
+                                </li>
+                            </ul>
+                        </div>
+                        <ul
+                        >
+                            <li class="order-item" v-for="(item, index) in cartItems" :key="index.id">
+  <div class="item-col info">
+    <img :src="item.hinh" alt="" />
+    <span>{{ item.ten }}</span>
+  </div>
+  <div style="margin-left: 20px;" class="item-col price">
+    {{ item.gia}}₫
+  </div>
+  <div class="item-col quantity">
+    {{ item.soLuong }}
+  </div>
+  <div class="item-col total">
+    {{ item.gia * item.soLuong }}₫
+    <button class="btn-delete" @click="xoaHang(index)">Xóa</button>
+  </div>  
+</li>
+
+                        </ul>
+                        <div class="order-btn-wrapper">
+  <button class="btn-orderItem">Đặt Món</button>
 </div>
-<!-- <div class="order-product" >
-<ul>
-    <li class="order-item" v-for="(item , index) in orderItem " :key="index">
- <img :src="item.hinhanh" alt="" class="order-image">
-                        <div>{{ item.ten }} - {{ item.gia }} VNĐ</div>
-                        <button class="order-delete" v-on:click="xoaHang(index)">Xóa</button>
-                        <button class="order-edit" v-on:click="chinhSuaHang(item)">Chỉnh sửa</button>
-    </li>
-</ul>
-</div> -->
+
+                    </div>
                 </div>
             </div>
             <div class="col-right">
-
+              
             </div>
-</div>
+        </div>
     </div>
-
 </template>
-<script setup>
-import { ref } from 'vue';
-  const orderItem = ref([]);
 
-  </script>
-<style scoped>
-.shopping-cart{
-    background-color: #143b36;
-height: 100%;
+<script setup>
+import { cartItems } from '../../stores/cartStore';
+
+function xoaHang(index){
+  cartItems.value.splice(index ,1)
 }
-.container-shoppingCart{
+
+</script>
+
+<style scoped>
+.shopping-cart {
+    background-color: #143b36;
+    height: 500px;
+}
+
+.container-shoppingCart {
     margin: 0 auto;
     padding: 0 auto;
-    width: 1200px;
+    width: 1300px;
     display: flex;
-overflow: hidden;
-
+    overflow: hidden;
 }
-.col-left{
-width: 70%;
-color: white;
 
+.col-left {
+    width: 70%;
+    color: white;
 }
-.col-right{
+
+.col-right {
     width: 30%;
     color: white;
 }
-.order-cart{
+
+.order-cart {
     margin-top: 20px;
     border: 1px solid red;
-    height: 500px;
+    height: auto;
     padding: 20px;
     width: 800px;
+    border: 1px solid white;
 }
 
+.header-cart {
+  display: flex;
+  color: white;
+  font-weight: bold;
+  border: 1px solid white;
+}
+
+.header-cart li {
+  flex: 1;
+  list-style: none;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border: 1px solid #ccc;
+}
+
+.item-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.item-col img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  margin-left: 10px;
+}
+
+.btn-delete {
+  margin-left: 10px;
+  color: red;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.order-btn-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-orderItem{
+  color: #fff;
+    background-color: #d69c52;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    box-shadow: 0 3px 6px #a37b44;
+    height: 40px;
+    width: 200px;
+    transition: box-shadow 0.3s ease;
+    display: flex;
+justify-content: center;
+align-items: center;
+}
 </style>

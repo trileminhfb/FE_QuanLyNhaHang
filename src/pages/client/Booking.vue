@@ -72,23 +72,24 @@ const router = useRouter();
 const form = reactive({
     table_number: '',
     timeBooking: '',
-    food_name: '',
+    food_name: '',  
     quantity: '',
     customer_name: ''
 });
 const createBooking = () => {
+    console.log(form); 
     api.post("/admin/bookings/create", form)
         .then((response) => {
-            
-            if (response.status == 201) { // http code khi tạo thành công là 201, nào mà update, delete... thành công mới dùng 200
+            if (response.status === 201) {
                 alert('Đặt bàn thành công!');
             }
         })
-        .catch((error) => { 
-            console.log('error', error)
-            // errors.value = error.response.data.errors;
-        })
+        .catch((error) => {
+            console.log('error', error);
+        });
 }
+
+
 </script>
 
 <style scoped>
