@@ -57,8 +57,7 @@
                                 <option value="1">1</option>
                             </select>
                         </div>
-
-                        <div class="h-[500px] w-[300px]">
+                        <div class="w-[300px]">
                             <div class="mb-2">Thể loại</div>
                             <div class="border overflow-y-auto text-sm flex flex-wrap gap-2 p-2 max-h-[200px]">
                                 <div

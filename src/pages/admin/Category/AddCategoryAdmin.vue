@@ -29,14 +29,6 @@
                     <SwitchButton :status="categoryData?.status" @toggle="() => toggleField('status')" />
                 </div>
 
-                <!-- Mô tả -->
-                <div>
-                    <label class="block mb-1">Mô tả:</label>
-                    <textarea id="detail-category" :value="categoryData?.detail"
-                        placeholder="Nhập mô tả món ăn tại đây..."
-                        class="w-full border rounded px-4 py-3 h-24 resize-none"></textarea>
-                </div>
-
                 <!-- Danh sách món ăn -->
                 <div class="grid grid-cols-2 gap-4">
                     <!-- Đã thêm -->
