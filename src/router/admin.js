@@ -63,7 +63,17 @@ const admin = [
         component: () => import("../pages/admin/Type/MenuTypeAdmin.vue"),
       },
       {
-        path: "types/details-types",
+        path: "types/add-types/",
+        name: "admin-add-types",
+        component: () => import("../pages/admin/Type/AddTypeAdmin.vue"),
+      },
+      {
+        path: "types/edit-types/:id?",
+        name: "admin-edit-types",
+        component: () => import("../pages/admin/Type/EditTypeAdmin.vue"),
+      },
+      {
+        path: "types/details-types/:id?",
         name: "admin-details-types",
         component: () => import("../pages/admin/Type/DetailTypeAdmin.vue"),
       },

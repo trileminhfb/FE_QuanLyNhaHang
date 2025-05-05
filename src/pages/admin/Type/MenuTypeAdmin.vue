@@ -2,7 +2,7 @@
   <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
     <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
       <Search v-model="searchQuery" />
-      <AddButton />
+      <AddButton @add="goAdd" />
     </div>
     <div class="w-full h-full border-t border-gray-400 px-2 pt-2">
       <table class="w-full h-fit table-auto font-semibold text-2xl">
@@ -55,11 +55,13 @@
                   </svg>
                   <div
                     class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                    <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailTypes">
-                      Chi tiết
+                    <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetail(item)">
+                      Chi tiết</p>
+                    <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEdit(item)">
+                      Chỉnh sửa
                     </p>
-                    <p class="hover:bg-gray-500 text-start w-full h-full">Chỉnh sửa</p>
-                    <p class="hover:bg-gray-500 text-start w-full h-full">Xoá</p>
+                    <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDelete">Xoá</p>
+                    <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
                   </div>
                 </div>
               </div>
@@ -73,17 +75,19 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed } from 'vue'
 import { useRouter } from "vue-router";
 import Search from "../../../components/Admin/Search.vue";
 import AddButton from "../../../components/Admin/AddButton.vue";
 import SortButton from "../../../components/Admin/SortButton.vue";
 import Pagination from "../../../components/Admin/Pagination.vue";
+import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue';
 
 const router = useRouter();
 const searchQuery = ref("");
 const sortKey = ref(""); // 'name' hoặc 'qty'
 const sortDirection = ref(""); // 'asc' | 'desc'
+const showConfirm = ref(false)
 
 function sortBy(key, direction) {
   sortKey.value = key;
@@ -115,25 +119,12 @@ const filteredItems = computed(() => {
 
 const allItems = ref([
   {
-    name: "Thức ăn",
-    qty_food: Math.floor(Math.random() * 100) + 1,
-    qty_category: Math.floor(Math.random() * 100) + 1,
-    status: Math.round(Math.random()),
+    id: 1, name: "Thức ăn", detail: "ok", status: 1,
   },
   {
-    name: "Nước",
-    qty_food: Math.floor(Math.random() * 100) + 1,
-    qty_category: Math.floor(Math.random() * 100) + 1,
-    status: Math.round(Math.random()),
+    id: 2, name: "Nước", detail: "oke", status: 0,
   },
 ]);
-
-// Giải thích:
-// - Math.random(): Tạo ra một số thập phân ngẫu nhiên từ 0 (bao gồm) đến 1 (không bao gồm).
-// - Math.floor(Math.random() * 100): Tạo ra một số nguyên ngẫu nhiên từ 0 đến 99.
-// - Math.floor(Math.random() * 100) + 1: Tạo ra một số nguyên ngẫu nhiên từ 1 đến 100 (cho qty).
-// - Math.round(Math.random()): Làm tròn số ngẫu nhiên (0 đến <1) thành 0 hoặc 1 (cho status).
-// - `loại ngẫu nhiên ${index}`: Tạo tên ngẫu nhiên đơn giản.
 
 const itemsPerPage = 5;
 const currentPage = ref(1);
@@ -152,7 +143,49 @@ function changePage(page) {
   }
 }
 
-function goDetailTypes() {
-  router.push({ name: 'admin-details-types' });
+function goDelete() {
+  showConfirm.value = true
 }
+
+function confirmDelete() {
+  showConfirm.value = false
+
+  console.log('Đã xác nhận xoá kiểu món ăn')
+  router.push({ name: 'admin-types' })
+}
+
+function cancelDelete() {
+  showConfirm.value = false
+}
+
+function goDetail(item) {
+  router.push({
+    name: 'admin-details-types',
+    params: {
+      id: item.id,
+    },
+    query: {
+      data: JSON.stringify(item)
+    }
+  });
+}
+
+function goAdd() {
+  router.push({
+    name: 'admin-add-types',
+  })
+}
+
+function goEdit(item) {
+  router.push({
+    name: 'admin-edit-types',
+    params: {
+      id: item.id,
+    },
+    query: {
+      data: JSON.stringify(item)
+    }
+  });
+}
+
 </script>
