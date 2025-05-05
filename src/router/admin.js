@@ -78,13 +78,6 @@ const admin = [
         component: () => import("../pages/admin/Type/DetailTypeAdmin.vue"),
       },
 
-      //user
-      {
-        path: "users",
-        name: "admin-users",
-        component: () => import("../pages/admin/Users/MenuUserAdmin.vue"),
-      },
-
       //table
       {
         path: "tables",
@@ -92,9 +85,26 @@ const admin = [
         component: () => import("../pages/admin/Table/MenuTableAdmin.vue"),
       },
       {
-        path: "tables/details-tables",
+        path: "tables/add-tables",
+        name: "admin-add-tables",
+        component: () => import("../pages/admin/Table/AddTableAdmin.vue"),
+      },
+      {
+        path: "tables/details-tables/:id?",
         name: "admin-details-tables",
         component: () => import("../pages/admin/Table/DetailTableAdmin.vue"),
+      },
+      {
+        path: "tables/edit-tables/:id?",
+        name: "admin-edit-tables",
+        component: () => import("../pages/admin/Table/EditTableAdmin.vue"),
+      },
+
+      //user
+      {
+        path: "users",
+        name: "admin-users",
+        component: () => import("../pages/admin/Users/MenuUserAdmin.vue"),
       },
 
       //sale

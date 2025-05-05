@@ -126,8 +126,7 @@ const filteredItems = computed(() => {
 const allItems = ref([
   { id: 1, picture: "food 1.png", name: "Xiềng nướng hàn", id_type: 1, id_category: 2, best_seller: 1, cost: 10000, detail: 'coincard', status: 1 },
   { id: 2, picture: "food 2.png", name: "Xiềng hấp hàn", id_type: 1, id_category: 2, best_seller: 0, cost: 10000, detail: 'CoinCard', status: 0 },
-  { id: 2, picture: "food 2.png", name: "Xiềng cec hàn", id_type: 2, id_category: 1, best_seller: 1, cost: 10000, detail: 'CoinCard', status: 0 },
-  { id: 2, picture: "food 2.png", name: "Xiềng cu hàn", id_type: 2, id_category: 1, best_seller: 1, cost: 10000, detail: 'CoinCard', status: 1 },
+  { id: 3, picture: "food 2.png", name: "Xiềng cec hàn", id_type: 2, id_category: 1, best_seller: 1, cost: 10000, detail: 'CoinCard', status: 0 },
 ]);
 
 const paginatedItems = computed(() => {
