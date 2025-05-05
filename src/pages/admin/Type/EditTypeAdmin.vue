@@ -17,7 +17,6 @@
                     <SwitchButton :status="typeData?.status" @toggle="() => toggleField('status')" />
                 </div>
 
-
                 <!-- Nút thao tác -->
                 <div class="flex justify-end gap-4 pt-4">
                     <button class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-400">Lưu thay đổi</button>
@@ -42,13 +41,6 @@ const router = useRouter()
 const route = useRoute()
 const typeData = route.query.data ? JSON.parse(route.query.data) : null;
 const showConfirm = ref(false)
-
-const allItems = ref([
-    { name: 'Lẩu' }, { name: 'Món mặn hấp' }, { name: 'Hải sản hấp' }, { name: 'Canh chua' }, { name: 'Canh chua' },
-    { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' },
-    { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' },
-    { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' },
-    { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' }, { name: 'Canh chua' },])
 
 function goBack() {
     router.push({ name: 'admin-types' })
