@@ -42,12 +42,13 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="flex justify-center items-center w-full h-full">
-                            <p v-if="item.status === 1" class="bg-green-500 w-44 text-center p-2 rounded-md">Đang trống
+                        <td class="flex justify-center items-center w-full text-white h-full">
+                            <p v-if="item.status === 1" class="bg-green-500 w-44 text-center p-2 rounded-md">
+                                Đang trống
                             </p>
-                            <p v-else-if="item.status === 0" class="bg-yellow-500 w-44 text-center p-2 rounded-md">Đang
+                            <p v-else-if="item.status === 2" class="bg-yellow-500 w-44 text-center p-2 rounded-md">Đang
                                 sử dụng</p>
-                            <p v-else-if="item.status === 2" class="bg-red-500 w-44 text-center p-2 rounded-md">Đã đặt
+                            <p v-else-if="item.status === 3" class="bg-red-500 w-44 text-center p-2 rounded-md">Đã đặt
                             </p>
                             <p v-else class="bg-gray-500 w-44 text-center p-2 rounded-md">Bị khoá</p>
                         </td>
@@ -184,7 +185,6 @@ async function confirmDelete() {
         alert('Không thể xoá bàn.')
     }
 }
-
 
 function cancelDelete() {
     showConfirm.value = false
