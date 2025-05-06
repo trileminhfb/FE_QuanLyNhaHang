@@ -16,17 +16,19 @@
                 <!-- Kiểu món ăn -->
                 <div class="flex items-center gap-4">
                     <label class="w-32">Kiểu món ăn:</label>
-                    <select class="border rounded px-4 py-2 w-[200px]" id="type-category">
-                        <option value="monchinh">Món chính</option>
-                        <option value="monchay">Món chay</option>
-                        <option value="trangmieng">Tráng miệng</option>
+                    <select v-model="form.type_id" class="border rounded px-4 py-2 w-[200px]">
+                        <option disabled value="">-- Chọn kiểu --</option>
+                        <option v-for="type in allItems" :key="type.id" :value="type.id">
+                            {{ type.name }}
+                        </option>
                     </select>
+
                 </div>
 
                 <!-- Trạng thái -->
                 <div class="flex items-center gap-4">
                     <label class="w-32">Trạng thái:</label>
-                    <SwitchButton :status="categoryData?.status" @toggle="() => toggleField('status')" />
+                    <SwitchButton v-model="form.status" @toggle="(val) => console.log('Trạng thái mới:', val)" />
                 </div>
 
                 <!-- Danh sách món ăn -->
@@ -70,19 +72,48 @@
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import SwitchButton from '../../../components/Admin/SwitchButton.vue';
-import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue';
+import axios from 'axios'
+import { onMounted, ref } from 'vue'
+import SwitchButton from '../../../components/Admin/SwitchButton.vue'
 
+const allItems = ref([])
 const router = useRouter()
 const route = useRoute()
-const categoryData = route.query.data ? JSON.parse(route.query.data) : null;
 
-function goBack() {
-    router.push({ name: 'admin-categories' })
+const form = ref({
+    name: '',
+    status: 1,
+    type_id: ''
+})
+
+onMounted(async () => {
+    try {
+        const res = await axios.get('http://127.0.0.1:8000/api/admin/types')
+        if (res.data.status === 1) {
+            allItems.value = res.data.data
+        }
+    } catch (error) {
+        console.error('Lỗi khi tải danh sách kiểu món ăn:', error)
+    }
+})
+
+async function goSave() {
+    try {
+        await axios.post('http://127.0.0.1:8000/api/admin/tables/create', form.value)
+        alert('Đã thêm bàn mới thành công!')
+        router.push({ name: 'admin-tables' })
+    } catch (error) {
+        console.error('Lỗi thêm bàn:', error)
+        alert('Không thể thêm bàn.')
+    }
 }
 
 function toggleField(field) {
     console.log("Toggled", field)
+}
+
+function goBack() {
+    router.push({ name: 'admin-categories' })
 }
 
 </script>
