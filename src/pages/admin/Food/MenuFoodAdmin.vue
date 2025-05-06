@@ -29,12 +29,12 @@
               <div class="h-full flex flex-row justify-start items-center">
                 <div class="overflow-hidden flex flex-row justify-center items-center">
                   <img class="hover:cursor-pointer overflow-auto object-cover h-32 w-24 rounded-lg shadow-md border"
-                    :src="`/picture/food/${item.picture}`" alt="Ảnh nhân viên" />
+                    :src="item.image" alt="Ảnh món ăn" />
                   <div class="ps-5 flex flex-col gap-5">
                     <p class="hover:cursor-pointer">{{ item.name }}</p>
                     <div class="flex flex-row gap-2 items-center">
                       <SwitchButton :status="item.status" @toggle="toggleStatus(item)" />
-                      <div v-if="item.best_seller === 1">
+                      <div v-if="item.bestSeller === 1">
                         <svg class="hover:cursor-pointer w-6 h-6 text-yellow-500" aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                           viewBox="0 0 24 24">
@@ -83,7 +83,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from "vue-router";
 import Sort from "../../../components/Admin/SortButton.vue";
 import Search from "../../../components/Admin/Search.vue";
@@ -91,6 +91,7 @@ import AddButton from "../../../components/Admin/AddButton.vue";
 import Pagination from "../../../components/Admin/Pagination.vue";
 import SwitchButton from "../../../components/Admin/SwitchButton.vue";
 import ConfirmDelete from "../../../components/Admin/ConfirmDelete.vue";
+import axios from 'axios'
 
 const showConfirm = ref(false)
 const router = useRouter();
@@ -100,6 +101,7 @@ const sortDirection = ref(""); // 'asc' | 'desc'
 const itemsPerPage = 5;
 const currentPage = ref(1);
 const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
+const allItems = ref([]);
 
 const filteredItems = computed(() => {
   let result = [...allItems.value];
@@ -123,11 +125,19 @@ const filteredItems = computed(() => {
   return result;
 });
 
-const allItems = ref([
-  { id: 1, picture: "food 1.png", name: "Xiềng nướng hàn", id_type: 1, id_category: 2, best_seller: 1, cost: 10000, detail: 'coincard', status: 1 },
-  { id: 2, picture: "food 2.png", name: "Xiềng hấp hàn", id_type: 1, id_category: 2, best_seller: 0, cost: 10000, detail: 'CoinCard', status: 0 },
-  { id: 3, picture: "food 2.png", name: "Xiềng cec hàn", id_type: 2, id_category: 1, best_seller: 1, cost: 10000, detail: 'CoinCard', status: 0 },
-]);
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/admin/foods')
+    if (response.data && Array.isArray(response.data.data)) {
+      allItems.value = response.data.data
+    } else {
+      console.error('Dữ liệu trả về không hợp lệ:', response.data)
+    }
+  } catch (error) {
+    console.error('Lỗi khi tải dữ liệu thức ăn:', error)
+  }
+})
+
 
 const paginatedItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;

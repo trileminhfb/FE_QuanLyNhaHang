@@ -17,8 +17,7 @@
                             <div class="flex flex-row w-full items-center px-5">
                                 <p>Kiểu:</p>
 
-                                <p class="text-2xl flex-1 text-end">{{ categoryData.id_type }}</p>
-                                <!-- <p class="text-2xl flex-1 text-end">{{ categoryData.types.name }} </p> -->
+                                <p class="text-2xl flex-1 text-end">{{ categoryData.type.name }} </p>
                             </div>
 
                             <div class="flex flex-row w-full items-center px-5">
