@@ -3,7 +3,7 @@
         <!-- Thanh tìm kiếm và nút thêm -->
         <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
             <Search v-model="searchQuery" />
-            <AddButton />
+            <AddButton @add="goAdd"></AddButton>
         </div>
 
         <!-- Bảng dữ liệu -->
@@ -82,6 +82,7 @@ import { useRouter } from "vue-router";
 import Sort from "../../../components/Admin/SortButton.vue";
 import Search from "../../../components/Admin/Search.vue";
 import Pagination from "../../../components/Admin/Pagination.vue";
+import AddButton from "../../../components/Admin/AddButton.vue";
 
 const router = useRouter();
 const searchQuery = ref("");

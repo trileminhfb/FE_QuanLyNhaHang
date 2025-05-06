@@ -43,6 +43,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { ref } from 'vue'
+import axios from 'axios'
 
 const router = useRouter()
 const route = useRoute()
@@ -51,8 +52,6 @@ const form = ref({
     number: '',
     status: 1
 })
-
-import axios from 'axios'
 
 async function goSave() {
     try {
@@ -64,7 +63,6 @@ async function goSave() {
         alert('Không thể thêm bàn.')
     }
 }
-
 
 function goBack() {
     router.push({ name: 'admin-tables' })

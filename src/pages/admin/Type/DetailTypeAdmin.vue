@@ -12,10 +12,10 @@
                                 <p>Tên kiểu:</p>
                                 <p class="text-2xl flex-1 text-end">{{ typeData.name }} </p>
                             </div>
-                            <div class="flex flex-row w-full items-center px-5">
+                            <!-- <div class="flex flex-row w-full items-center px-5">
                                 <p>Danh sách các loại thức ăn:</p>
                                 <p class="text-2xl flex-1 text-end">Lẫu, Nướng, Hấp</p>
-                            </div>
+                            </div> -->
                             <div class="flex flex-row w-full items-center px-5">
                                 <p class="flex-1">Trạng thái:</p>
                                 <p v-if="typeData.status === 1" class="bg-green-500 text-white text-end px-2">
@@ -25,7 +25,7 @@
                                     Đang đóng
                                 </p>
                             </div>
-                            <div class="border p-2 h-96 flex flex-col gap-2 ">
+                            <!-- <div class="border p-2 h-96 flex flex-col gap-2 ">
                                 <p>Danh sách các món ăn</p>
                                 <div class="overflow-y-auto max-h-full">
                                     <div class="flex flex-row gap-2 justify-start items-center border">
@@ -53,7 +53,7 @@
                                         <p>Hamberger thịt nướng bơ tỏi hấp xả các thứ</p>
                                     </div>
                                 </div>
-                            </div>
+                            </div> -->
                             <div class="flex flex-row gap-2 p-2">
                                 <div class="bg-green-500 rounded-lg p-2 flex justify-center items-center flex-1 text-white hover:text-black hover:cursor-pointer hover:bg-green-300"
                                     @click="goEdit(typeData)">

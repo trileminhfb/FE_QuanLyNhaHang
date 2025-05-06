@@ -63,8 +63,6 @@ const form = ref({
     status: tableData?.status ?? 1
 })
 
-
-
 async function goSave() {
     try {
         const response = await axios.put(`http://127.0.0.1:8000/api/admin/tables/${tableData.id}`, {

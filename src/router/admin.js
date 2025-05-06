@@ -28,7 +28,7 @@ const admin = [
       {
         path: "foods/edit-foods/:id?",
         name: "admin-edit-foods",
-        component: () => import("../pages/admin/food/EditFoodAdmin.vue"),
+        component: () => import("../pages/admin/Food/EditFoodAdmin.vue"),
       },
 
       //category
@@ -146,6 +146,62 @@ const admin = [
         name: "admin-details-booking",
         component: () =>
           import("../pages/admin/Booking/DetailBookingAdmin.vue"),
+      },
+
+      //warehouse
+      {
+        path: "warehouse",
+        component: () => import("../layout/warehouse/index.vue"),
+        children: [
+          {
+            path: "",
+            redirect: { name: "menu-warehouse-admin" }, // Tự động chuyển sang route con cụ thể
+          },
+
+          //warehouse menu
+          {
+            path: "menu-warehouse-admin",
+            name: "menu-warehouse-admin",
+            component: () =>
+              import(
+                "../pages/admin/Warehouse/MenuWarehouseAdmin/MenuWarehouseAdmin.vue"
+              ),
+          },
+          {
+            path: "detail-warehouse-admin/:id?",
+            name: "detail-warehouse-admin",
+            component: () =>
+              import(
+                "../pages/admin/Warehouse/MenuWarehouseAdmin/DetailWarehouseAdmin.vue"
+              ),
+          },
+          {
+            path: "edit-warehouse-admin/:id?",
+            name: "edit-warehouse-admin",
+            component: () =>
+              import(
+                "../pages/admin/Warehouse/MenuWarehouseAdmin/EditWarehouseAdmin.vue"
+              ),
+          },
+
+          //warehouse ingredient
+          {
+            path: "ingredient-warehouse",
+            name: "ingredient-warehouse-admin",
+            component: () =>
+              import(
+                "../pages/admin/Warehouse/IngredientWarehouse/IngredientWarehouseAdmin.vue"
+              ),
+          },
+          {
+            path: "import-warehouse",
+            name: "import-warehouse-admin",
+            component: () =>
+              import(
+                "../pages/admin/Warehouse/ImportWarehouse/ImportWarehouseAdmin.vue"
+              ),
+          },
+        ],
       },
     ],
   },
