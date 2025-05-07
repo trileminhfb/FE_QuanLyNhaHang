@@ -37,12 +37,8 @@
             <MenuIcon src="/imageicon/staff icon.png" label="Nhân viên" />
         </div>
 
-        <div
-            class="flex flex-row gap-2 bg-gray-300 justify-start items-center w-full h-[100px] rounded-lg border-2 ps-2 hover:bg-gray-500 hover:cursor-pointer">
-            <div class="rounded-full border-black border-2 h-16 w-16 overflow-hidden flex justify-center items-center">
-                <img class="w-12 h-12 object-cover" src="/imageicon/warehouse icon.png" alt="" />
-            </div>
-            <p>Kho</p>
+        <div :class="menuClass('admin-warehouses')" @click="goWarehouse">
+            <MenuIcon src="/imageicon/warehouse icon.png" label="Kho" />
         </div>
     </div>
 </template>
@@ -79,6 +75,9 @@ function goRank() {
 }
 function goCustomer() {
     router.push({ name: 'admin-customers' })
+}
+function goWarehouse() {
+    router.push({ name: 'menu-warehouse-admin' })
 }
 
 function menuClass(name) {

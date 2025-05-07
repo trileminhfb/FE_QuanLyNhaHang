@@ -2,7 +2,7 @@
     <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
         <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
             <Search v-model="searchQuery" />
-            <AddButton />
+            <AddButton @add="goAdd" />
         </div>
         <div class="w-full h-full border-t border-gray-400 px-2 pt-2">
             <table class="w-full h-fit table-auto font-semibold text-2xl ">
@@ -12,12 +12,6 @@
                             <div class="flex flex-row justify-center items-center gap-2">
                                 <SortButton @sort="direction => sortBy('name', direction)" />
                                 <p class="text-start w-full">Tên loại</p>
-                            </div>
-                        </th>
-                        <th>
-                            <div class="flex flex-row justify-center items-center gap-2">
-                                <SortButton @sort="direction => sortBy('qty', direction)" />
-                                <p>Số lượng món</p>
                             </div>
                         </th>
                         <th>Thao tác</th>
@@ -44,10 +38,9 @@
                                 </div>
                             </div>
                         </td>
-                        <td class="text-center">{{ item.qty }}</td>
                         <td class="text-center">
                             <div class="flex justify-center items-center h-full">
-                                <div
+                                <div igheden
                                     class="w-10 h-10 text-gray-800 hover:bg-gray-400 hover:cursor-pointer rounded-lg relative group">
                                     <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg" fill="none"
                                         viewBox="0 0 24 24">
@@ -56,12 +49,15 @@
                                     </svg>
                                     <div
                                         class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                                        <p class="hover:bg-gray-500 text-start w-full h-full"
-                                            @click="goDetailCategories">
-                                            Chi
-                                            tiết</p>
-                                        <p class="hover:bg-gray-500 text-start w-full h-full">Chỉnh sửa</p>
-                                        <p class="hover:bg-gray-500 text-start w-full h-full">Xoá</p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetail(item)">
+                                            Chi tiết</p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEdit(item)">
+                                            Chỉnh sửa
+                                        </p>
+                                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDelete(item)">
+                                            Xoá</p>
+                                        <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete"
+                                            @cancel="cancelDelete" />
                                     </div>
                                 </div>
                             </div>
@@ -75,38 +71,85 @@
 </template>
 
 <script setup>
-
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import axios from 'axios'
 import { useRouter } from 'vue-router'
 import Search from '../../../components/Admin/Search.vue'
 import AddButton from '../../../components/Admin/AddButton.vue'
 import SortButton from '../../../components/Admin/SortButton.vue'
 import Pagination from '../../../components/Admin/Pagination.vue'
-
-
+import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue'
 
 const router = useRouter()
 const searchQuery = ref('')
-const sortKey = ref('') // 'name' hoặc 'qty'
-const sortDirection = ref('') // 'asc' | 'desc'
+const sortKey = ref('')
+const sortDirection = ref('')
+const showConfirm = ref(false)
+const allItems = ref([])
+const itemToDelete = ref(null)
+const itemsPerPage = 5
+const currentPage = ref(1)
+const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage))
+
+const paginatedItems = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    return filteredItems.value.slice(start, end)
+})
+
+onMounted(async () => {
+    try {
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/categories')
+        allItems.value = response.data
+    } catch (error) {
+        console.error('Lỗi khi tải dữ liệu categories:', error)
+    }
+})
+
+function goDelete(item) {
+    itemToDelete.value = item
+    showConfirm.value = true
+}
+
+async function confirmDelete() {
+    if (!itemToDelete.value || !itemToDelete.value.id) {
+        console.error('Không có item hoặc ID để xoá')
+        showConfirm.value = false
+        return
+    }
+
+    try {
+        await axios.delete(`http://127.0.0.1:8000/api/admin/categories/${itemToDelete.value.id}`)
+        alert('Đã xoá loại thành công!')
+        allItems.value = allItems.value.filter(item => item.id !== itemToDelete.value.id)
+        itemToDelete.value = null
+        showConfirm.value = false
+    } catch (error) {
+        console.error('Lỗi khi xoá loại:', error)
+        alert('Không thể xoá loại.')
+        showConfirm.value = false
+    }
+}
+
+function cancelDelete() {
+    showConfirm.value = false
+    itemToDelete.value = null
+}
 
 function sortBy(key, direction) {
     sortKey.value = key
     sortDirection.value = direction
 }
 
-
 const filteredItems = computed(() => {
     let result = [...allItems.value]
 
-    // Lọc theo search nếu có
     if (searchQuery.value) {
         result = result.filter(item =>
             item.name.toLowerCase().includes(searchQuery.value.toLowerCase())
         )
     }
 
-    // Sắp xếp nếu có key và direction
     if (sortKey.value && sortDirection.value) {
         result.sort((a, b) => {
             if (sortDirection.value === 'asc') {
@@ -120,42 +163,29 @@ const filteredItems = computed(() => {
     return result
 })
 
-
-const allItems = ref([
-    { name: 'Name 1', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 2', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 3', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 4', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 5', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 6', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 7', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 8', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 9', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 10', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 11', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 12', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 13', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 14', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 15', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-    { name: 'Name 16', qty: Math.floor(Math.random() * 100) + 1, status: Math.round(Math.random()) },
-])
-
-const itemsPerPage = 5
-const currentPage = ref(1)
-
-const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage))
-
-const paginatedItems = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage
-    const end = start + itemsPerPage
-    return filteredItems.value.slice(start, end)
-})
-
 function changePage(page) {
-    if (page >= 1 && page <= totalPages.value) { currentPage.value = page }
+    if (page >= 1 && page <= totalPages.value) {
+        currentPage.value = page
+    }
 }
 
-function goDetailCategories() {
-    router.push({ name: 'admin-details-categories' })
+function goDetail(item) {
+    router.push({
+        name: 'admin-details-categories',
+        params: { id: item.id },
+        query: { data: JSON.stringify(item) }
+    })
+}
+
+function goAdd() {
+    router.push({ name: 'admin-add-categories' })
+}
+
+function goEdit(item) {
+    router.push({
+        name: 'admin-edit-categories',
+        params: { id: item.id },
+        query: { data: JSON.stringify(item) }
+    })
 }
 </script>

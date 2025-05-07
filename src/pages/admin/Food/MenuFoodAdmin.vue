@@ -2,7 +2,7 @@
   <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
     <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
       <Search v-model="searchQuery" />
-      <AddButton />
+      <AddButton @add="goAdd" />
     </div>
     <div class="w-full h-full border-t border-gray-400 px-2 pt-2">
       <table class="w-full h-fit table-auto font-semibold text-2xl">
@@ -14,18 +14,6 @@
                 <p class="text-start w-full">Tên món</p>
               </div>
             </th>
-            <!-- <th>
-              <div class="flex flex-row justify-center items-center gap-2">
-                <Sort @sort="(direction) => sortBy('star', direction)" />
-                <p>Điểm</p>
-              </div>
-            </th>
-            <th>
-              <div class="flex flex-row justify-center items-center gap-2">
-                <Sort @sort="(direction) => sortBy('qty', direction)" />
-                <p>Số lượng đã đặt</p>
-              </div>
-            </th> -->
             <th>
               <div class="flex flex-row justify-center items-center gap-2">
                 <Sort @sort="(direction) => sortBy('price', direction)" />
@@ -41,20 +29,12 @@
               <div class="h-full flex flex-row justify-start items-center">
                 <div class="overflow-hidden flex flex-row justify-center items-center">
                   <img class="hover:cursor-pointer overflow-auto object-cover h-32 w-24 rounded-lg shadow-md border"
-                    :src="`/picture/food/${item.picture}`" alt="Ảnh nhân viên" />
+                    :src="item.image" alt="Ảnh món ăn" />
                   <div class="ps-5 flex flex-col gap-5">
                     <p class="hover:cursor-pointer">{{ item.name }}</p>
                     <div class="flex flex-row gap-2 items-center">
-                      <div v-if="item.status === 1"
-                        class="hover:cursor-pointer w-16 h-8 flex rounded-full border-2 border-black justify-end items-center p-1">
-                        <div class="w-6 h-6 bg-green-500 rounded-full"></div>
-                      </div>
-                      <div v-else
-                        class="hover:cursor-pointer w-16 h-8 flex rounded-full border-2 border-black justify-start items-center p-1">
-                        <div class="w-6 h-6 bg-red-500 rounded-full"></div>
-                      </div>
-
-                      <div v-if="item.best_seller === 1">
+                      <SwitchButton :status="item.status" @toggle="toggleStatus(item)" />
+                      <div v-if="item.bestSeller === 1">
                         <svg class="hover:cursor-pointer w-6 h-6 text-yellow-500" aria-hidden="true"
                           xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                           viewBox="0 0 24 24">
@@ -74,8 +54,6 @@
                 </div>
               </div>
             </td>
-            <!-- <td class="text-center">{{ item.star }}</td> -->
-            <!-- <td class="text-center">{{ item.qty }}</td> -->
             <td class="text-center">{{ item.cost.toLocaleString() }} VNĐ</td>
             <td class="text-center">
               <div class="flex justify-center items-center h-full">
@@ -89,8 +67,9 @@
                     <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailFoods(item)">
                       Chi tiết
                     </p>
-                    <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEditFoods(item)">Chỉnh sửa</p>
-                    <p class="hover:bg-gray-500 text-start w-full h-full">Xoá</p>
+                    <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEdit(item)">Chỉnh sửa</p>
+                    <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDelete">Xoá</p>
+                    <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
                   </div>
                 </div>
               </div>
@@ -104,34 +83,35 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from 'vue'
 import { useRouter } from "vue-router";
 import Sort from "../../../components/Admin/SortButton.vue";
 import Search from "../../../components/Admin/Search.vue";
 import AddButton from "../../../components/Admin/AddButton.vue";
 import Pagination from "../../../components/Admin/Pagination.vue";
+import SwitchButton from "../../../components/Admin/SwitchButton.vue";
+import ConfirmDelete from "../../../components/Admin/ConfirmDelete.vue";
+import axios from 'axios'
 
+const showConfirm = ref(false)
 const router = useRouter();
 const searchQuery = ref("");
 const sortKey = ref(""); // 'name' hoặc 'qty'
 const sortDirection = ref(""); // 'asc' | 'desc'
-
-function sortBy(key, direction) {
-  sortKey.value = key;
-  sortDirection.value = direction;
-}
+const itemsPerPage = 5;
+const currentPage = ref(1);
+const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
+const allItems = ref([]);
 
 const filteredItems = computed(() => {
   let result = [...allItems.value];
 
-  // Lọc theo search nếu có
   if (searchQuery.value) {
     result = result.filter((item) =>
       item.name.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   }
 
-  // Sắp xếp nếu có key và direction
   if (sortKey.value && sortDirection.value) {
     result.sort((a, b) => {
       if (sortDirection.value === "asc") {
@@ -145,15 +125,19 @@ const filteredItems = computed(() => {
   return result;
 });
 
-const allItems = ref([
-  { id: 1, picture: "food 1.png", name: "Xiềng nướng hàn", id_type: 1, id_category: 2, best_seller: 1, cost: 10000, detail: 'coincard', status: 1 },
-  { id: 2, picture: "food 2.png", name: "Xiềng hấp hàn", id_type: 1, id_category: 2, best_seller: 0, cost: 10000, detail: 'CoinCard', status: 0 },
-]);
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/admin/foods')
+    if (response.data && Array.isArray(response.data.data)) {
+      allItems.value = response.data.data
+    } else {
+      console.error('Dữ liệu trả về không hợp lệ:', response.data)
+    }
+  } catch (error) {
+    console.error('Lỗi khi tải dữ liệu thức ăn:', error)
+  }
+})
 
-const itemsPerPage = 5;
-const currentPage = ref(1);
-
-const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
 
 const paginatedItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
@@ -161,10 +145,23 @@ const paginatedItems = computed(() => {
   return filteredItems.value.slice(start, end);
 });
 
+const toggleStatus = (item) => {
+  item.status = item.status === 1 ? 0 : 1
+}
+
 function changePage(page) {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
   }
+}
+
+function sortBy(key, direction) {
+  sortKey.value = key;
+  sortDirection.value = direction;
+}
+
+function goAdd() {
+  router.push({ name: 'admin-add-foods' })
 }
 
 function goDetailFoods(item) {
@@ -179,7 +176,7 @@ function goDetailFoods(item) {
   });
 }
 
-function goEditFoods(item) {
+function goEdit(item) {
   router.push({
     name: 'admin-edit-foods',
     params: {
@@ -189,6 +186,20 @@ function goEditFoods(item) {
       data: JSON.stringify(item)
     }
   });
+}
+
+function goDelete() {
+  showConfirm.value = true
+}
+
+function confirmDelete() {
+  showConfirm.value = false
+  console.log('Đã xác nhận xoá món ăn')
+  router.push({ name: 'admin-foods' })
+}
+
+function cancelDelete() {
+  showConfirm.value = false
 }
 
 </script>

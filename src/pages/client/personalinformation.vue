@@ -1,4 +1,5 @@
 <template>
+
   <div class="container-personalinformation">
     <div class="rank-box">
       <div class="member-info">
@@ -238,6 +239,11 @@ const currentTab = ref(0)
 .claim-gift-btn:hover {
   background-color: #45a049;
 }
+  
+
+
+
+
   .input-information{
     display: flex;
     flex-direction: column;
@@ -395,11 +401,6 @@ const currentTab = ref(0)
   .title p {
     font-family: "Dancing Script", cursive;
   }
-
-  
-  
- 
-  
   
   .tab-links {
     display: flex;
