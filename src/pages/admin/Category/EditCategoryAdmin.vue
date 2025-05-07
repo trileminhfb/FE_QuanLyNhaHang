@@ -16,9 +16,11 @@
                 <!-- Kiểu món ăn -->
                 <div class="flex items-center gap-4">
                     <label class="w-32">Kiểu món ăn:</label>
-                    <select class="border rounded px-4 py-2 w-[200px]" id="type-category">
-                        <option value="1">Thức ăn</option>
-                        <option value="2">Nước</option>
+                    <select v-model="form.type_id" class="border rounded px-4 py-2 w-[200px]">
+                        <option disabled value="">{{ categoryData.type.name }}</option>
+                        <option v-for="type in allItems" :key="type.id" :value="type.id">
+                            {{ type.name }}
+                        </option>
                     </select>
                 </div>
 
@@ -34,11 +36,17 @@
                     <div class="border rounded p-4 flex flex-col max-h-[350px]">
                         <p class="font-bold text-lg mb-2 text-green-600">🍽 Món đã thêm</p>
                         <div class="overflow-y-auto space-y-2 max-h-[300px]">
-                            <div v-for="i in 6" :key="'added-' + i"
-                                class="flex items-center gap-4 p-2 border rounded hover:bg-gray-100">
-                                <img class="w-12 h-16 object-cover rounded" src="/picture/food/food 1.png" alt="">
-                                <span class="flex-1">Hamberger thịt nướng bơ tỏi xả hấp các thứ</span>
-                                <button class="text-red-500 hover:text-red-700 font-bold">Gỡ</button>
+                            <div v-if="categoryData?.category_foods?.length > 0">
+                                <div v-for="(item, index) in categoryData.category_foods" :key="index"
+                                    class="flex flex-row gap-4 items-center border rounded p-2 hover:bg-gray-100">
+                                    <img class="object-cover w-12 h-16 rounded" :src="item.food.image"
+                                        :alt="item.food.name" />
+                                    <p class="flex-1 text-base">{{ item.food.name }}</p>
+                                    <button class="text-red-500 hover:text-red-700 font-bold">Gỡ</button>
+                                </div>
+                            </div>
+                            <div v-else class="text-gray-500 italic">
+                                Không có món nào thuộc loại này.
                             </div>
                         </div>
                     </div>
@@ -61,7 +69,7 @@
                 <div class="flex justify-end gap-4 pt-4">
                     <button class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-400">Lưu thay đổi</button>
                     <button class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-400"
-                        @click="goDelete">Xoá</button>
+                        @click="goDelete(categoryData)">Xoá</button>
                     <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
                     <button @click="goBack" class="border px-6 py-2 rounded hover:bg-gray-100">Trở lại</button>
                 </div>
@@ -73,13 +81,40 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import SwitchButton from '../../../components/Admin/SwitchButton.vue';
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue';
-import { ref } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
 const categoryData = route.query.data ? JSON.parse(route.query.data) : null;
+const allItems = ref([])
 const showConfirm = ref(false)
+const itemToDelete = ref(null)
+
+const form = ref({
+    name: '',
+    status: 1,
+    type_id: ''
+})
+
+onMounted(async () => {
+    try {
+        const res = await axios.get('http://127.0.0.1:8000/api/admin/types')
+        if (res.data.status === 1) {
+            allItems.value = res.data.data
+        }
+
+        if (categoryData) {
+            form.value.name = categoryData.name
+            form.value.status = categoryData.status
+            form.value.type_id = categoryData.type.id
+        }
+    } catch (error) {
+        console.error('Lỗi khi tải danh sách kiểu món ăn:', error)
+    }
+})
+
 
 function goBack() {
     router.push({ name: 'admin-categories' })
@@ -89,19 +124,33 @@ function toggleField(field) {
     console.log("Toggled", field)
 }
 
-function goDelete() {
+function goDelete(item) {
+    itemToDelete.value = item
     showConfirm.value = true
 }
 
-function confirmDelete() {
-    showConfirm.value = false
+async function confirmDelete() {
+    if (!itemToDelete.value || !itemToDelete.value.id) {
+        console.error('Không có item hoặc ID để xoá')
+        showConfirm.value = false
+        return
+    }
 
-    console.log('Đã xác nhận xoá loại món ăn')
-    router.push({ name: 'admin-categories' })
+    try {
+        await axios.delete(`http://127.0.0.1:8000/api/admin/categories/${itemToDelete.value.id}`)
+        alert('Đã xoá loại thành công!')
+        itemToDelete.value = null
+        showConfirm.value = false
+        router.push({ name: 'admin-categories' })
+    } catch (error) {
+        console.error('Lỗi khi xoá loại:', error)
+        alert('Không thể xoá loại.')
+        showConfirm.value = false
+    }
 }
 
 function cancelDelete() {
     showConfirm.value = false
+    itemToDelete.value = null
 }
-
 </script>

@@ -25,14 +25,8 @@
                                     <div class="ps-5 flex flex-row gap-5">
                                         <p class="hover:cursor-pointer">{{ item.name }}</p>
                                         <div class="flex flex-row gap-2 items-center">
-                                            <div v-if="item.status === 1"
-                                                class="hover:cursor-pointer w-16 h-8 flex rounded-full border-2 border-black justify-end items-center p-1">
-                                                <div class="w-6 h-6 bg-green-500 rounded-full"></div>
-                                            </div>
-                                            <div v-else
-                                                class="hover:cursor-pointer w-16 h-8 flex rounded-full border-2 border-black justify-start items-center p-1">
-                                                <div class="w-6 h-6 bg-red-500 rounded-full"></div>
-                                            </div>
+                                            <SwitchButton :model-value="item.status"
+                                                @toggle="() => toggleStatus(item)" />
                                         </div>
                                     </div>
                                 </div>
@@ -79,6 +73,7 @@ import AddButton from '../../../components/Admin/AddButton.vue'
 import SortButton from '../../../components/Admin/SortButton.vue'
 import Pagination from '../../../components/Admin/Pagination.vue'
 import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue'
+import SwitchButton from '../../../components/Admin/SwitchButton.vue'
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -110,6 +105,21 @@ function goDelete(item) {
     itemToDelete.value = item
     showConfirm.value = true
 }
+
+async function toggleStatus(item) {
+    const newStatus = item.status === 1 ? 0 : 1
+    try {
+        await axios.put(`http://127.0.0.1:8000/api/admin/categories/${item.id}`, {
+            ...item,
+            status: newStatus
+        })
+        item.status = newStatus
+    } catch (error) {
+        console.error("Không thể cập nhật trạng thái:", error)
+        alert("Cập nhật trạng thái thất bại.")
+    }
+}
+
 
 async function confirmDelete() {
     if (!itemToDelete.value || !itemToDelete.value.id) {
