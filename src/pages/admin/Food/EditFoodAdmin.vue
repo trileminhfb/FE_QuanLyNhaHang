@@ -9,8 +9,8 @@
                     <div class="border flex-col gap-2 p-5 flex flex-[2] rounded-s-lg">
                         <div class="w-full">
                             <p>Tên món ăn</p>
-                            <input class="border w-full h-12 ps-2" :placeholder=foodData.name type="text"
-                                name="name-food" id="name">
+                            <input class="border w-full h-12 ps-2" v-model="form.name" :placeholder=foodData.name
+                                type="text" name="name-food" id="name">
                         </div>
                         <div class="w-full">
                             <p>Giá món ăn (VNĐ)</p>
@@ -20,13 +20,11 @@
                         <div class="w-full flex flex-row gap-5">
                             <div class="flex flex-row gap-5">
                                 <p>Best Seller</p>
-                                <!-- <SwitchButton :status="foodData.best_seller" @toggle="toggleStatus(item)" /> -->
                                 <SwitchButton :status="foodData.best_seller"
                                     @toggle="() => toggleField('best_seller')" />
                             </div>
                             <div class="flex flex-row gap-5">
                                 <p>Mở bán</p>
-                                <!-- <SwitchButton :status="foodData.status" @toggle="toggleStatus(item)" /> -->
                                 <SwitchButton :status="foodData.status" @toggle="() => toggleField('status')" />
 
                             </div>

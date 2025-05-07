@@ -4,6 +4,7 @@
             <div class=" uppercase font-bold text-2xl">
                 Chi tiết món ăn
             </div>
+
             <div class="w-[70vw] h-full flex justify-center items-start text-xl">
                 <div class="w-full border h-[70vh] flex flex-col">
                     <div class="flex-1 border flex flex-row">
@@ -11,6 +12,7 @@
                             <img class="w-full h-full object-cover" :src="foodData.image" alt="Ảnh món ăn" />
 
                         </div>
+
                         <div class="border flex flex-[2] flex-col p-2 gap-1">
                             <div class="flex flex-row items-center">
                                 <p class="text-2xl">{{ foodData.name }}</p>
@@ -47,6 +49,7 @@
                             <p v-if="foodData.status === 1" class="bg-green-500 text-white rounded-md w-fit p-2">
                                 Đang mở bán
                             </p>
+
                             <p v-else class="bg-red-500 text-white rounded-md w-fit p-2">
                                 Đang đóng
                             </p>
@@ -92,6 +95,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="flex flex-col overflow-y-auto max-h-full">
                         <p class="uppercase font-bold">đánh giá</p>
 
@@ -119,17 +123,6 @@
 
                                 <p class="font-normal">Món này rất ngon, thịt mềm và thấm vị. Sẽ quay lại lần nữa! </p>
                             </div>
-                            <div class="flex flex-col">
-                                <div class="flex flex-row">
-                                    <p>Nguyễn Văn A</p>
-
-                                    <p class="px-1 font-normal text-sm items-center flex">-</p>
-
-                                    <p class="font-normal text-sm items-center flex">15/04/2025</p>
-                                </div>
-
-                                <p class="font-normal">Món này rất ngon, thịt mềm và thấm vị. Sẽ quay lại lần nữa! </p>
-                            </div>
 
                             <div class="flex flex-col">
                                 <div class="flex flex-row">
@@ -142,6 +135,19 @@
 
                                 <p class="font-normal">Món này rất ngon, thịt mềm và thấm vị. Sẽ quay lại lần nữa! </p>
                             </div>
+
+                            <div class="flex flex-col">
+                                <div class="flex flex-row">
+                                    <p>Nguyễn Văn A</p>
+
+                                    <p class="px-1 font-normal text-sm items-center flex">-</p>
+
+                                    <p class="font-normal text-sm items-center flex">15/04/2025</p>
+                                </div>
+
+                                <p class="font-normal">Món này rất ngon, thịt mềm và thấm vị. Sẽ quay lại lần nữa! </p>
+                            </div>
+
                             <div class="flex flex-col">
                                 <div class="flex flex-row">
                                     <p>Nguyễn Văn A</p>

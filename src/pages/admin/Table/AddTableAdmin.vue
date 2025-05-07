@@ -10,8 +10,9 @@
                         <div class="border flex flex-[2] flex-col p-2 gap-2">
                             <div class="flex items-center gap-4">
                                 <label class="w-32">Tên bàn:</label>
-                                <input type="text" id="number" v-model="form.number"
-                                    class="flex-1 border rounded px-4 py-2 text-lg" placeholder="Nhập tên Bàn..." />
+                                <input type="number" id="number" v-model="form.number"
+                                    class="flex-1 border rounded px-4 py-2 text-lg no-spinner" @input="validateTable"
+                                    placeholder="Nhập số bàn..." />
                             </div>
 
                             <div class="flex items-center gap-4">
@@ -40,6 +41,7 @@
         </div>
     </div>
 </template>
+
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import { ref } from 'vue'
@@ -52,6 +54,12 @@ const form = ref({
     number: '',
     status: 1
 })
+
+function validateTable(e) {
+    let val = parseInt(e.target.value)
+    if (val < 0) val = 0
+    form.value.number = val
+}
 
 async function goSave() {
     try {
@@ -69,3 +77,11 @@ function goBack() {
 }
 
 </script>
+
+<style scoped>
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+</style>

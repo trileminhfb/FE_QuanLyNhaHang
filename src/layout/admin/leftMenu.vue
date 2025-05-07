@@ -36,11 +36,10 @@
         <div :class="menuClass('admin-users')" @click="goUser">
             <MenuIcon src="/imageicon/staff icon.png" label="Nhân viên" />
         </div>
-        <div :class="menuClass('admin-users')" @click="goWarehouse">
+
+        <div :class="menuClass('admin-warehouses')" @click="goWarehouse">
             <MenuIcon src="/imageicon/warehouse icon.png" label="Kho" />
         </div>
-
-
     </div>
 </template>
 
