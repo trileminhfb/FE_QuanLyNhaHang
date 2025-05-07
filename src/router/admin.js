@@ -100,6 +100,28 @@ const admin = [
         component: () => import("../pages/admin/Table/EditTableAdmin.vue"),
       },
 
+      //rank
+      {
+        path: "ranks",
+        name: "admin-ranks",
+        component: () => import("../pages/admin/Rank/MenuRankAdmin.vue"),
+      },
+      {
+        path: "ranks/add-ranks",
+        name: "admin-add-ranks",
+        component: () => import("../pages/admin/Rank/AddRankAdmin.vue"),
+      },
+      {
+        path: "ranks/edit-ranks/:id?",
+        name: "admin-edit-ranks",
+        component: () => import("../pages/admin/Rank/EditRankAdmin.vue"),
+      },
+      {
+        path: "ranks/detail-ranks/:id?",
+        name: "admin-detail-ranks",
+        component: () => import("../pages/admin/Rank/DetailRankAdmin.vue"),
+      },
+
       //user
       {
         path: "users",
@@ -112,13 +134,6 @@ const admin = [
         path: "sale",
         name: "admin-sales",
         component: () => import("../pages/admin/Sale/MenuSaleAdmin.vue"),
-      },
-
-      //rank
-      {
-        path: "rank",
-        name: "admin-ranks",
-        component: () => import("../pages/admin/Rank/MenuRankAdmin.vue"),
       },
 
       //customer
