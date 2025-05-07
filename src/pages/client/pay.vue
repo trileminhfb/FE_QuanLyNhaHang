@@ -5,7 +5,7 @@
         <div class="main-inform">
           <div class="shop-title">
             Nhà Hàng Phê Food
-            <img src="/imageicon/logo.png" alt="">
+            <img src="/imageicon/logo.png" alt="" />
           </div>
 
           <div class="shop-inform">
@@ -67,7 +67,8 @@
       </div>
 
       <div class="col-right">
-        <div class="order-cart">
+        Bạn chưa có mặt hàng nào
+        <div class="order-cart" v-if="!paymentSuccessful">
           <h3 class="order-title"><strong>Đơn Hàng Của Bạn</strong></h3>
 
           <div v-if="cartItems.length === 0">Chưa có mặt hàng nào</div>
@@ -97,13 +98,13 @@
   </div>
 </template>
 
-
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios' // đừng dùng axios mặc định
-import api from '../../services/api' // dùng thg ni thay cho axxios
+import api from '../../services/api'
 import { cartItems } from '../../stores/cartStore'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const form = ref({
   id_table: '',
   timeEnd: '',
@@ -114,49 +115,54 @@ const form = ref({
 
 const selectedPayment = ref('')
 const namePay = [
-  { name: 'Thanh toán khi giao hàng' }
+  { name: 'Thanh toán khi giao hàng' },
+  { name: 'Thanh toán online' }
 ]
+const paymentSuccessful = ref(false)
 
 const xoaHang = (index) => {
   cartItems.splice(index, 1)
 }
 
-const datMon = () => {
+const datMon = async () => {
   if (!form.value.id_table || !form.value.timeEnd || !form.value.total || !form.value.id_user || !form.value.id_customer || !selectedPayment.value) {
     alert("Vui lòng nhập đầy đủ thông tin!");
     return;
   }
+
   const payload = {
-  id_table: form.value.id_table,
-  timeEnd: form.value.timeEnd,
-  total: form.value.total,
-  id_user: form.value.id_user,
-  id_customer: form.value.id_customer,
-  payment_method: selectedPayment.value,
-  items: cartItems.value.map(item => ({
-    id_product: item.id,
-    quantity: item.soLuong,
-    price: item.gia
-  }))
-};
+    id_table: form.value.id_table,
+    timeEnd: form.value.timeEnd,
+    total: form.value.total,
+    id_user: form.value.id_user,
+    id_customer: form.value.id_customer,
+    payment_method: selectedPayment.value,
+    items: cartItems.value.map(item => ({
+      id_product: item.id,
+      quantity: item.soLuong,
+      price: item.gia
+    }))
+  };
 
-console.log(payload);
-
-api.post('/admin/invoices/create', payload)// bỏ api đi, vì trong api cấu hình sẵn api r
-  .then(response => {
+  try {
+    const response = await api.post('/admin/invoices/create', payload)
     console.log('Invoice created successfully:', response.data);
-  })
-  .catch(error => {
+    paymentSuccessful.value = true;
+    alert('Thanh toán thành công');
+  } catch (error) {
     if (error.response) {
       console.error('Error response:', error.response);
-      alert('Có lỗi xảy ra khi tạo hóa đơn vui lòng kiểm tra lại.');
+      alert('Có lỗi xảy ra khi tạo hóa đơn, vui lòng kiểm tra lại.');
     } else {
       console.error('Error:', error.message);
+      alert('Có lỗi xảy ra khi thanh toán.');
     }
-  });
-
+  }
 }
 </script>
+
+
+
 
 
 <style scoped>
