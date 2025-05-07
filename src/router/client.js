@@ -53,6 +53,17 @@ const users = [
                 name: "users-evaluation",
                 component: () => import("../pages/client/evaluation.vue")
             }, 
+            {
+                path: '/history',
+                name: 'History',
+                component: () => import('../pages/client/history.vue')
+              },
+              {
+                path: '/booking-history',
+                name: 'History',
+                component: () => import('../pages/client/bookinghistory.vue')
+              }
+              
         ]
     }
 ];
