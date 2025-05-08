@@ -181,7 +181,7 @@ function changePage(page) {
 
 function goDetail(item) {
     router.push({
-        name: 'admin-details-categories',
+        name: 'admin-detail-categories',
         params: { id: item.id },
         query: { data: JSON.stringify(item) }
     })

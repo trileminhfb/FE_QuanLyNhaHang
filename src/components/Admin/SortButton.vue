@@ -13,7 +13,6 @@
                 d="m19 9-7 7-7-7" />
         </svg>
     </div>
-
 </template>
 <script>
 export default {

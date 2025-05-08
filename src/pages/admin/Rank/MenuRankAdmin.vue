@@ -92,9 +92,9 @@ import axios from 'axios'
 import SortButton from '../../../components/Admin/SortButton.vue'
 
 const router = useRouter();
-const searchQuery = ref('');
-const sortKey = ref('');
-const sortDirection = ref('');
+const searchQuery = ref("");
+const sortKey = ref("");
+const sortDirection = ref("");
 const showConfirm = ref(false);
 const itemToDelete = ref(null);
 const itemsPerPage = 5;
@@ -115,26 +115,26 @@ onMounted(() => {
 })
 
 const filteredItems = computed(() => {
-    let result = [...allItems.value]
+    let result = [...allItems.value];
 
     if (searchQuery.value) {
-        result = result.filter(item =>
-            String(item.number).toLowerCase().includes(searchQuery.value.toLowerCase())
-        )
+        result = result.filter((item) =>
+            item.nameRank.toLowerCase().includes(searchQuery.value.toLowerCase())
+        );
     }
 
     if (sortKey.value && sortDirection.value) {
         result.sort((a, b) => {
-            if (sortDirection.value === 'asc') {
-                return a[sortKey.value] > b[sortKey.value] ? 1 : -1
+            if (sortDirection.value === "asc") {
+                return a[sortKey.value] > b[sortKey.value] ? 1 : -1;
             } else {
-                return a[sortKey.value] < b[sortKey.value] ? 1 : -1
+                return a[sortKey.value] < b[sortKey.value] ? 1 : -1;
             }
-        })
+        });
     }
 
-    return result
-})
+    return result;
+});
 
 const totalPages = computed(() =>
     Math.ceil(filteredItems.value.length / itemsPerPage)
@@ -153,8 +153,8 @@ function changePage(page) {
 }
 
 function sortBy(key, direction) {
-    sortKey.value = key
-    sortDirection.value = direction
+    sortKey.value = key;
+    sortDirection.value = direction;
 }
 
 function goDelete(item) {

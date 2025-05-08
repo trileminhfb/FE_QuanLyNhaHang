@@ -9,270 +9,244 @@ const admin = [
         component: () => import("../pages/admin/Home.vue"),
       },
 
-      //food
+      // Food
       {
         path: "foods",
-        name: "admin-foods",
-        component: () => import("../pages/admin/Food/MenuFoodAdmin.vue"),
-      },
-      {
-        path: "foods/add-foods",
-        name: "admin-add-foods",
-        component: () => import("../pages/admin/Food/AddFoodAdmin.vue"),
-      },
-      {
-        path: "foods/details-foods/:id?",
-        name: "admin-details-foods",
-        component: () => import("../pages/admin/Food/DetailFoodAdmin.vue"),
-      },
-      {
-        path: "foods/edit-foods/:id?",
-        name: "admin-edit-foods",
-        component: () => import("../pages/admin/food/EditFoodAdmin.vue"),
+        children: [
+          {
+            path: "",
+            name: "admin-foods",
+            component: () => import("../pages/admin/Food/MenuFoodAdmin.vue"),
+          },
+          {
+            path: "add",
+            name: "admin-add-foods",
+            component: () => import("../pages/admin/Food/AddFoodAdmin.vue"),
+          },
+          {
+            path: "detail/:id?",
+            name: "admin-detail-foods",
+            component: () => import("../pages/admin/Food/DetailFoodAdmin.vue"),
+          },
+          {
+            path: "edit/:id?",
+            name: "admin-edit-foods",
+            component: () => import("../pages/admin/food/EditFoodAdmin.vue"),
+          },
+        ],
       },
 
-      //category
+      // Category
       {
         path: "categories",
-        name: "admin-categories",
-        component: () =>
-          import("../pages/admin/Category/MenuCategoryAdmin.vue"),
-      },
-      {
-        path: "categories/add-categories",
-        name: "admin-add-categories",
-        component: () => import("../pages/admin/Category/AddCategoryAdmin.vue"),
-      },
-      {
-        path: "categories/edit-categories/:id?",
-        name: "admin-edit-categories",
-        component: () =>
-          import("../pages/admin/Category/EditCategoryAdmin.vue"),
-      },
-      {
-        path: "categories/details-categories/:id?",
-        name: "admin-details-categories",
-        component: () =>
-          import("../pages/admin/Category/DetailCategoryAdmin.vue"),
+        children: [
+          {
+            path: "",
+            name: "admin-categories",
+            component: () =>
+              import("../pages/admin/Category/MenuCategoryAdmin.vue"),
+          },
+          {
+            path: "add",
+            name: "admin-add-categories",
+            component: () =>
+              import("../pages/admin/Category/AddCategoryAdmin.vue"),
+          },
+          {
+            path: "edit/:id?",
+            name: "admin-edit-categories",
+            component: () =>
+              import("../pages/admin/Category/EditCategoryAdmin.vue"),
+          },
+          {
+            path: "detail/:id?",
+            name: "admin-detail-categories",
+            component: () =>
+              import("../pages/admin/Category/DetailCategoryAdmin.vue"),
+          },
+        ],
       },
 
-      //type
+      // Type
       {
         path: "types",
-        name: "admin-types",
-        component: () => import("../pages/admin/Type/MenuTypeAdmin.vue"),
-      },
-      {
-        path: "types/details-types",
-        name: "admin-details-types",
-        component: () => import("../pages/admin/Type/DetailTypeAdmin.vue"),
+        children: [
+          {
+            path: "",
+            name: "admin-types",
+            component: () => import("../pages/admin/Type/MenuTypeAdmin.vue"),
+          },
+          {
+            path: "add",
+            name: "admin-add-types",
+            component: () => import("../pages/admin/Type/AddTypeAdmin.vue"),
+          },
+          {
+            path: "edit/:id?",
+            name: "admin-edit-types",
+            component: () => import("../pages/admin/Type/EditTypeAdmin.vue"),
+          },
+          {
+            path: "detail/:id?",
+            name: "admin-detail-types",
+            component: () => import("../pages/admin/Type/DetailTypeAdmin.vue"),
+          },
+        ],
       },
 
-      //user
-      {
-        path: "users",
-        name: "admin-users",
-        component: () => import("../pages/admin/Users/MenuUserAdmin.vue"),
-      },
-
-      //table
+      // Table
       {
         path: "tables",
-        name: "admin-tables",
-        component: () => import("../pages/admin/Table/MenuTableAdmin.vue"),
-      },
-      {
-        path: "tables/details-tables",
-        name: "admin-details-tables",
-        component: () => import("../pages/admin/Table/DetailTableAdmin.vue"),
-      },
-
-      //sale
-      {
-        path: "sale",
-        name: "admin-sales",
-        component: () => import("../pages/admin/Sale/MenuSaleAdmin.vue"),
-      },
-
-      //rank
-      {
-        path: "rank",
-        name: "admin-ranks",
-        component: () => import("../pages/admin/Rank/MenuRankAdmin.vue"),
-      },
-
-      //customer
-      {
-        path: "customers",
-        name: "admin-customers",
-        component: () =>
-          import("../pages/admin/Customer/MenuCustomerAdmin.vue"),
-      },
-      {
-        path: "customers/details-customers",
-        name: "admin-details-customers",
-        component: () =>
-          import("../pages/admin/Customer/DetailCustomerAdmin.vue"),
+        children: [
+          {
+            path: "",
+            name: "admin-tables",
+            component: () => import("../pages/admin/Table/MenuTableAdmin.vue"),
+          },
+          {
+            path: "add",
+            name: "admin-add-tables",
+            component: () => import("../pages/admin/Table/AddTableAdmin.vue"),
+          },
+          {
+            path: "edit/:id?",
+            name: "admin-edit-tables",
+            component: () => import("../pages/admin/Table/EditTableAdmin.vue"),
+          },
+          {
+            path: "detail/:id?",
+            name: "admin-detail-tables",
+            component: () =>
+              import("../pages/admin/Table/DetailTableAdmin.vue"),
+          },
+        ],
       },
 
-      //booking
-      {
-        path: "booking",
-        name: "admin-booking",
-        component: () => import("../pages/admin/Booking/MenuBookingAdmin.vue"),
-      },
-      {
-        path: "booking/details-booking",
-        name: "admin-details-booking",
-        component: () =>
-          import("../pages/admin/Booking/DetailBookingAdmin.vue"),
-      },
-
-      //category
-      {
-        path: "categories",
-        name: "admin-categories",
-        component: () =>
-          import("../pages/admin/Category/MenuCategoryAdmin.vue"),
-      },
-      {
-        path: "categories/add-categories",
-        name: "admin-add-categories",
-        component: () => import("../pages/admin/Category/AddCategoryAdmin.vue"),
-      },
-      {
-        path: "categories/edit-categories/:id?",
-        name: "admin-edit-categories",
-        component: () =>
-          import("../pages/admin/Category/EditCategoryAdmin.vue"),
-      },
-      {
-        path: "categories/details-categories/:id?",
-        name: "admin-details-categories",
-        component: () =>
-          import("../pages/admin/Category/DetailCategoryAdmin.vue"),
-      },
-
-      //type
-      {
-        path: "types",
-        name: "admin-types",
-        component: () => import("../pages/admin/Type/MenuTypeAdmin.vue"),
-      },
-      {
-        path: "types/add-types/",
-        name: "admin-add-types",
-        component: () => import("../pages/admin/Type/AddTypeAdmin.vue"),
-      },
-      {
-        path: "types/edit-types/:id?",
-        name: "admin-edit-types",
-        component: () => import("../pages/admin/Type/EditTypeAdmin.vue"),
-      },
-      {
-        path: "types/details-types/:id?",
-        name: "admin-details-types",
-        component: () => import("../pages/admin/Type/DetailTypeAdmin.vue"),
-      },
-
-      //table
-      {
-        path: "tables",
-        name: "admin-tables",
-        component: () => import("../pages/admin/Table/MenuTableAdmin.vue"),
-      },
-      {
-        path: "tables/add-tables",
-        name: "admin-add-tables",
-        component: () => import("../pages/admin/Table/AddTableAdmin.vue"),
-      },
-      {
-        path: "tables/details-tables/:id?",
-        name: "admin-details-tables",
-        component: () => import("../pages/admin/Table/DetailTableAdmin.vue"),
-      },
-      {
-        path: "tables/edit-tables/:id?",
-        name: "admin-edit-tables",
-        component: () => import("../pages/admin/Table/EditTableAdmin.vue"),
-      },
-
-      //rank
+      // Rank
       {
         path: "ranks",
-        name: "admin-ranks",
-        component: () => import("../pages/admin/Rank/MenuRankAdmin.vue"),
-      },
-      {
-        path: "ranks/add-ranks",
-        name: "admin-add-ranks",
-        component: () => import("../pages/admin/Rank/AddRankAdmin.vue"),
-      },
-      {
-        path: "ranks/edit-ranks/:id?",
-        name: "admin-edit-ranks",
-        component: () => import("../pages/admin/Rank/EditRankAdmin.vue"),
-      },
-      {
-        path: "ranks/detail-ranks/:id?",
-        name: "admin-detail-ranks",
-        component: () => import("../pages/admin/Rank/DetailRankAdmin.vue"),
+        children: [
+          {
+            path: "",
+            name: "admin-ranks",
+            component: () => import("../pages/admin/Rank/MenuRankAdmin.vue"),
+          },
+          {
+            path: "add",
+            name: "admin-add-ranks",
+            component: () => import("../pages/admin/Rank/AddRankAdmin.vue"),
+          },
+          {
+            path: "edit/:id?",
+            name: "admin-edit-ranks",
+            component: () => import("../pages/admin/Rank/EditRankAdmin.vue"),
+          },
+          {
+            path: "detail/:id?",
+            name: "admin-detail-ranks",
+            component: () => import("../pages/admin/Rank/DetailRankAdmin.vue"),
+          },
+        ],
       },
 
-      //user
+      // Sale
+      {
+        path: "sales",
+        children: [
+          {
+            path: "",
+            name: "admin-sales",
+            component: () => import("../pages/admin/Sale/MenuSaleAdmin.vue"),
+          },
+          {
+            path: "add",
+            name: "admin-add-sales",
+            component: () => import("../pages/admin/Sale/AddSaleAdmin.vue"),
+          },
+          {
+            path: "edit/:id?",
+            name: "admin-edit-sales",
+            component: () => import("../pages/admin/Sale/EditSaleAdmin.vue"),
+          },
+          {
+            path: "detail/:id?",
+            name: "admin-detail-sales",
+            component: () => import("../pages/admin/Sale/DetailSaleAdmin.vue"),
+          },
+        ],
+      },
+
+      // User
       {
         path: "users",
         name: "admin-users",
         component: () => import("../pages/admin/Users/MenuUserAdmin.vue"),
       },
-
-      //sale
       {
-        path: "sale",
-        name: "admin-sales",
-        component: () => import("../pages/admin/Sale/MenuSaleAdmin.vue"),
+        path: "add",
+        name: "admin-add-users",
+        component: () => import("../pages/admin/Users/AddUserAdmin.vue"),
+      },
+      {
+        path: "edit/:id?",
+        name: "admin-edit-users",
+        component: () => import("../pages/admin/Users/EditUserAdmin.vue"),
+      },
+      {
+        path: "detail/:id?",
+        name: "admin-detail-users",
+        component: () => import("../pages/admin/Users/DetailUserAdmin.vue"),
       },
 
-      //customer
+      // Customer
       {
         path: "customers",
-        name: "admin-customers",
-        component: () =>
-          import("../pages/admin/Customer/MenuCustomerAdmin.vue"),
-      },
-      {
-        path: "customers/details-customers",
-        name: "admin-details-customers",
-        component: () =>
-          import("../pages/admin/Customer/DetailCustomerAdmin.vue"),
+        children: [
+          {
+            path: "",
+            name: "admin-customers",
+            component: () =>
+              import("../pages/admin/Customer/MenuCustomerAdmin.vue"),
+          },
+          {
+            path: "detail",
+            name: "admin-detail-customers",
+            component: () =>
+              import("../pages/admin/Customer/DetailCustomerAdmin.vue"),
+          },
+        ],
       },
 
-      //booking
+      // Booking
       {
         path: "booking",
-        name: "admin-booking",
-        component: () => import("../pages/admin/Booking/MenuBookingAdmin.vue"),
-      },
-      {
-        path: "booking/details-booking",
-        name: "admin-details-booking",
-        component: () =>
-          import("../pages/admin/Booking/DetailBookingAdmin.vue"),
+        children: [
+          {
+            path: "",
+            name: "admin-booking",
+            component: () =>
+              import("../pages/admin/Booking/MenuBookingAdmin.vue"),
+          },
+          {
+            path: "detail",
+            name: "admin-detail-booking",
+            component: () =>
+              import("../pages/admin/Booking/DetailBookingAdmin.vue"),
+          },
+        ],
       },
 
-      //warehouse
+      // Warehouse
       {
         path: "warehouse",
         component: () => import("../layout/warehouse/index.vue"),
         children: [
           {
             path: "",
-            redirect: { name: "menu-warehouse-admin" }, // Tự động chuyển sang route con cụ thể
+            redirect: { name: "menu-warehouse-admin" },
           },
-
-          //warehouse menu
           {
-            path: "menu-warehouse-admin",
+            path: "menu",
             name: "menu-warehouse-admin",
             component: () =>
               import(
@@ -280,7 +254,7 @@ const admin = [
               ),
           },
           {
-            path: "detail-warehouse-admin/:id?",
+            path: "detail/:id?",
             name: "detail-warehouse-admin",
             component: () =>
               import(
@@ -288,17 +262,15 @@ const admin = [
               ),
           },
           {
-            path: "edit-warehouse-admin/:id?",
+            path: "edit/:id?",
             name: "edit-warehouse-admin",
             component: () =>
               import(
                 "../pages/admin/Warehouse/MenuWarehouseAdmin/EditWarehouseAdmin.vue"
               ),
           },
-
-          //warehouse ingredient
           {
-            path: "ingredient-warehouse",
+            path: "ingredients",
             name: "ingredient-warehouse-admin",
             component: () =>
               import(
@@ -306,7 +278,7 @@ const admin = [
               ),
           },
           {
-            path: "import-warehouse",
+            path: "import",
             name: "import-warehouse-admin",
             component: () =>
               import(

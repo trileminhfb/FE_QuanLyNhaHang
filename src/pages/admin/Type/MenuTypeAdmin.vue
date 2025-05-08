@@ -10,7 +10,7 @@
           <tr class="border-2 border-gray-300">
             <th>
               <div class="flex flex-row justify-center items-center gap-2">
-                <SortButton @sort="direction => sortBy('name', direction)" />
+                <SortButton @sort="key => sortBy('name', key)" />
                 <p class="text-start w-full">Tên kiểu</p>
               </div>
             </th>
@@ -178,7 +178,7 @@ function changePage(page) {
 
 function goDetail(item) {
   router.push({
-    name: 'admin-details-types',
+    name: 'admin-detail-types',
     params: { id: item.id },
     query: { data: JSON.stringify(item) }
   })

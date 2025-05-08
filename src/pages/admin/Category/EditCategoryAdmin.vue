@@ -9,14 +9,15 @@
                 <!-- Tên loại -->
                 <div class="flex items-center gap-4">
                     <label class="w-32">Tên loại:</label>
-                    <input type="text" id="name-category" class="flex-1 border rounded px-4 py-2 text-lg"
+                    <input type="text" id="name-category" v-model="form.name"
+                        class="flex-1 border rounded px-4 py-2 text-lg"
                         :placeholder="categoryData?.name || 'Nhập tên loại...'" />
                 </div>
 
                 <!-- Kiểu món ăn -->
                 <div class="flex items-center gap-4">
                     <label class="w-32">Kiểu món ăn:</label>
-                    <select v-model="form.type_id" class="border rounded px-4 py-2 w-[200px]">
+                    <select v-model="form.id_type" class="border rounded px-4 py-2 w-[200px]">
                         <option disabled value="">{{ categoryData.type.name }}</option>
                         <option v-for="type in allItems" :key="type.id" :value="type.id">
                             {{ type.name }}
@@ -27,7 +28,7 @@
                 <!-- Trạng thái -->
                 <div class="flex items-center gap-4">
                     <label class="w-32">Trạng thái:</label>
-                    <SwitchButton :status="categoryData?.status" @toggle="() => toggleField('status')" />
+                    <SwitchButton v-model="form.status" @toggle="(val) => console.log('Trạng thái mới:', val)" />
                 </div>
 
                 <!-- Danh sách món ăn -->
@@ -67,7 +68,8 @@
 
                 <!-- Nút thao tác -->
                 <div class="flex justify-end gap-4 pt-4">
-                    <button class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-400">Lưu thay đổi</button>
+                    <button class="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-400"
+                        @click="goSave">Lưu</button>
                     <button class="bg-red-500 text-white px-6 py-2 rounded hover:bg-red-400"
                         @click="goDelete(categoryData)">Xoá</button>
                     <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
@@ -95,8 +97,24 @@ const itemToDelete = ref(null)
 const form = ref({
     name: '',
     status: 1,
-    type_id: ''
+    id_type: '',
 })
+
+async function goSave() {
+    try {
+        const response = await axios.put(`http://127.0.0.1:8000/api/admin/categories/${categoryData.id}`, {
+            name: form.value.name,
+            status: form.value.status,
+            id_type: form.value.id_type,
+        })
+
+        alert("Cập nhật thành công!")
+        router.push({ name: 'admin-categories' })
+    } catch (error) {
+        console.error("Lỗi khi lưu:", error)
+        alert("Đã xảy ra lỗi khi lưu dữ liệu.")
+    }
+}
 
 onMounted(async () => {
     try {
@@ -108,7 +126,7 @@ onMounted(async () => {
         if (categoryData) {
             form.value.name = categoryData.name
             form.value.status = categoryData.status
-            form.value.type_id = categoryData.type.id
+            form.value.id_type = categoryData.type.id
         }
     } catch (error) {
         console.error('Lỗi khi tải danh sách kiểu món ăn:', error)
