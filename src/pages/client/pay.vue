@@ -65,7 +65,6 @@
           </div>
         </div>
       </div>
-
       <div class="col-right">
         Bạn chưa có mặt hàng nào
         <div class="order-cart" v-if="!paymentSuccessful">
