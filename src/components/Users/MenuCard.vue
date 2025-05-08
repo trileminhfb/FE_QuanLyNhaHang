@@ -271,12 +271,12 @@ const tabs = ref([
     hinh: '/imageicon/banhngot.png',
     noiDung: 'Nội dung Món Pizza',
     dsMon: [
-    { ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-      { ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-      { ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-      { ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+    { id: 7,ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      {id: 8, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      { id: 9,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      {id: 10, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      {id: 11, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      { id: 12,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     ]
   },
   {
@@ -284,9 +284,9 @@ const tabs = ref([
     hinh: '/imageicon/banhngot.png',
     noiDung: 'Nội dung Món Tráng Miệng',
     dsMon: [
-    { ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+    {  id: 13, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      {  id: 14, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      {  id: 15, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     ]
   },
   {
@@ -294,9 +294,9 @@ const tabs = ref([
     hinh: '/imageicon/banhngot.png',
     noiDung: 'Nội dung Món Tráng Miệng',
     dsMon: [
-    { ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+    {  id: 16, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      {  id: 17, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      {   id: 18,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     ]
   },
   {
@@ -304,9 +304,9 @@ const tabs = ref([
     hinh: '/imageicon/banhngot.png',
     noiDung: 'Nội dung Món Tráng Miệng',
     dsMon: [
-    { ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+    {  id: 19, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      {  id: 20, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      {   id: 21,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     ]
   },
   

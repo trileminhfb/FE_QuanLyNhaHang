@@ -8,6 +8,7 @@
       <main>
         <section class="form-section">
           <form @submit.prevent="submitReview" class="review-form" novalidate>
+            <!-- Rating -->
             <div class="form-group rating-group">
               <label>Rating:</label>
               <div class="stars">
@@ -18,17 +19,43 @@
               </div>
             </div>
 
-            <div class="form-group">
-              <label for="id_food">Food ID</label>
-              <input id="id_food" v-model="formEvaluation.id_food" placeholder="Enter food ID..." required />
-            </div>
+        <!-- Dropdown chọn món ăn có ảnh -->
+<div class="form-group">
+  <label for="id_food">Food</label>
+  <div class="custom-select" @click="toggleDropdown">
+    <div class="selected-item">
+      <img
+        v-if="selectedFood"
+        :src="selectedFood.image"
+        alt="Selected food"
+        class="food-icon"
+      />
+      <span>{{ selectedFood ? selectedFood.name : 'Chọn món ăn đánh giá' }}</span>
 
+    </div>
+    <ul v-if="isDropdownOpen" class="dropdown-list">
+      <li
+        v-for="food in foodList"
+        :key="food.id"
+        class="dropdown-item"
+        @click.stop="selectFood(food)"
+      >
+        <img :src="food.image" alt="Food image" class="food-icon" />
+        <p>Tên món : {{ food.name }}</p>
+      </li>
+    </ul>
+  </div>
+</div>
+
+
+            <!-- Review Comment -->
             <div class="form-group">
               <label for="detail">Comment</label>
               <textarea id="detail" v-model="formEvaluation.detail" placeholder="Write your review here..." required
                 rows="4"></textarea>
             </div>
 
+            <!-- Upload Photos -->
             <div class="form-group">
               <label for="photos">Upload Photos</label>
               <input type="file" id="photos" multiple accept="image/*" @change="handleFileChange" />
@@ -76,7 +103,7 @@
         </section>
 
         <section v-else class="no-reviews">
-          <p>Chưa có đánh giá nào</p>
+          <p>No reviews yet</p>
         </section>
       </main>
       <footer>
@@ -89,20 +116,26 @@
 <script>
 import { reactive } from "vue";
 import api from "../../services/api";
+
 export default {
   data() {
-    return {
-      rating: 0,
-      photoFiles: [],
-      photoPreviews: [],
-      reviews: [],
-      editingReview: null,  // Đánh giá đang chỉnh sửa
-    };
-  },
+  return {
+    rating: 0,
+    photoFiles: [],
+    photoPreviews: [],
+    reviews: [],
+    foodList: [
+      { id: 1, name: 'cơm gà',  image: 'imageicon/phefood.png' },
+      { id: 2,name: 'cơm gà', image: 'imageicon/phefood.png' },
+      { id: 3,name: 'cơm gà', image: 'imageicon/phefood.png' },
+    ],
+    editingReview: null,
+    isDropdownOpen: false,
+  };
+},
   setup() {
     const formEvaluation = reactive({
       id_food: "",
-      star: "",
       detail: "",
     });
 
@@ -115,8 +148,24 @@ export default {
     isEditing() {
       return this.editingReview !== null;
     },
+    selectedFood() {
+    return this.foodList.find((f) => f.id === this.formEvaluation.id_food) || null;
+  },
   },
   methods: {
+    toggleDropdown() {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  },
+  selectFood(food) {
+    this.formEvaluation.id_food = food.id;
+    this.isDropdownOpen = false;
+  },
+  handleClickOutside(event) {
+    if (!this.$el.contains(event.target)) {
+      this.isDropdownOpen = false;
+    }
+  },
+
     handleFileChange(event) {
       const files = Array.from(event.target.files);
       for (const file of files) {
@@ -189,8 +238,6 @@ export default {
     },
     editReview(review) {
       this.editingReview = review;
-      // console.log("this.editingReview", this.editingReview);
-
       this.formEvaluation.id_food = review.id_food;
       this.formEvaluation.detail = review.detail;
       this.rating = review.rating;
@@ -232,6 +279,7 @@ export default {
 </script>
 
 
+
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap");
 
@@ -246,6 +294,35 @@ body {
   font-family: "Montserrat", sans-serif;
   background: linear-gradient(135deg, #72edf2 10%, #5151e5 100%);
   height: 100vh;
+}
+
+.dropdown-list {
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0ff;
+}
+.food-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .app-wrapper {

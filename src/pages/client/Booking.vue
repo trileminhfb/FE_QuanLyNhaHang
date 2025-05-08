@@ -19,7 +19,6 @@
                             <input type="text" v-model="form.phoneNumber" placeholder="Nhập số điện thoại..." maxlength="20" required />
                         </div>
                     </div>
-                  
 
                     <div class="form-row">
                         <div class="form-group">
@@ -41,8 +40,8 @@
 
                 <button class="oder-btn" @click="createBooking">
                     <strong>Đặt Bàn Ngay</strong>
-                    <p v-if="errors.length" class="error-message">
-                        Vui lòng kiểm tra lại thông tin.
+                    <p v-if="errors.message" class="error-message">
+                        {{ errors.message }}
                     </p>
                 </button>
             </div>
@@ -70,6 +69,8 @@ const form = reactive({
     timeBooking: ''
 });
 
+const bookingHistory = ref([]);
+
 const formatDateTime = (datetime) => {
     const date = new Date(datetime);
     const year = date.getFullYear();
@@ -81,30 +82,39 @@ const formatDateTime = (datetime) => {
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 };
 
-const bookingHistory = ref([]);
-
 const createBooking = () => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+        alert("Bạn cần đăng nhập để thực hiện chức năng này.");
+        router.push({ name: 'login' });
+        return;
+    }
+
+    // Kiểm tra form trước khi gửi
+    errors.value = {};
+    if (!form.FullName || !form.phoneNumber || !form.quantity || !form.timeBooking) {
+        errors.value = { message: 'Vui lòng kiểm tra lại thông tin.' };
+        return;
+    }
+
     const payload = {
         ...form,
-        timeBooking: formatDateTime(form.timeBooking) 
+        timeBooking: formatDateTime(form.timeBooking)
     };
 
     api.post("/admin/bookings/create", payload)
         .then((response) => {
             if (response.status === 201) {
                 alert('Đặt bàn thành công!');
-                // Cập nhật dữ liệu lịch sử đặt bàn vào Vue.js
-                bookingHistory.value.push(response.data);  // Giả sử response.data là dữ liệu đặt bàn đã tạo
-                router.push('/some-other-page'); 
+                bookingHistory.value.push(response.data);
+                router.push({ name: 'users-home' }); // chuyển về trang Home
             }
         })
         .catch((error) => {
             console.log('Lỗi khi đặt bàn:', error);
-            errors.value = error.response?.data?.errors || {};
+            errors.value = error.response?.data?.errors || { message: 'Đã xảy ra lỗi khi đặt bàn.' };
         });
 };
-
-
 </script>
 
 <style scoped>
