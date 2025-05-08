@@ -12,10 +12,6 @@
                                 <p>Tên kiểu:</p>
                                 <p class="text-2xl flex-1 text-end">{{ typeData.name }} </p>
                             </div>
-                            <!-- <div class="flex flex-row w-full items-center px-5">
-                                <p>Danh sách các loại thức ăn:</p>
-                                <p class="text-2xl flex-1 text-end">Lẫu, Nướng, Hấp</p>
-                            </div> -->
                             <div class="flex flex-row w-full items-center px-5">
                                 <p class="flex-1">Trạng thái:</p>
                                 <p v-if="typeData.status === 1" class="bg-green-500 text-white text-end px-2">
@@ -25,6 +21,16 @@
                                     Đang đóng
                                 </p>
                             </div>
+                            <div class="flex flex-row w-full px-5">
+                                <p>Danh sách các loại thức ăn:</p>
+                                <div class="flex-1 flex flex-wrap gap-2 justify-end px-5">
+                                    <span v-for="(cat, index) in filteredCategories" :key="index"
+                                        class="text-xl bg-gray-200 px-2 py-1 rounded">
+                                        {{ cat.name }}
+                                    </span>
+                                </div>
+                            </div>
+
                             <!-- <div class="border p-2 h-96 flex flex-col gap-2 ">
                                 <p>Danh sách các món ăn</p>
                                 <div class="overflow-y-auto max-h-full">
@@ -81,13 +87,29 @@
 <script setup>
 
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue';
+import axios from 'axios'
+const allItems = ref([])
 
 const router = useRouter()
 const route = useRoute()
 const typeData = route.query.data ? JSON.parse(route.query.data) : null;
 const showConfirm = ref(false)
+
+onMounted(async () => {
+    try {
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/categories')
+        allItems.value = response.data
+    } catch (error) {
+        console.error('Lỗi khi tải dữ liệu:', error)
+        alert('Không thể tải danh sách.')
+    }
+})
+
+const filteredCategories = computed(() =>
+    allItems.value.filter(item => item.id_type === typeData?.id)
+)
 
 function goBack() {
     router.push({ name: 'admin-types' })
@@ -97,11 +119,17 @@ function goDelete() {
     showConfirm.value = true
 }
 
-function confirmDelete() {
+async function confirmDelete() {
     showConfirm.value = false
 
-    console.log('Đã xác nhận xoá kiểu món ăn')
-    router.push({ name: 'admin-types' })
+    try {
+        await axios.delete(`http://127.0.0.1:8000/api/admin/types/${typeData.id}`)
+        alert('Đã xoá rank thành công!')
+        router.push({ name: 'admin-types' })
+    } catch (error) {
+        console.error('Lỗi khi xoá rank:', error)
+        alert('Không thể xoá rank.')
+    }
 }
 
 function cancelDelete() {

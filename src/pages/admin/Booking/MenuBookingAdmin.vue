@@ -312,6 +312,6 @@ function changePage(page) {
 }
 
 function goDetailBooking() {
-  router.push({ name: 'admin-details-booking' })
+  router.push({ name: 'admin-detail-booking' })
 }
 </script>
