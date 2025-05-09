@@ -8,7 +8,28 @@ const admin = [
         name: "home",
         component: () => import("../pages/admin/Home.vue"),
       },
-
+      //profile
+      {
+        path: "profile",
+        children: [
+          {
+            path: "",
+            name: "profile",
+            component: () => import("../pages/admin/Profile/Profile.vue"),
+          },
+          {
+            path: "edit-profile",
+            name: "edit-profile",
+            component: () => import("../pages/admin/Profile/Edit.vue"),
+          },
+          {
+            path: "change-password",
+            name: "change-password",
+            component: () =>
+              import("../pages/admin/Profile/ChangePassword.vue"),
+          },
+        ],
+      },
       // Food
       {
         path: "foods",

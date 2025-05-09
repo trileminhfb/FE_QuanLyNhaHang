@@ -8,10 +8,9 @@
                     <div class="border flex flex-row">
                         <!-- Ảnh đại diện -->
                         <div class="flex flex-col flex-1 justify-center items-center p-2">
-                            <img :src="form.image"
+                            <!-- <img :src="form.image"
                                 class="w-[150px] h-[150px] object-cover border rounded-full cursor-pointer hover:opacity-80"
-                                alt="Ảnh người dùng" @click="triggerFileInput" />
-                            <input type="file" ref="fileInput" class="hidden" @change="onFileChange" accept="image/*" />
+                                alt="Ảnh người dùng" /> -->
                         </div>
 
                         <!-- Form -->
@@ -103,23 +102,8 @@ const form = ref({
     phone_number: '',
     email: '',
     birth: '',
-    image: 'admin.jpg', // <-- ảnh mặc định
+    image: '', // <-- ảnh mặc định
 })
-
-function triggerFileInput() {
-    fileInput.value?.click()
-}
-
-function onFileChange(e) {
-    const file = e.target.files[0]
-    if (file && file.type.startsWith('image/')) {
-        const reader = new FileReader()
-        reader.onload = () => {
-            form.value.image = reader.result
-        }
-        reader.readAsDataURL(file)
-    }
-}
 
 async function goSave() {
     if (!form.value.name || !form.value.password || !form.value.email || !form.value.role) {

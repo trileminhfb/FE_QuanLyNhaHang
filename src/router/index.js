@@ -10,4 +10,21 @@ const router = createRouter({
   routes,
 });
 
+router.beforeEach((to, from, next) => {
+  const token = localStorage.getItem("token");
+
+  if (!token && to.path.startsWith("/admin")) {
+    return next("/account/login");
+  }
+
+  if (
+    token &&
+    (to.path === "/account/login" || to.path === "/account/register")
+  ) {
+    return next("/admin");
+  }
+
+  next();
+});
+
 export default router;

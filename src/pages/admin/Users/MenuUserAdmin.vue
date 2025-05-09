@@ -126,22 +126,6 @@ const filteredItems = computed(() => {
   return result
 })
 
-
-async function toggleStatus(item) {
-  const newStatus = item.status === 1 ? 0 : 1
-  try {
-    await axios.put(`http://127.0.0.1:8000/api/admin/users/${item.id}`, {
-      ...item,
-      status: newStatus
-    })
-    item.status = newStatus
-  } catch (error) {
-    console.error("Không thể cập nhật trạng thái:", error)
-    alert("Cập nhật trạng thái thất bại.")
-  }
-}
-
-
 onMounted(async () => {
   try {
     const response = await axios.get('http://127.0.0.1:8000/api/admin/users')
@@ -170,7 +154,7 @@ async function confirmDelete() {
   }
 
   try {
-    await axios.delete(`http://127.0.0.1:8000/api/admin/users/${itemToDelete.value.id}`)
+    await axios.delete(`http://127.0.0.1:8000/api/admin/users/delete/${itemToDelete.value.id}`)
     alert('Đã xoá thành công!')
     allItems.value = allItems.value.filter(item => item.id !== itemToDelete.value.id)
     itemToDelete.value = null

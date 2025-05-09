@@ -20,8 +20,8 @@
                 </div>
             </div>
 
-            <div
-                class="flex flex-row hover:cursor-pointer hover:bg-gray-500 justify-center items-center font-bold text-2xl p-2 rounded-lg">
+            <div class="flex flex-row hover:cursor-pointer hover:bg-gray-500 justify-center items-center font-bold text-2xl p-2 rounded-lg"
+                @click="goProfile">
                 <p>Admin</p>
                 <div class="w-12 h-12">
                     <svg class="w-full h-full text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -53,5 +53,9 @@ function goHome() {
 
 function goBooking() {
     router.push('/admin/booking')
+}
+
+function goProfile() {
+    router.push({ name: 'profile' })
 }
 </script>
