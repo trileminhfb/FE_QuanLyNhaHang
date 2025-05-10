@@ -16,7 +16,7 @@
                 </th>
                 <th>
                   <div class="flex flex-row justify-center items-center gap-2">
-                    <SortButton @sort="(direction) => sortBy('price', direction)" />
+                    <SortButton @sort="(direction) => sortBy('quantity', direction)" />
                     <p>Số lượng</p>
                   </div>
                 </th>
@@ -56,7 +56,7 @@
                           Chi tiết
                         </p>
                         <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEdit(item)">Chỉnh sửa</p>
-                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDelete">Xoá</p>
+                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDelete(item)">Xoá</p>
                         <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
                       </div>
                     </div>
@@ -66,7 +66,6 @@
             </tbody>
           </table>
           <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
-
         </div>
       </div>
     </div>
@@ -75,40 +74,47 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import ConfirmDelete from "../../../../components/Admin/ConfirmDelete.vue";
 import SortButton from "../../../../components/Admin/SortButton.vue";
+import ConfirmDelete from "../../../../components/Admin/ConfirmDelete.vue";
 import Search from "../../../../components/Admin/Search.vue";
 import Pagination from "../../../../components/Admin/Pagination.vue";
 import axios from "axios";
 
 const showConfirm = ref(false);
-
+const itemToDelete = ref(null)
 const router = useRouter();
 const searchQuery = ref("");
-const sortKey = ref(""); // 'ingredient.name_ingredient' hoặc 'quantity'
-const sortDirection = ref(""); // 'asc' | 'desc'
+const sortKey = ref('')
+const sortDirection = ref('')
 const itemsPerPage = 4;
 const currentPage = ref(1);
 const allItems = ref([]);
+const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
+
+const paginatedItems = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage
+  const end = start + itemsPerPage
+  return filteredItems.value.slice(start, end)
+})
 
 const filteredItems = computed(() => {
   let result = [...allItems.value];
 
   if (searchQuery.value) {
-    result = result.filter((item) =>
+    result = result.filter(item =>
       item.ingredient.name_ingredient.toLowerCase().includes(searchQuery.value.toLowerCase())
     );
   }
 
   if (sortKey.value && sortDirection.value) {
     result.sort((a, b) => {
-      const aValue = sortKey.value === 'ingredient.name_ingredient' ? a.ingredient.name_ingredient : a[sortKey.value];
-      const bValue = sortKey.value === 'ingredient.name_ingredient' ? b.ingredient.name_ingredient : b[sortKey.value];
+      const aVal = sortKey.value === 'name' ? a.ingredient.name_ingredient : a[sortKey.value];
+      const bVal = sortKey.value === 'name' ? b.ingredient.name_ingredient : b[sortKey.value];
 
-      if (sortDirection.value === "asc") {
-        return aValue > bValue ? 1 : -1;
+      if (sortDirection.value === 'asc') {
+        return aVal > bVal ? 1 : -1;
       } else {
-        return aValue < bValue ? 1 : -1;
+        return aVal < bVal ? 1 : -1;
       }
     });
   }
@@ -116,13 +122,6 @@ const filteredItems = computed(() => {
   return result;
 });
 
-const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
-
-const paginatedItems = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
-  return filteredItems.value.slice(start, end);
-});
 
 async function fetchWarehouse() {
   try {
@@ -146,12 +145,8 @@ function changePage(page) {
 }
 
 function sortBy(key, direction) {
-  if (key === 'name') {
-    sortKey.value = 'ingredient.name_ingredient';
-  } else {
-    sortKey.value = key;
-  }
-  sortDirection.value = direction;
+  sortKey.value = key
+  sortDirection.value = direction
 }
 
 function goDetailFoods(item) {
@@ -170,18 +165,34 @@ function goEdit(item) {
   });
 }
 
-// function goDelete(item) {
-//   itemToDelete.value = item;
-//   showConfirm.value = true;
-// }
+function goDelete(item) {
+  itemToDelete.value = item
+  showConfirm.value = true
+}
 
-// function confirmDelete() {
-//   showConfirm.value = false;
-//   console.log("Đã xác nhận xoá:", itemToDelete.value);
-//   router.push({ name: 'admin-foods' });
-// }
+async function confirmDelete() {
+  if (!itemToDelete.value || !itemToDelete.value.id) {
+    console.error('Không có item hoặc ID để xoá')
+    showConfirm.value = false
+    return
+  }
 
-// function cancelDelete() {
-//   showConfirm.value = false;
-// }
+  try {
+    await axios.delete(`http://127.0.0.1:8000/api/admin/warehouses/delete/${itemToDelete.value.id}`)
+    alert('Đã xoá thành công!')
+    router.push({ name: 'menu-warehouse-admin' }) // quay lại danh sách
+  } catch (error) {
+    console.error('Lỗi khi xoá:', error)
+    alert('Không thể xoá.')
+  } finally {
+    itemToDelete.value = null
+    showConfirm.value = false
+  }
+}
+
+function cancelDelete() {
+  showConfirm.value = false
+  itemToDelete.value = null
+}
+
 </script>

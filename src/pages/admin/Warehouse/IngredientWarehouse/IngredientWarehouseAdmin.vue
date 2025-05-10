@@ -15,6 +15,12 @@
                                     <p class="text-start w-full">Tên</p>
                                 </div>
                             </th>
+                            <th>
+                                <div class="flex flex-row justify-center items-center gap-2">
+                                    <SortButton @sort="(key) => sortBy('name', key)" />
+                                    <p class="text-start w-full">Đơn vị</p>
+                                </div>
+                            </th>
                             <th>Thao tác</th>
                         </tr>
                     </thead>
@@ -32,6 +38,11 @@
                                 </div>
                             </td>
                             <td class="text-center">
+                                <div class="flex flex-row justify-center">
+                                    <p>{{ item.unit }}</p>
+                                </div>
+                            </td>
+                            <td class="text-center">
                                 <div class="flex justify-center items-center h-full">
                                     <div
                                         class="w-10 h-10 text-gray-800 hover:bg-gray-400 hover:cursor-pointer rounded-lg relative group">
@@ -43,12 +54,13 @@
                                         <div
                                             class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
                                             <p class="hover:bg-gray-500 text-start w-full h-full"
-                                                @click="goDetailFoods(item)">
+                                                @click="goDetail(item)">
                                                 Chi tiết
                                             </p>
                                             <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEdit(item)">
                                                 Chỉnh sửa</p>
-                                            <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDelete">Xoá
+                                            <p class="hover:bg-gray-500 text-start w-full h-full"
+                                                @click="goDelete(item)">Xoá
                                             </p>
                                             <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete"
                                                 @cancel="cancelDelete" />
@@ -60,7 +72,6 @@
                     </tbody>
                 </table>
                 <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
-
             </div>
         </div>
     </div>
@@ -80,7 +91,7 @@ const showConfirm = ref(false);
 
 const router = useRouter();
 const searchQuery = ref("");
-const sortKey = ref(""); // 'ingredient.name_ingredient' hoặc 'quantity'
+const sortKey = ref(""); // 'name_ingredient' hoặc 'quantity'
 const sortDirection = ref(""); // 'asc' | 'desc'
 const itemsPerPage = 4;
 const currentPage = ref(1);
@@ -142,45 +153,31 @@ function changePage(page) {
 
 function sortBy(key, direction) {
     if (key === 'name') {
-        sortKey.value = 'ingredient.name_ingredient';
+        sortKey.value = 'name_ingredient';
     } else {
         sortKey.value = key;
     }
     sortDirection.value = direction;
 }
 
-// function goAdd() {
-//   router.push({ name: 'admin-add-foods' });
-// }
+function goAdd() {
+    router.push({ name: 'add-ingredient-warehouse-admin' });
+}
 
-// function goDetailFoods(item) {
-//   router.push({
-//     name: 'admin-details-foods',
-//     params: { id: item.id },
-//     query: { data: JSON.stringify(item) }
-//   });
-// }
+function goDetail(item) {
+    router.push({
+        name: 'detail-ingredient-warehouse-admin',
+        params: { id: item.id },
+        query: { data: JSON.stringify(item) }
+    });
+}
 
-// function goEdit(item) {
-//   router.push({
-//     name: 'admin-edit-foods',
-//     params: { id: item.id },
-//     query: { data: JSON.stringify(item) }
-//   });
-// }
+function goEdit(item) {
+    router.push({
+        name: 'edit-ingredient-warehouse-admin',
+        params: { id: item.id },
+        query: { data: JSON.stringify(item) }
+    });
+}
 
-// function goDelete(item) {
-//   itemToDelete.value = item;
-//   showConfirm.value = true;
-// }
-
-// function confirmDelete() {
-//   showConfirm.value = false;
-//   console.log("Đã xác nhận xoá:", itemToDelete.value);
-//   router.push({ name: 'admin-foods' });
-// }
-
-// function cancelDelete() {
-//   showConfirm.value = false;
-// }
 </script>

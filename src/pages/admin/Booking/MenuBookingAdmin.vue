@@ -1,14 +1,15 @@
 <template>
   <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
     <div class="h-full w-full flex flex-col font-bold">
-      <p class="uppercase text-2xl">Lịch sử đặt hàng</p>
+      <p class="uppercase text-2xl">Lịch sử đặt bàn</p>
       <div class="w-full h-full flex flex-col">
         <div class="w-full h-fit flex flex-row p-2">
           <div class="flex flex-row flex-1 gap-5">
             <div class="">Tất cả</div>
             <div class="">Hoàn thành</div>
+            <div class="">Từ chối</div>
             <div class="">Bị huỷ</div>
-            <div class="">Đang sử dụng</div>
+            <div class="">Đang chờ</div>
           </div>
           <div class="flex flex-row flex-1 gap-2 justify-end items-center">
             <Search v-model="searchQuery" />
