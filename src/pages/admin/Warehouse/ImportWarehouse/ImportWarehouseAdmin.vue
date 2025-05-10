@@ -4,6 +4,7 @@
             <div class="w-full flex justify-end gap-2 p-2">
                 <Search v-model="searchQuery" />
                 <AddButton @add="goAdd" />
+
             </div>
             <div class="w-full">
                 <table class="w-full h-fit table-auto font-semibold text-2xl">
@@ -17,13 +18,13 @@
                             </th>
                             <th>
                                 <div class="flex flex-row justify-center items-center gap-2">
-                                    <SortButton @sort="(direction) => sortBy('price', direction)" />
+                                    <SortButton @sort="(direction) => sortBy('quantity', direction)" />
                                     <p>Số lượng</p>
                                 </div>
                             </th>
                             <th>
                                 <div class="flex flex-row justify-center items-center gap-2">
-                                    <SortButton @sort="(direction) => sortBy('price', direction)" />
+                                    <SortButton @sort="(direction) => sortBy('quantity', direction)" />
                                     <p>Ngày nhập</p>
                                 </div>
                             </th>
@@ -43,8 +44,17 @@
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-center">{{ item.quantity.toLocaleString() }} </td>
-                            <td class="text-center">{{ item.quantity.toLocaleString() }} </td>
+                            <td class="text-center">
+                                <div class="flex flex-row gap-2 justify-center">
+                                    <p>{{ item.quantity.toLocaleString() }}</p>
+                                    <p>{{ item.ingredient.unit }}</p>
+                                </div>
+                            </td>
+                            <td class="text-center">
+                                <div class="flex flex-row gap-2 justify-center">
+                                    <p>{{ item.stock_in_date }}</p>
+                                </div>
+                            </td>
                             <td class="text-center">
                                 <div class="flex justify-center items-center h-full">
                                     <div
@@ -60,10 +70,6 @@
                                                 @click="goDetailFoods(item)">
                                                 Chi tiết
                                             </p>
-                                            <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEdit(item)">
-                                                Chỉnh sửa</p>
-                                            <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDelete">Xoá
-                                            </p>
                                             <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete"
                                                 @cancel="cancelDelete" />
                                         </div>
@@ -74,7 +80,6 @@
                     </tbody>
                 </table>
                 <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
-
             </div>
         </div>
     </div>
@@ -83,41 +88,48 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import ConfirmDelete from "../../../../components/Admin/ConfirmDelete.vue";
 import SortButton from "../../../../components/Admin/SortButton.vue";
+import ConfirmDelete from "../../../../components/Admin/ConfirmDelete.vue";
 import Search from "../../../../components/Admin/Search.vue";
-import AddButton from "../../../../components/Admin/AddButton.vue";
 import Pagination from "../../../../components/Admin/Pagination.vue";
 import axios from "axios";
+import AddButton from "../../../../components/Admin/AddButton.vue";
 
 const showConfirm = ref(false);
-
+const itemToDelete = ref(null)
 const router = useRouter();
 const searchQuery = ref("");
-const sortKey = ref(""); // 'ingredient.name_ingredient' hoặc 'quantity'
-const sortDirection = ref(""); // 'asc' | 'desc'
+const sortKey = ref('')
+const sortDirection = ref('')
 const itemsPerPage = 4;
 const currentPage = ref(1);
 const allItems = ref([]);
+const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
+
+const paginatedItems = computed(() => {
+    const start = (currentPage.value - 1) * itemsPerPage
+    const end = start + itemsPerPage
+    return filteredItems.value.slice(start, end)
+})
 
 const filteredItems = computed(() => {
     let result = [...allItems.value];
 
     if (searchQuery.value) {
-        result = result.filter((item) =>
+        result = result.filter(item =>
             item.ingredient.name_ingredient.toLowerCase().includes(searchQuery.value.toLowerCase())
         );
     }
 
     if (sortKey.value && sortDirection.value) {
         result.sort((a, b) => {
-            const aValue = sortKey.value === 'ingredient.name_ingredient' ? a.ingredient.name_ingredient : a[sortKey.value];
-            const bValue = sortKey.value === 'ingredient.name_ingredient' ? b.ingredient.name_ingredient : b[sortKey.value];
+            const aVal = sortKey.value === 'name' ? a.ingredient.name_ingredient : a[sortKey.value];
+            const bVal = sortKey.value === 'name' ? b.ingredient.name_ingredient : b[sortKey.value];
 
-            if (sortDirection.value === "asc") {
-                return aValue > bValue ? 1 : -1;
+            if (sortDirection.value === 'asc') {
+                return aVal > bVal ? 1 : -1;
             } else {
-                return aValue < bValue ? 1 : -1;
+                return aVal < bVal ? 1 : -1;
             }
         });
     }
@@ -125,13 +137,6 @@ const filteredItems = computed(() => {
     return result;
 });
 
-const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
-
-const paginatedItems = computed(() => {
-    const start = (currentPage.value - 1) * itemsPerPage;
-    const end = start + itemsPerPage;
-    return filteredItems.value.slice(start, end);
-});
 
 async function fetchWarehouse() {
     try {
@@ -155,46 +160,19 @@ function changePage(page) {
 }
 
 function sortBy(key, direction) {
-    if (key === 'name') {
-        sortKey.value = 'ingredient.name_ingredient';
-    } else {
-        sortKey.value = key;
-    }
-    sortDirection.value = direction;
+    sortKey.value = key
+    sortDirection.value = direction
 }
 
-// function goAdd() {
-//   router.push({ name: 'admin-add-foods' });
-// }
+function goAdd() {
+    router.push({ name: 'add-import-warehouse-admin' });
+}
 
-// function goDetailFoods(item) {
-//   router.push({
-//     name: 'admin-details-foods',
-//     params: { id: item.id },
-//     query: { data: JSON.stringify(item) }
-//   });
-// }
-
-// function goEdit(item) {
-//   router.push({
-//     name: 'admin-edit-foods',
-//     params: { id: item.id },
-//     query: { data: JSON.stringify(item) }
-//   });
-// }
-
-// function goDelete(item) {
-//   itemToDelete.value = item;
-//   showConfirm.value = true;
-// }
-
-// function confirmDelete() {
-//   showConfirm.value = false;
-//   console.log("Đã xác nhận xoá:", itemToDelete.value);
-//   router.push({ name: 'admin-foods' });
-// }
-
-// function cancelDelete() {
-//   showConfirm.value = false;
-// }
+function goDetailFoods(item) {
+    router.push({
+        name: 'detail-import-warehouse-admin',
+        params: { id: item.id },
+        query: { data: JSON.stringify(item) }
+    });
+}
 </script>

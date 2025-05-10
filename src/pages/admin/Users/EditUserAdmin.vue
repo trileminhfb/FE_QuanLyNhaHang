@@ -9,8 +9,8 @@
                 <div class="w-full border h-fit flex flex-col">
                     <div class=" border flex flex-row">
                         <div class="flex flex-col flex-1 justify-center items-center">
-                            <img class="w-full h-full object-cover" :src="`/picture/rank/${userData.image}`"
-                                alt="Ảnh người dùng" />
+                            <!-- <img class="w-full h-full object-cover" :src="`/picture/rank/${userData.image}`"
+                                alt="Ảnh người dùng" /> -->
                         </div>
 
                         <div class="border flex flex-[2] flex-col p-2 gap-1">
@@ -95,12 +95,13 @@ console.log("User data:", userData);
 const showConfirm = ref(false)
 
 const form = ref({
-    image: userData?.image || '',
+    id: userData?.id || '',
+    // image: userData?.image || '',
     name: userData?.name || '',
     role: userData?.role || '',
     phone_number: userData?.phone_number || '',
     email: userData?.email || '',
-    password: userData?.password || '',
+    // password: userData?.password || '',
     birth: userData?.birth || '',
     status: userData?.status || ''
 
@@ -116,14 +117,15 @@ async function goSave() {
     // Nếu không có lỗi, gửi dữ liệu lên server
     try {
         const response = await axios.put(`http://127.0.0.1:8000/api/admin/users/update/${userData.id}`, {
+            id: form.value.id,
             name: form.value.name,
             role: form.value.role,
             status: form.value.status,
             phone_number: form.value.phone_number,
             email: form.value.email,
             birth: form.value.birth,
-            password: form.value.password,
-            image: form.value.image
+            // password: form.value.password,
+            // image: form.value.image
         });
 
         // Kiểm tra response và thông báo cho người dùng
@@ -157,7 +159,7 @@ async function confirmDelete() {
     showConfirm.value = false
 
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/admin/users/${userData.id}`)
+        await axios.delete(`http://127.0.0.1:8000/api/admin/users/delete/${userData.id}`)
         alert('Đã xoá  thành công!')
         router.push({ name: 'admin-users' })
     } catch (error) {

@@ -79,7 +79,6 @@ const itemToDelete = ref(null)
 const allItems = ref([])
 const itemsPerPage = 5
 const currentPage = ref(1)
-
 const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage))
 
 const paginatedItems = computed(() => {

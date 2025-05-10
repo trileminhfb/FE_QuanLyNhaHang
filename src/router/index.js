@@ -11,18 +11,21 @@ const router = createRouter({
   routes,
 });
 
-// 🛡️ Navigation Guard: kiểm tra login trước khi truy cập các trang cần đăng nhập
 router.beforeEach((to, from, next) => {
-  const publicPages = ['login', 'register', 'users-home']; // các route không cần login
+  const publicPages = [
+    "users-login",
+    "admin-login",
+    "users-register",
+    "users-home",
+  ];
   const authRequired = !publicPages.includes(to.name);
-  const isLoggedIn = !!localStorage.getItem('auth_token');
+  const isLoggedIn = !!localStorage.getItem("auth_token");
 
   if (authRequired && !isLoggedIn) {
-    // Nếu chưa login, chuyển sang trang login
-    return next({ name: 'login' });
+    return next({ name: "admin-login" });
   }
 
-  next(); // Cho phép đi tiếp nếu đã login hoặc là trang công khai
+  next();
 });
 
 export default router;

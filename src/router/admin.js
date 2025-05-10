@@ -8,7 +8,17 @@ const admin = [
         name: "home",
         component: () => import("../pages/admin/Home.vue"),
       },
-
+      //profile
+      {
+        path: "profile",
+        children: [
+          {
+            path: "",
+            name: "profile",
+            component: () => import("../pages/admin/Profile/Profile.vue"),
+          },
+        ],
+      },
       // Food
       {
         path: "foods",
@@ -209,10 +219,16 @@ const admin = [
               import("../pages/admin/Customer/MenuCustomerAdmin.vue"),
           },
           {
-            path: "detail",
+            path: "detail/:id?",
             name: "admin-detail-customers",
             component: () =>
               import("../pages/admin/Customer/DetailCustomerAdmin.vue"),
+          },
+          {
+            path: "edit/:id?",
+            name: "admin-edit-customers",
+            component: () =>
+              import("../pages/admin/Customer/EditCustomerAdmin.vue"),
           },
         ],
       },
@@ -235,6 +251,22 @@ const admin = [
           },
         ],
       },
+      // Bill
+      {
+        path: "bill",
+        children: [
+          {
+            path: "",
+            name: "admin-bill",
+            component: () => import("../pages/admin/Bills/MenuBillAdmin.vue"),
+          },
+          {
+            path: "detail",
+            name: "admin-detail-bill",
+            component: () => import("../pages/admin/Bills/DetailBillAdmin.vue"),
+          },
+        ],
+      },
 
       // Warehouse
       {
@@ -245,6 +277,7 @@ const admin = [
             path: "",
             redirect: { name: "menu-warehouse-admin" },
           },
+          // Menu warehouse
           {
             path: "menu",
             name: "menu-warehouse-admin",
@@ -254,7 +287,7 @@ const admin = [
               ),
           },
           {
-            path: "detail/:id?",
+            path: "menu/detail/:id?",
             name: "detail-warehouse-admin",
             component: () =>
               import(
@@ -262,13 +295,15 @@ const admin = [
               ),
           },
           {
-            path: "edit/:id?",
+            path: "menu/edit/:id?",
             name: "edit-warehouse-admin",
             component: () =>
               import(
                 "../pages/admin/Warehouse/MenuWarehouseAdmin/EditWarehouseAdmin.vue"
               ),
           },
+
+          // Ingredient warehouse
           {
             path: "ingredients",
             name: "ingredient-warehouse-admin",
@@ -278,11 +313,53 @@ const admin = [
               ),
           },
           {
+            path: "ingredients/add",
+            name: "add-ingredient-warehouse-admin",
+            component: () =>
+              import(
+                "../pages/admin/Warehouse/IngredientWarehouse/AddIngredientWarehouseAdmin.vue"
+              ),
+          },
+          {
+            path: "ingredients/edit/:id?",
+            name: "edit-ingredient-warehouse-admin",
+            component: () =>
+              import(
+                "../pages/admin/Warehouse/IngredientWarehouse/EditIngredientWarehouseAdmin.vue"
+              ),
+          },
+          {
+            path: "ingredients/detail/:id?",
+            name: "detail-ingredient-warehouse-admin",
+            component: () =>
+              import(
+                "../pages/admin/Warehouse/IngredientWarehouse/DetailIngredientWarehouseAdmin.vue"
+              ),
+          },
+
+          // Import warehouse
+          {
             path: "import",
             name: "import-warehouse-admin",
             component: () =>
               import(
                 "../pages/admin/Warehouse/ImportWarehouse/ImportWarehouseAdmin.vue"
+              ),
+          },
+          {
+            path: "import/add",
+            name: "add-import-warehouse-admin",
+            component: () =>
+              import(
+                "../pages/admin/Warehouse/ImportWarehouse/AddImportWarehouseAdmin.vue"
+              ),
+          },
+          {
+            path: "import/detail/:id?",
+            name: "detail-import-warehouse-admin",
+            component: () =>
+              import(
+                "../pages/admin/Warehouse/ImportWarehouse/DetailImportWarehouseAdmin.vue"
               ),
           },
         ],
