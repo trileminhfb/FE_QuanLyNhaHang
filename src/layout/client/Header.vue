@@ -116,14 +116,14 @@
 
           </li>
           <li>
-            <div class="cart-shopping">
-              <router-link :to="{ name: 'users-shoppingCart' }">
-                <i class="fa-solid fa-cart-shopping"></i>
-                <span class="cart-count" v-if="cartCount > 0">{{ cartCount }}</span>
-              </router-link>
+  <div class="cart-shopping">
+    <router-link :to="{ name: 'users-shoppingCart' }">
+      <i class="fa-solid fa-cart-shopping"></i>
+      <span class="cart-count" v-if="cartCount > 0">{{ cartCount }}</span>
+    </router-link>
+  </div>
+</li>
 
-            </div>
-          </li>
           <li>
             <input type="checkbox" id="menu-toggle" hidden>
 
@@ -158,11 +158,20 @@
     <i class="fa-solid fa-gear"></i>
     <h2>Setting</h2>
   </div>
+  <router-link :to="{name:'History'}" class="menu-item">
+  <i class="fa-solid fa-wrench"></i>
+  <h2>History</h2>
+</router-link>
+<router-link :to="{name:'users-login'}" class="menu-item">
+  <i class="fa-solid fa-right-to-bracket"></i>
 
-  <div class="menu-item">
-    <i class="fa-solid fa-wrench"></i>
-    <h2>Help</h2>
-  </div>
+  <h2>login</h2>
+</router-link>
+  <div class="menu-item" @click="handleLogout">
+  <i class="fa-solid fa-right-from-bracket"></i>
+  <h2>Log Out</h2>
+</div>
+
 </div>
 
           </li>
@@ -176,29 +185,76 @@
   </nav>
 </template>
 <script setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
+import Swal from 'sweetalert2';
 import '../../assets/css/Header.css'
 import { cartCount } from '../../stores/cartStore';
+import api from '../../services/api';
+import { useRouter} from 'vue-router';
 const currentImage = ref('/imageicon/food icon.png')
 const isSearch = ref(false);
+const tuKhoa = ref('');
+const monTimDuoc = ref([]);
+const router =useRouter();
 
+// Mở ô tìm kiếm
 const handleOpenSearch = () => {
   isSearch.value = true;
 };
 
-// Khi nhấn ra ngoài, ô tìm kiếm sẽ thu lại
+// Thu gọn ô tìm kiếm khi click ra ngoài
 const handleClickOutside = (event) => {
   if (!event.target.closest('.search-box')) {
     isSearch.value = false;
   }
 };
 
-// Khi mất focus (blur) ra ngoài ô input, ô tìm kiếm sẽ thu lại
+// Thu gọn khi mất focus
 const handleBlur = () => {
   if (isSearch.value) {
     isSearch.value = false;
   }
 };
+
+// Theo dõi từ khóa và gọi API tìm kiếm
+watch(tuKhoa, (newVal) => {
+  if (!newVal.trim()) {
+    monTimDuoc.value = [];
+    return;
+  }
+
+  api.get(`/tim-mon?ten=${encodeURIComponent(newVal)}`)
+    .then(response => {
+      monTimDuoc.value = response.data.mons; // tuỳ theo cấu trúc dữ liệu trả về
+    })
+    .catch(error => {
+      console.error('Lỗi tìm kiếm món:', error);
+      monTimDuoc.value = [];
+    });
+});
+const handleLogout = async () => {
+  const result = await Swal.fire({
+    title: 'Bạn có chắc chắn muốn đăng xuất không?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Đăng xuất',
+    cancelButtonText: 'Hủy'
+  });
+
+  if (result.isConfirmed) {
+    Swal.fire({
+      title: 'Đăng xuất thành công!',
+      text: 'Bạn đã đăng xuất khỏi tài khoản.',
+      icon: 'success',
+      confirmButtonText: 'OK'
+    });
+
+    localStorage.removeItem('users-login');
+    router.push('/login');
+  }
+};
+
+
 
 
 </script>

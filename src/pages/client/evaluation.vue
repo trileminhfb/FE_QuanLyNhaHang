@@ -8,6 +8,7 @@
       <main>
         <section class="form-section">
           <form @submit.prevent="submitReview" class="review-form" novalidate>
+            <!-- Rating -->
             <div class="form-group rating-group">
               <label>Rating:</label>
               <div class="stars">
@@ -18,17 +19,53 @@
               </div>
             </div>
 
+            <!-- Dropdown chọn món ăn có ảnh -->
             <div class="form-group">
-              <label for="id_food">Food ID</label>
-              <input id="id_food" v-model="formEvaluation.id_food" placeholder="Enter food ID..." required />
+              <label for="id_food">Food</label>
+              <div class="custom-select" @click="toggleDropdown">
+                <div class="selected-item">
+                  <img
+                    v-if="selectedFood"
+                    :src="selectedFood.image"
+                    alt="Selected food"
+                    class="food-icon"
+                  />
+                  <span>{{ selectedFood ? selectedFood.name : 'Chọn món ăn đánh giá' }}</span>
+                </div>
+                <ul v-if="isDropdownOpen" class="dropdown-list">
+                  <li
+                    v-for="food in foodList"
+                    :key="food.id"
+                    class="dropdown-item"
+                    @click.stop="selectFood(food)"
+                  >
+                    <img :src="food.image" alt="Food image" class="food-icon" />
+                    <p>{{ food.name }}</p>
+                  </li>
+                </ul>
+              </div>
             </div>
 
+            <!-- Thêm trường input cho id_customer -->
+            <div class="form-group">
+              <label for="id_customer">Customer ID</label>
+              <input
+                type="text"
+                id="id_customer"
+                v-model="formEvaluation.id_customer"
+                placeholder="Enter your customer ID"
+                required
+              />
+            </div>
+
+            <!-- Review Comment -->
             <div class="form-group">
               <label for="detail">Comment</label>
               <textarea id="detail" v-model="formEvaluation.detail" placeholder="Write your review here..." required
                 rows="4"></textarea>
             </div>
 
+            <!-- Upload Photos -->
             <div class="form-group">
               <label for="photos">Upload Photos</label>
               <input type="file" id="photos" multiple accept="image/*" @change="handleFileChange" />
@@ -76,7 +113,7 @@
         </section>
 
         <section v-else class="no-reviews">
-          <p>Chưa có đánh giá nào</p>
+          <p>No reviews yet</p>
         </section>
       </main>
       <footer>
@@ -89,24 +126,27 @@
 <script>
 import { reactive } from "vue";
 import api from "../../services/api";
+
 export default {
   data() {
     return {
+      formEvaluation: {
+        id_food: "",
+        detail: "",
+        id_customer: "",  // Thêm id_customer vào đây
+      },
       rating: 0,
       photoFiles: [],
       photoPreviews: [],
       reviews: [],
-      editingReview: null,  // Đánh giá đang chỉnh sửa
+      foodList: [
+        { id: 1, name: 'Cơm Gà', image: 'imageicon/phefood.png' },
+        { id: 2, name: 'Bánh Mì', image: 'imageicon/phefood.png' },
+        { id: 3, name: 'Phở', image: 'imageicon/phefood.png' },
+      ],
+      editingReview: null,
+      isDropdownOpen: false,
     };
-  },
-  setup() {
-    const formEvaluation = reactive({
-      id_food: "",
-      star: "",
-      detail: "",
-    });
-
-    return { formEvaluation };
   },
   computed: {
     canSubmit() {
@@ -115,8 +155,18 @@ export default {
     isEditing() {
       return this.editingReview !== null;
     },
+    selectedFood() {
+      return this.foodList.find((f) => f.id === this.formEvaluation.id_food) || null;
+    },
   },
   methods: {
+    toggleDropdown() {
+      this.isDropdownOpen = !this.isDropdownOpen;
+    },
+    selectFood(food) {
+      this.formEvaluation.id_food = food.id;
+      this.isDropdownOpen = false;
+    },
     handleFileChange(event) {
       const files = Array.from(event.target.files);
       for (const file of files) {
@@ -141,6 +191,7 @@ export default {
       formData.append("id_food", this.formEvaluation.id_food);
       formData.append("star", this.rating);
       formData.append("detail", this.formEvaluation.detail);
+      formData.append("id_customer", this.formEvaluation.id_customer); // Gửi id_customer
 
       this.photoFiles.forEach((file) => {
         formData.append("photos[]", file);
@@ -148,8 +199,9 @@ export default {
 
       if (this.isEditing) {
         // Cập nhật đánh giá
+        formData.append("_method", "PUT");
         api
-          .post(`/client/rates/${this.editingReview.id}?_method=PUT`, formData)
+        .post(`/client/rates/update/${this.editingReview.id}`, formData)
           .then((response) => {
             const updatedReview = {
               id: this.editingReview.id,
@@ -171,7 +223,7 @@ export default {
       } else {
         // Gửi đánh giá mới
         api
-          .post("/client/rates", formData)
+          .post("/client/rates/create", formData)
           .then((response) => {
             const newReview = {
               id: response.data.data.id,
@@ -189,18 +241,17 @@ export default {
     },
     editReview(review) {
       this.editingReview = review;
-      // console.log("this.editingReview", this.editingReview);
-
       this.formEvaluation.id_food = review.id_food;
       this.formEvaluation.detail = review.detail;
+      this.formEvaluation.id_customer = review.id_customer; // Cập nhật id_customer khi chỉnh sửa
       this.rating = review.rating;
       this.photoPreviews = review.photos || [];
     },
     deleteReview(index) {
       const review = this.reviews[index];
       if (confirm("Bạn có chắc muốn xóa đánh giá này?")) {
-        api
-          .delete(`/client/rates/${review.id}`)
+        api.delete(`/client/rates/delete/${review.id}`)
+
           .then(() => {
             this.reviews.splice(index, 1);
             alert("Đánh giá đã được xóa.");
@@ -223,6 +274,7 @@ export default {
       this.rating = 0;
       this.formEvaluation.id_food = "";
       this.formEvaluation.detail = "";
+      this.formEvaluation.id_customer = "1"; // Đặt lại id_customer khi reset form
       this.photoFiles = [];
       this.photoPreviews = [];
       this.editingReview = null;
@@ -230,6 +282,7 @@ export default {
   },
 };
 </script>
+
 
 
 <style scoped>
@@ -246,6 +299,35 @@ body {
   font-family: "Montserrat", sans-serif;
   background: linear-gradient(135deg, #72edf2 10%, #5151e5 100%);
   height: 100vh;
+}
+
+.dropdown-list {
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: white;
+  border: 1px solid #ccc;
+  z-index: 10;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.dropdown-item:hover {
+  background-color: #f0f0ff;
+}
+.food-icon {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .app-wrapper {

@@ -88,7 +88,7 @@
                         <input type="text" v-model="informationpersonal.hoTen" />
                       </div>
                       <div class="group-information">
-                        Ngày sinh
+                        Ngày sinh 
                         <input type="date" v-model="informationpersonal.ngaySinh"  />
                       </div>
                     </div>
