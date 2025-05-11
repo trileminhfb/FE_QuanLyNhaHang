@@ -1,41 +1,52 @@
 <template>
     <div class="container">
         <div class="order-table">
-            <div class="col-left">
-                <p style="font-size: 40px;" class="title-oder">
-                    <i class="fas fa-utensils"></i>
-                    Liên Hệ Đặt Bàn
-                    <i class="fas fa-utensils"></i>
-                </p>
 
-                <div class="input-text">
+            <div v-if="!bookingSuccess">
+                <!--  FORM ĐẶT BÀN -->
+                <div class="col-left">
+                    <p class="title-oder"><i class="fas fa-utensils"></i> Liên Hệ Đặt Bàn <i class="fas fa-utensils"></i></p>
+                    
                     <div class="form-row">
-                        <div class="form-group">
-                            <label>Họ và tên</label>
-                            <input type="text" v-model="form.FullName" placeholder="Nhập họ và tên..." maxlength="255" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Số điện thoại</label>
-                            <input type="text" v-model="form.phoneNumber" placeholder="Nhập số điện thoại..." maxlength="20" required />
-                        </div>
+                        <label>Thời gian bạn đến?</label>
+                        <input type="datetime-local" v-model="form.timeBooking" required />
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Số lượng</label>
-                            <input type="number" v-model="form.quantity" placeholder="Số lượng..." min="1" required />
-                        </div>
-                        <div class="form-group">
-                            <label>Thời gian bạn đến?</label>
-                            <input type="datetime-local" v-model="form.timeBooking" required />
-                        </div>
-                    </div>
+
+                    <button class="oder-btn" @click="createBooking">
+                        <strong style="color: black;">Đặt Bàn Ngay</strong>
+                    </button>
+                    <p v-if="errors.message" class="error-message">{{ errors.message }}</p>
                 </div>
+            </div>
 
-                <div class="oder-introduce">
-                    <p>Khác có thể đặt tiệc hội nghị, liên hoan vui lòng gọi trực tiếp:
-                        <strong class="number-phone">1900 2345</strong>
-                    </p>
+            <div v-else>
+                <!-- FORM ĐẶT MÓN -->
+                <div class="col-left">
+                    <h3 style="color: white; font-size: 30px;">🎉Bạn Đặt bàn thành công🎉</h3>
+                    <p style="color: white; font-size: 20px; margin-bottom: 10px;">Bây giờ bạn có muốn đặt món luôn không? <a href="/"><strong style="color: yellow;">👉Không</strong></a></p>
+
+                    <div class="form-row">
+                        <label>Booking ID:</label>
+                        <input type="text" v-model="foodForm.id_booking" placeholder="Nhập ID Đặt Bàn" />
+                    </div>
+
+                    <div class="form-row">
+                        <label>Chọn món:</label>
+                        <select v-model="foodForm.id_foods"> 
+                            <option v-for="food in foodList" :key="food.id" :value="food.id">
+                                {{ food.name }}
+                            </option>
+                        </select>
+                    </div>
+
+
+                    <div class="form-row">
+                        <label>Số lượng:</label>
+                        <input type="number" v-model="foodForm.quantity" min="1" />
+                    </div>
+
+                    <button @click="submitFoodOrder">Xác nhận đặt món</button>
                 </div>
 
                 <button class="oder-btn" @click="createBooking">
@@ -44,6 +55,7 @@
                         {{ errors.message }}
                     </p>
                 </button>
+
             </div>
 
             <div class="col-right">
@@ -54,70 +66,135 @@
 </template>
 
 <script setup>
-import api from '../../services/api';
-import { useRouter } from 'vue-router';
-import '../../assets/css/Booking.css';
 import { ref, reactive } from 'vue';
+import { useRouter } from 'vue-router';
+import api from '../../services/api';
+import { useBookingHistoryStore } from '../../stores/bookingHistoryStore';
 
-const errors = ref({});
 const router = useRouter();
+const bookingStore = useBookingHistoryStore();
 
+const bookingSuccess = ref(false);
+const errors = ref({});
 const form = reactive({
-    FullName: '',
-    phoneNumber: '',
-    quantity: '',
     timeBooking: ''
 });
 
-const bookingHistory = ref([]);
+const foodForm = ref({
+    id_foods: '',
+    quantity: 1,
+    id_booking: ''  // Thêm trường id_booking
+});
+const saveBookingToLocal = (id_food, quantity, id_table) => {
+  const newBooking = {
+    timeBooking: new Date().toISOString(),
+    booking_food: {
+      id_food,
+      quantity,
+      id_table
+    }
+  };
+
+  const oldData = JSON.parse(localStorage.getItem('bookings')) || [];
+  oldData.push(newBooking);
+  localStorage.setItem('bookings', JSON.stringify(oldData));
+};
+
+const foodList = ref([]);
+
 
 const formatDateTime = (datetime) => {
     const date = new Date(datetime);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = '00';
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, '0');
+    const d = String(date.getDate()).padStart(2, '0');
+    const h = String(date.getHours()).padStart(2, '0');
+    const min = String(date.getMinutes()).padStart(2, '0');
+    return `${y}-${m}-${d} ${h}:${min}:00`;
 };
 
 const createBooking = () => {
-    const token = localStorage.getItem('auth_token');
-    if (!token) {
-        alert("Bạn cần đăng nhập để thực hiện chức năng này.");
-        router.push({ name: 'login' });
-        return;
-    }
 
-    // Kiểm tra form trước khi gửi
+    const token = localStorage.getItem('token');
+
     errors.value = {};
-    if (!form.FullName || !form.phoneNumber || !form.quantity || !form.timeBooking) {
-        errors.value = { message: 'Vui lòng kiểm tra lại thông tin.' };
+
+    if (!form.timeBooking) {
+        errors.value = { message: 'Vui lòng chọn thời gian đến.' };
         return;
     }
 
     const payload = {
-        ...form,
+
         timeBooking: formatDateTime(form.timeBooking)
     };
 
-    api.post("/admin/bookings/create", payload)
-        .then((response) => {
-            if (response.status === 201) {
-                alert('Đặt bàn thành công!');
-                bookingHistory.value.push(response.data);
-                router.push({ name: 'users-home' }); // chuyển về trang Home
+    api.post('/client/bookings/create', payload)
+        .then((res) => {
+            if (res.status === 201) {
+                alert('Bạn đã đặt bàn thành công');
+                bookingStore.addBooking(res.data);
+
+                // Lưu thông tin booking vào localStorage
+                localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings));
+
+                bookingSuccess.value = true;
+                getFoods();
             }
         })
-        .catch((error) => {
-            console.log('Lỗi khi đặt bàn:', error);
-            errors.value = error.response?.data?.errors || { message: 'Đã xảy ra lỗi khi đặt bàn.' };
+        .catch((err) => {
+            const res = err.response;
+            if (res?.status === 401) {
+                alert("Đăng nhập trước đi má");
+            } else if (res?.data?.errors) {
+                errors.value = res.data.errors;
+            } else if (res?.data?.message) {
+                errors.value = { message: res.data.message };
+            } else {
+                errors.value = { message: 'Đã xảy ra lỗi. Vui lòng thử lại sau.' };
+            }
         });
 };
+
+
+const submitFoodOrder = () => {
+    if (!foodForm.value.id_foods || foodForm.value.quantity < 1 || !foodForm.value.id_booking) {
+        alert('Vui lòng chọn món, số lượng và ID đặt bàn hợp lệ.');
+        return;
+    }
+
+    api.post('/client/booking-food', foodForm.value)
+        .then(() => {
+            // Lưu vào localStorage
+            saveBookingToLocal(
+                foodForm.value.id_foods,
+                foodForm.value.quantity,
+                foodForm.value.id_booking
+            );
+
+            alert('Đặt món thành công!');
+            router.push({ name: 'users-home' });
+        })
+        .catch((err) => {
+            console.log('Lỗi đặt món:', err.response?.data || err.message);
+        });
+};
+
+
+const getFoods = () => {
+    api.get('/client/foods').then((res) => {
+        foodList.value = res.data;
+    });
+};
+
 </script>
 
+
 <style scoped>
+.error-message {
+    color: red;
+    font-size: 14px;
+}
 .container {
     max-width: 1200px;
     width: 100%;
@@ -230,4 +307,139 @@ input {
 .oder-btn:hover {
     background: yellow;
 }
+.error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.container {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.order-table {
+    width: 100%;
+    background: #143b36;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    padding: 30px 40px;
+    gap: 50px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.col-left {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.col-right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.col-right img {
+    width: 100%;
+    max-width: 400px;
+    object-fit: contain;
+    margin-top: 50px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.col-right img:hover {
+    transform: scale(1.05);
+}
+
+.title-oder {
+    font-family: "Dancing Script", cursive;
+    text-align: center;
+    color: white;
+    margin-bottom: 30px;
+    font-size: 32px;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+label {
+    color: white;
+    margin-bottom: 6px;
+    font-size: 18px;
+    font-weight: 500;
+    text-align: left;
+}
+
+input,
+select {
+    background: #fff;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease;
+    width: 100%;
+}
+
+input[type="datetime-local"] {
+    background: #f0f0f0;
+}
+
+input:focus,
+select:focus {
+    border-color: #ffcc00;
+}
+
+button {
+    background: #ffcc00;
+    color: #fff;
+    padding: 15px;
+    width: 100%;
+    max-width: 250px;
+    font-size: 18px;
+    margin: 20px 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #e6b800;
+}
+
+button:disabled {
+    background-color: #ddd;
+    cursor: not-allowed;
+}
+
+p a {
+    color: #ffcc00;
+    text-decoration: none;
+}
+
+p a:hover {
+    text-decoration: underline;
+}
+
 </style>

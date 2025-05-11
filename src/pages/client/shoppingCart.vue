@@ -58,7 +58,9 @@ async function xoaHang(id) {
     await api.delete(`/admin/carts/${id}`); // Gửi yêu cầu xóa món từ giỏ hàng
     const index = cartItems.value.findIndex(item => item.id_food === id);
     if (index !== -1) {
-      cartItems.value.splice(index, 1); // Xóa món khỏi giỏ
+      cartItems.value.splice(index, 1); 
+      alert(`Bạn đã xóa thành công món: ${item.name}`);
+
     }
   } catch (error) {
     console.error("Không thể xóa món khỏi giỏ hàng", error);
@@ -69,7 +71,7 @@ async function xoaHang(id) {
 <style scoped>
 .shopping-cart {
     background-color: #143b36;
-    height: 800px;
+    height: auto;
     padding: 20px;
 }
 
@@ -148,6 +150,7 @@ async function xoaHang(id) {
     color: darkred;
 }
 
+
 .order-btn-wrapper {
     display: flex;
     margin-top: 20px;
@@ -175,5 +178,6 @@ async function xoaHang(id) {
     background-color: #c58a3c;
     box-shadow: 0 5px 10px #a37b44;
 }
+
 
 </style>

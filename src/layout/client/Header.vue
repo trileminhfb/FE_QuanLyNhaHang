@@ -158,16 +158,19 @@
     <i class="fa-solid fa-gear"></i>
     <h2>Setting</h2>
   </div>
+  <router-link :to="{name:'History'}" class="menu-item">
+  <i class="fa-solid fa-wrench"></i>
+  <h2>History</h2>
+</router-link>
+<router-link :to="{name:'users-login'}" class="menu-item">
+  <i class="fa-solid fa-right-to-bracket"></i>
 
-  <div class="menu-item">
-    <i class="fa-solid fa-wrench"></i>
-    <h2>Help</h2>
-  </div>
+  <h2>login</h2>
+</router-link>
   <div class="menu-item" @click="handleLogout">
   <i class="fa-solid fa-right-from-bracket"></i>
   <h2>Log Out</h2>
 </div>
-
 </div>
 
           </li>
@@ -238,7 +241,6 @@ const handleLogout = async () => {
   });
 
   if (result.isConfirmed) {
-    // Thông báo Đăng Xuất Thành công đẹp hơn
     Swal.fire({
       title: 'Đăng xuất thành công!',
       text: 'Bạn đã đăng xuất khỏi tài khoản.',

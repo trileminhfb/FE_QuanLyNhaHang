@@ -61,7 +61,7 @@ export async function addToCart(mon) {
   }
 }
 
-// Hàm đồng bộ giỏ hàng với server mỗi khi có thay đổi
+
 watch(cartItems, async (newCart) => {
   try {
     // Cập nhật giỏ hàng trên server

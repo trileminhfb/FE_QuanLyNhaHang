@@ -35,6 +35,9 @@
 
                 <label for="id_customer">Khách hàng (ID)</label>
                 <input type="number" id="id_customer" v-model="form.id_customer" placeholder="Nhập ID khách hàng" />
+                <label for="id_sale">Mã giảm giá (ID Sale)</label>
+<input type="number" id="id_sale" v-model="form.id_sale" placeholder="Nhập mã giảm giá" />
+
               </div>
 
               <div class="row-col-right">
@@ -109,7 +112,8 @@ const form = ref({
   timeEnd: '',
   total: '',
   id_user: '',
-  id_customer: ''
+  id_customer: '',
+  id_sale :''
 })
 
 const selectedPayment = ref('')
@@ -124,7 +128,7 @@ const xoaHang = (index) => {
 }
 
 const datMon = async () => {
-  if (!form.value.id_table || !form.value.timeEnd || !form.value.total || !form.value.id_user || !form.value.id_customer || !selectedPayment.value) {
+  if (!form.value.id_table || !form.value.timeEnd ||!form.value.id_sale|| !form.value.total || !form.value.id_user || !form.value.id_customer || !selectedPayment.value) {
     alert("Vui lòng nhập đầy đủ thông tin!");
     return;
   }
@@ -135,6 +139,7 @@ const datMon = async () => {
     total: form.value.total,
     id_user: form.value.id_user,
     id_customer: form.value.id_customer,
+    id_sale :form.value.id_sale,
     payment_method: selectedPayment.value,
     items: cartItems.value.map(item => ({
       id_product: item.id,
