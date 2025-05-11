@@ -23,6 +23,7 @@ router.beforeEach((to, from, next) => {
   }
 
   next(); // Cho phép đi tiếp nếu đã login hoặc là trang công khai
+
 });
 
 export default router;

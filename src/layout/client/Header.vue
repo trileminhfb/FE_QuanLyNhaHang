@@ -171,7 +171,6 @@
   <i class="fa-solid fa-right-from-bracket"></i>
   <h2>Log Out</h2>
 </div>
-
 </div>
 
           </li>

@@ -91,7 +91,6 @@ const route = useRoute()
 const showConfirm = ref(false)
 const itemToDelete = ref(null)
 
-// Safely parse categoryData from route query
 const categoryData = ref(null)
 try {
     if (route.query.data) {

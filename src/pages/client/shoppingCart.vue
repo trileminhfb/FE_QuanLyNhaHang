@@ -150,6 +150,7 @@ async function xoaHang(id) {
     color: darkred;
 }
 
+
 .order-btn-wrapper {
     display: flex;
     margin-top: 20px;
@@ -177,5 +178,6 @@ async function xoaHang(id) {
     background-color: #c58a3c;
     box-shadow: 0 5px 10px #a37b44;
 }
+
 
 </style>

@@ -33,13 +33,13 @@
 
               <div class="gio-hang-icon">
                 <span class="so-luong" v-if="soLuong > 0">{{ soLuong }}</span>
+
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-
     <div class="food-items" v-else>
       <p>Vui lòng chọn danh mục để xem món ăn.</p>
     </div>
@@ -49,6 +49,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '../../services/api'
+
 import { useRouter } from 'vue-router'
 import { cartItems, addToCart } from '../../stores/cartStore'
 

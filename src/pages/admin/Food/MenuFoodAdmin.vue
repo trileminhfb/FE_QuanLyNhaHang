@@ -166,7 +166,7 @@ function goAdd() {
 
 function goDetailFoods(item) {
   router.push({
-    name: 'admin-details-foods',
+    name: 'admin-detail-foods',
     params: {
       id: item.id,
     },

@@ -12,6 +12,7 @@
                         <input type="datetime-local" v-model="form.timeBooking" required />
                     </div>
 
+
                     <button class="oder-btn" @click="createBooking">
                         <strong style="color: black;">Đặt Bàn Ngay</strong>
                     </button>
@@ -39,6 +40,7 @@
                         </select>
                     </div>
 
+
                     <div class="form-row">
                         <label>Số lượng:</label>
                         <input type="number" v-model="foodForm.quantity" min="1" />
@@ -46,6 +48,14 @@
 
                     <button @click="submitFoodOrder">Xác nhận đặt món</button>
                 </div>
+
+                <button class="oder-btn" @click="createBooking">
+                    <strong>Đặt Bàn Ngay</strong>
+                    <p v-if="errors.message" class="error-message">
+                        {{ errors.message }}
+                    </p>
+                </button>
+
             </div>
 
             <div class="col-right">
@@ -92,6 +102,7 @@ const saveBookingToLocal = (id_food, quantity, id_table) => {
 
 const foodList = ref([]);
 
+
 const formatDateTime = (datetime) => {
     const date = new Date(datetime);
     const y = date.getFullYear();
@@ -103,6 +114,7 @@ const formatDateTime = (datetime) => {
 };
 
 const createBooking = () => {
+
     const token = localStorage.getItem('token');
 
     errors.value = {};
@@ -113,6 +125,7 @@ const createBooking = () => {
     }
 
     const payload = {
+
         timeBooking: formatDateTime(form.timeBooking)
     };
 

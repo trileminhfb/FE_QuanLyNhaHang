@@ -7,6 +7,7 @@ export const cartItems = ref([]);
 const fetchCart = async () => {
   try {
     const response = await api.get('/client/carts'); 
+
     console.log(response.data);
     // Lưu thông tin chi tiết vào giỏ hàng
     cartItems.value = response.data.map(item => ({

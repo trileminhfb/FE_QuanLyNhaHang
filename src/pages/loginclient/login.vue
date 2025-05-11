@@ -65,6 +65,7 @@
   const loginPassword = ref('')
   
   function login() {
+
   api.post('/client/login', {
     email: loginEmail.value,
     password: loginPassword.value
@@ -271,5 +272,6 @@ input:focus {
     .links-row {
         font-size: 0.85rem;
     }
+
 }
 </style>
