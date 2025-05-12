@@ -2,11 +2,11 @@
 
 1. **Trí ngu đúng không?**
 
-   - [ ] Vui lòng chọn đúng để tiếp tục
+   - [] Vui lòng chọn đúng để tiếp tục
 
 2. **Công Anh Đẹp trai không?**
 
-   -- [ ] Vui lòng chọn đúng để tiếp tục
+   - [] Vui lòng chọn đúng để tiếp tục
 
 **Người tạo PR:**  
 **Ngày tạo PR:**
