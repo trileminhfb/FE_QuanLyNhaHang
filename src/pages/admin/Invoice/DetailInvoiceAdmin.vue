@@ -138,15 +138,16 @@
                             <div class="flex flex-row gap-2 border rounded-lg p-2">
                                 <!-- Nếu status là 1 -->
                                 <template v-if="invoiceData?.status === 1">
-                                    <div
-                                        class="bg-green-500 rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-green-600">
+                                    <div class="bg-green-500 rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-green-600"
+                                        @click="() => updateInvoiceStatus(2)">
                                         Thanh toán
                                     </div>
 
-                                    <div
-                                        class="bg-red-500 rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-red-600">
-                                        Xoá
+                                    <div class="bg-red-500 rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-red-600"
+                                        @click="() => updateInvoiceStatus(3)">
+                                        Huỷ
                                     </div>
+
                                     <div class="rounded-lg border p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-gray-300"
                                         @click="goBack">
                                         Trở về
@@ -177,10 +178,8 @@ import axios from 'axios'
 const router = useRouter()
 const route = useRoute()
 
-// Parse dữ liệu hóa đơn từ query
 const invoiceData = route.query.data ? JSON.parse(route.query.data) : null;
 
-// Format ngày giờ
 function formatToLocalDatetime(isoString) {
     if (!isoString) return 'N/A';
     const date = new Date(isoString);
@@ -212,8 +211,37 @@ function calculateFinalTotal(item, sale) {
     return calculateTotal(item) + calculateVAT(item) - calculateDiscount(item, sale);
 }
 
-
 function goBack() {
     router.push({ name: 'admin-invoice' });
 }
+
+async function updateInvoiceStatus(newStatus) {
+    if (!invoiceData?.id) return;
+
+    const payload = {
+        id_table: invoiceData?.table?.id || null,
+        id_user: invoiceData?.user?.id || null,
+        total: calculateFinalTotal(invoiceData?.invoice_foods, invoiceData?.sale),
+        timeEnd: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        id_customer: invoiceData?.customer?.id || null,
+        status: newStatus,
+        foods: invoiceData?.invoice_foods?.map(item => ({
+            id: item.food.id,
+            quantity: item.quantity
+        })) || []
+    };
+
+    console.log("🔥 Payload gửi lên:", JSON.stringify(payload, null, 2));
+
+    try {
+        await axios.put(`http://127.0.0.1:8000/api/admin/invoices/${invoiceData.id}`, payload);
+        invoiceData.status = newStatus;
+        alert('Thành công!');
+        router.push({ name: 'admin-invoice' });
+    } catch (error) {
+        console.error('❌ Lỗi khi cập nhật hóa đơn:', error);
+        alert('Cập nhật trạng thái thất bại!');
+    }
+}
+
 </script>

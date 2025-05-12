@@ -7,36 +7,30 @@
                     <div class="flex flex-row flex-1 gap-5">
                         <div @click="showAll" :class="[
                             'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
-                            statusFilter === null ? 'text-red-500 border-b-4 border-red-500' : ''
-                        ]">
+                            statusFilter === null ? 'text-red-500 border-b-4 border-red-500' : '']">
                             Tất cả
                         </div>
                         <div @click="showSuccess" :class="[
                             'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
-                            statusFilter === 2 ? 'text-red-500 border-b-4 border-red-500' : ''
-                        ]">
+                            statusFilter === 2 ? 'text-red-500 border-b-4 border-red-500' : '']">
                             Hoàn thành
                         </div>
                         <div @click="showCancel" :class="[
                             'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
-                            statusFilter === 3 ? 'text-red-500 border-b-4 border-red-500' : ''
-                        ]">
+                            statusFilter === 3 ? 'text-red-500 border-b-4 border-red-500' : '']">
                             Bị huỷ
                         </div>
                         <div @click="showUsing" :class="[
                             'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
-                            statusFilter === 1 ? 'text-red-500 border-b-4 border-red-500' : ''
-                        ]">
+                            statusFilter === 1 ? 'text-red-500 border-b-4 border-red-500' : '']">
                             Đang sử dụng
                         </div>
 
                     </div>
                     <div class="flex flex-row flex-1 gap-2 justify-end items-center">
                         <Search v-model="searchQuery" />
-                        <input class="border border-gray-300" type="date" name="start_date" id="start_date"
-                            value="2025-04-18" />
-                        <p>đến</p>
-                        <input class="border border-gray-300" type="date" name="ebd_date" id="ebd_date"
+
+                        <input class="border border-gray-300" type="date" name="created_at" id="created_at"
                             value="2025-04-19" />
                     </div>
                 </div>

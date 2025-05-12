@@ -61,49 +61,19 @@ function goBack() {
 }
 
 const form = ref({
-    id_ingredient: '',
-    quantity: '',
-    price: '',
-    stock_in_date: ''
+    number: '',
+    status: 1
 })
-
-
-const isSaving = ref(false)
 
 async function goSave() {
-    if (!form.value.id_ingredient || !form.value.quantity || !form.value.stock_in_date) {
-        alert("Vui lòng điền đầy đủ thông tin.");
-        return;
-    }
-
-    isSaving.value = true;
     try {
-        const response = await axios.post('http://127.0.0.1:8000/api/admin/warehouse-invoices/create', form.value);
-        if (response.data.status === 1) {
-            alert('Đã thêm mới thành công!');
-            router.push({ name: 'import-warehouse-admin' });
-        } else {
-            alert('Thêm thất bại: ' + (response.data.message || 'Lỗi không xác định.'));
-        }
+        await axios.post('http://127.0.0.1:8000/api/admin/ingredients/create', form.value)
+        alert('Đã thêm mới thành công!')
+        router.push({ name: 'admin-tables' })
     } catch (error) {
-        console.error('Lỗi khi thêm:', error);
-        alert('Đã xảy ra lỗi khi thêm. Vui lòng kiểm tra lại hoặc thử lại sau.');
-    } finally {
-        isSaving.value = false;
+        console.error('Lỗi thêm:', error)
+        alert('Không thể thêm.')
     }
-    console.log('Dữ liệu gửi:', form.value)
 }
-
-
-onMounted(async () => {
-    try {
-        const res = await axios.get('http://127.0.0.1:8000/api/admin/ingredients')
-        if (res.data.status === 1) {
-            allItems.value = res.data.data
-        }
-    } catch (error) {
-        console.error('Lỗi khi tải danh sách:', error)
-    }
-})
 
 </script>

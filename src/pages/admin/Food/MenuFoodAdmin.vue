@@ -10,7 +10,7 @@
           <tr class="border-2 border-gray-300">
             <th>
               <div class="flex flex-row justify-center items-center gap-2">
-                <Sort @sort="(direction) => sortBy('name', direction)" />
+                <Sort @sort="(key) => sortBy('name', key)" />
                 <p class="text-start w-full">Tên món</p>
               </div>
             </th>
@@ -33,22 +33,8 @@
                   <div class="ps-5 flex flex-col gap-5">
                     <p class="hover:cursor-pointer">{{ item.name }}</p>
                     <div class="flex flex-row gap-2 items-center">
-                      <SwitchButton :status="item.status" @toggle="toggleStatus(item)" />
-                      <div v-if="item.bestSeller === 1">
-                        <svg class="hover:cursor-pointer w-6 h-6 text-yellow-500" aria-hidden="true"
-                          xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
-                          viewBox="0 0 24 24">
-                          <path
-                            d="M13.849 4.22c-.684-1.626-3.014-1.626-3.698 0L8.397 8.387l-4.552.361c-1.775.14-2.495 2.331-1.142 3.477l3.468 2.937-1.06 4.392c-.413 1.713 1.472 3.067 2.992 2.149L12 19.35l3.897 2.354c1.52.918 3.405-.436 2.992-2.15l-1.06-4.39 3.468-2.938c1.353-1.146.633-3.336-1.142-3.477l-4.552-.36-1.754-4.17Z" />
-                        </svg>
-                      </div>
-                      <div v-else>
-                        <svg class="hover:cursor-pointer w-6 h-6 text-gray-500" xmlns="http://www.w3.org/2000/svg"
-                          fill="none" viewBox="0 0 24 24">
-                          <path stroke="currentColor" stroke-width="2"
-                            d="M11.083 5.104c.35-.8 1.485-.8 1.834 0l1.752 4.022a1 1 0 0 0 .84.597l4.463.342c.9.069 1.255 1.2.556 1.771l-3.33 2.723a1 1 0 0 0-.337 1.016l1.03 4.119c.214.858-.71 1.552-1.474 1.106l-3.913-2.281a1 1 0 0 0-1.008 0L7.583 20.8c-.764.446-1.688-.248-1.474-1.106l1.03-4.119A1 1 0 0 0 6.8 14.56l-3.33-2.723c-.698-.571-.342-1.702.557-1.771l4.462-.342a1 1 0 0 0 .84-.597l1.753-4.022Z" />
-                        </svg>
-                      </div>
+                      <SwitchButton :model-value="item.status" @toggle="() => toggleStatus(item)" />
+                      <BestSellerSwitch :model-value="item.bestSeller" @toggle="() => toggleBestSeller(item)" />
                     </div>
                   </div>
                 </div>
@@ -92,6 +78,7 @@ import Pagination from "../../../components/Admin/Pagination.vue";
 import SwitchButton from "../../../components/Admin/SwitchButton.vue";
 import ConfirmDelete from "../../../components/Admin/ConfirmDelete.vue";
 import axios from 'axios'
+import BestSellerSwitch from '../../../components/Admin/BestSellerSwitch.vue';
 
 const showConfirm = ref(false)
 const router = useRouter();
@@ -128,8 +115,8 @@ const filteredItems = computed(() => {
 onMounted(async () => {
   try {
     const response = await axios.get('http://127.0.0.1:8000/api/admin/foods')
-    if (response.data && Array.isArray(response.data.data)) {
-      allItems.value = response.data.data
+    if (Array.isArray(response.data)) {
+      allItems.value = response.data
     } else {
       console.error('Dữ liệu trả về không hợp lệ:', response.data)
     }
@@ -139,14 +126,39 @@ onMounted(async () => {
 })
 
 
+
 const paginatedItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
   const end = start + itemsPerPage;
   return filteredItems.value.slice(start, end);
 });
 
-const toggleStatus = (item) => {
-  item.status = item.status === 1 ? 0 : 1
+async function toggleStatus(item) {
+  const newStatus = item.status === 1 ? 0 : 1
+  try {
+    await axios.put(`http://127.0.0.1:8000/api/admin/foods/${item.id}`, {
+      ...item,
+      status: newStatus
+    })
+    item.status = newStatus
+  } catch (error) {
+    console.error("Không thể cập nhật trạng thái:", error)
+    alert("Cập nhật trạng thái thất bại.")
+  }
+}
+
+async function toggleBestSeller(item) {
+  const newStatus = item.bestSeller === 1 ? 0 : 1
+  try {
+    await axios.put(`http://127.0.0.1:8000/api/admin/foods/${item.id}`, {
+      ...item,
+      bestSeller: newStatus
+    })
+    item.bestSeller = newStatus
+  } catch (error) {
+    console.error("Không thể cập nhật trạng thái:", error)
+    alert("Cập nhật trạng thái thất bại.")
+  }
 }
 
 function changePage(page) {
