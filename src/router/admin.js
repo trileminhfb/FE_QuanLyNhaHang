@@ -41,7 +41,7 @@ const admin = [
           {
             path: "edit/:id?",
             name: "admin-edit-foods",
-            component: () => import("../pages/admin/food/EditFoodAdmin.vue"),
+            component: () => import("../pages/admin/Food/EditFoodAdmin.vue"),
           },
         ],
       },
