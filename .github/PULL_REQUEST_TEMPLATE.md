@@ -1,5 +1,7 @@
 # Pull Request Checklist
 
+**nhập x vào ô để chọn**
+
 1. **Trí ngu đúng không?**
 
    - [] Vui lòng chọn đúng để tiếp tục
