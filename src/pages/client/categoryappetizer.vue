@@ -107,7 +107,9 @@ function categorizeFoods(foods) {
   //   { name: 'Giá', dsMon: [] } 
   // ]
   const categorized = categories.value.map((item) => {
-    return {name: item.name,gia:item.cost ,
+    return {
+      name: item.name,
+      gia: item.cost,
       dsMon: []
     }
   })
@@ -115,7 +117,6 @@ function categorizeFoods(foods) {
   foods.forEach(food => {
     food.categories.forEach(category => {
       console.log('ádâ', category);
-
       const categoryIndex = categorized.findIndex(c => c.name === category.name)
       if (categoryIndex !== -1) {
         categorized[categoryIndex].dsMon.push(food)
@@ -123,8 +124,6 @@ function categorizeFoods(foods) {
     })
   })
   console.log('food', foods);
-
-
   return categorized
 }
 
