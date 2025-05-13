@@ -98,7 +98,7 @@ function cancelDelete() {
 
 function goEdit(item) {
     router.push({
-        name: 'admin-edit-types',
+        name: 'edit-warehouse-admin',
         params: {
             id: item.id,
         },

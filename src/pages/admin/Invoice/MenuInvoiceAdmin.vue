@@ -1,151 +1,153 @@
-<template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
-        <div class="h-full w-full flex flex-col font-bold">
-            <p class="uppercase text-2xl">Tổng hoá đơn</p>
-            <div class="w-full h-full flex flex-col">
-                <div class="w-full h-fit flex flex-row p-2">
-                    <div class="flex flex-row flex-1 gap-5">
-                        <div @click="showAll" :class="[
-                            'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
-                            statusFilter === null ? 'text-red-500 border-b-4 border-red-500' : '']">
-                            Tất cả
-                        </div>
-                        <div @click="showSuccess" :class="[
-                            'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
-                            statusFilter === 2 ? 'text-red-500 border-b-4 border-red-500' : '']">
-                            Hoàn thành
-                        </div>
-                        <div @click="showCancel" :class="[
-                            'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
-                            statusFilter === 3 ? 'text-red-500 border-b-4 border-red-500' : '']">
-                            Bị huỷ
-                        </div>
-                        <div @click="showUsing" :class="[
-                            'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
-                            statusFilter === 1 ? 'text-red-500 border-b-4 border-red-500' : '']">
-                            Đang sử dụng
-                        </div>
+    <template>
+        <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
+            <div class="h-full w-full flex flex-col font-bold">
+                <p class="uppercase text-2xl">Tổng hoá đơn</p>
+                <div class="w-full h-full flex flex-col">
+                    <div class="w-full h-fit flex flex-row p-2">
+                        <div class="flex flex-row flex-1 gap-5">
+                            <div @click="showAll" :class="[
+                                'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
+                                statusFilter === null ? 'text-red-500 border-b-4 border-red-500' : '']">
+                                Tất cả
+                            </div>
+                            <div @click="showSuccess" :class="[
+                                'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
+                                statusFilter === 2 ? 'text-red-500 border-b-4 border-red-500' : '']">
+                                Hoàn thành
+                            </div>
+                            <div @click="showCancel" :class="[
+                                'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
+                                statusFilter === 3 ? 'text-red-500 border-b-4 border-red-500' : '']">
+                                Bị huỷ
+                            </div>
+                            <div @click="showUsing" :class="[
+                                'hover:cursor-pointer hover:border-b-4 hover:text-red-500 hover:border-red-500',
+                                statusFilter === 1 ? 'text-red-500 border-b-4 border-red-500' : '']">
+                                Đang sử dụng
+                            </div>
 
+                        </div>
+                        <div class="flex flex-row flex-1 gap-2 justify-end items-center">
+                            <Search v-model="searchQuery" />
+
+                            <input class="border border-gray-300" type="date" name="created_at" id="created_at"
+                                value="2025-04-19" />
+                        </div>
                     </div>
-                    <div class="flex flex-row flex-1 gap-2 justify-end items-center">
-                        <Search v-model="searchQuery" />
+                    <div class="w-full h-fit border-t border-gray-400 px-2 pt-2">
+                        <table class="w-full table-auto font-semibold text-sm">
+                            <thead>
+                                <tr class="border-2 border-gray-300">
+                                    <th>
+                                        <div class="flex flex-row justify-center items-center gap-2">
+                                            <SortButton @sort="(direction) => sortBy('id', direction)" />
+                                            <p class="text-start w-full">ID</p>
+                                        </div>
+                                    </th>
 
-                        <input class="border border-gray-300" type="date" name="created_at" id="created_at"
-                            value="2025-04-19" />
-                    </div>
-                </div>
-                <div class="w-full h-fit border-t border-gray-400 px-2 pt-2">
-                    <table class="w-full table-auto font-semibold text-sm">
-                        <thead>
-                            <tr class="border-2 border-gray-300">
-                                <th>
-                                    <div class="flex flex-row justify-center items-center gap-2">
-                                        <SortButton @sort="(direction) => sortBy('id', direction)" />
-                                        <p class="text-start w-full">ID</p>
-                                    </div>
-                                </th>
+                                    <th>
+                                        <div class="flex flex-row justify-center items-center gap-2">
+                                            <SortButton @sort="(direction) => sortBy('status', direction)" />
+                                            <p>Trạng thái</p>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex flex-row justify-center items-center gap-2">
+                                            <SortButton @sort="(direction) => sortBy('table.number', direction)" />
+                                            <p>Bàn</p>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="flex flex-row justify-center items-center gap-2">
+                                            <SortButton @sort="(direction) => sortBy('time_start', direction)" />
+                                            <p>Thời gian đặt</p>
+                                        </div>
+                                    </th>
 
-                                <th>
-                                    <div class="flex flex-row justify-center items-center gap-2">
-                                        <SortButton @sort="(direction) => sortBy('status', direction)" />
-                                        <p>Trạng thái</p>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="flex flex-row justify-center items-center gap-2">
-                                        <SortButton @sort="(direction) => sortBy('table.number', direction)" />
-                                        <p>Bàn</p>
-                                    </div>
-                                </th>
-                                <th>
-                                    <div class="flex flex-row justify-center items-center gap-2">
-                                        <SortButton @sort="(direction) => sortBy('time_start', direction)" />
-                                        <p>Thời gian đặt</p>
-                                    </div>
-                                </th>
+                                    <th>
+                                        <div class="flex flex-row justify-center items-center gap-2">
+                                            <SortButton @sort="(direction) => sortBy('total', direction)" />
+                                            <p>Tổng</p>
+                                        </div>
+                                    </th>
+                                    <th>Thao tác</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(item, index) in paginatedItems" :key="index"
+                                    class="border-2 border-gray-300">
+                                    <td>
+                                        <div class="h-16 flex flex-row justify-start items-center px-2">
+                                            <p>#</p>
+                                            <p>{{ item.id }}</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="h-16 flex justify-center items-center">
+                                            <p v-if="item.status === 1" class="bg-yellow-500 w-32 text-center p-2">
+                                                Đang sử dụng
+                                            </p>
+                                            <p v-else-if="item.status === 2" class="bg-green-500 w-32 text-center p-2">
+                                                Hoàn thành
+                                            </p>
+                                            <p v-else-if="item.status === 3" class="bg-red-500 w-32 text-center p-2">
+                                                Bị huỷ
+                                            </p>
 
-                                <th>
-                                    <div class="flex flex-row justify-center items-center gap-2">
-                                        <SortButton @sort="(direction) => sortBy('total', direction)" />
-                                        <p>Tổng</p>
-                                    </div>
-                                </th>
-                                <th>Thao tác</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="(item, index) in paginatedItems" :key="index" class="border-2 border-gray-300">
-                                <td>
-                                    <div class="h-16 flex flex-row justify-start items-center px-2">
-                                        <p>#</p>
-                                        <p>{{ item.id }}</p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="h-16 flex justify-center items-center">
-                                        <p v-if="item.status === 1" class="bg-yellow-500 w-32 text-center p-2">
-                                            Đang sử dụng
-                                        </p>
-                                        <p v-else-if="item.status === 2" class="bg-green-500 w-32 text-center p-2">
-                                            Hoàn thành
-                                        </p>
-                                        <p v-else-if="item.status === 3" class="bg-red-500 w-32 text-center p-2">
-                                            Bị huỷ
-                                        </p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="h-16 flex justify-center items-center px-2">
+                                            <p>{{ item.table?.number ?? "Không xác định" }}</p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="h-16 flex justify-center items-center px-2">
+                                            <p>{{ formatToLocalDatetime(item.created_at) }}</p>
+                                        </div>
+                                    </td>
 
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="h-16 flex justify-center items-center px-2">
-                                        <p>{{ item.table?.number ?? "Không xác định" }}</p>
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="h-16 flex justify-center items-center px-2">
-                                        <p>{{ formatToLocalDatetime(item.created_at) }}</p>
-                                    </div>
-                                </td>
-
-                                <td>
-                                    <div class="h-16 flex justify-center items-center px-2">
-                                        <p>{{ item.total?.toLocaleString() ?? "0" }}</p>
-                                        <p>VNĐ</p>
-                                    </div>
-                                </td>
-                                <td class="text-center">
-                                    <div class="flex justify-center items-center h-full">
-                                        <div
-                                            class="w-10 h-10 text-gray-800 hover:bg-gray-400 hover:cursor-pointer rounded-lg relative group">
-                                            <svg class="w-full h-full" aria-hidden="true"
-                                                xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none"
-                                                viewBox="0 0 24 24">
-                                                <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
-                                                    d="M6 12h.01m6 0h.01m5.99 0h.01" />
-                                            </svg>
+                                    <td>
+                                        <div class="h-16 flex justify-center items-center px-2">
+                                            <p>{{ item.total?.toLocaleString() ?? "0" }}</p>
+                                            <p>VNĐ</p>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="flex justify-center items-center h-full">
                                             <div
-                                                class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                                                <p class="hover:bg-gray-500 text-start w-full h-full"
-                                                    @click="goDetail(item)">
-                                                    Chi tiết
-                                                </p>
-                                                <p class="hover:bg-gray-500 text-start w-full h-full"
-                                                    @click="goEdit(item)">
-                                                    Chỉnh sửa
-                                                </p>
-                                                <p class="hover:bg-gray-500 text-start w-full h-full">Xoá</p>
+                                                class="w-10 h-10 text-gray-800 hover:bg-gray-400 hover:cursor-pointer rounded-lg relative group">
+                                                <svg class="w-full h-full" aria-hidden="true"
+                                                    xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                                    fill="none" viewBox="0 0 24 24">
+                                                    <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                                                        d="M6 12h.01m6 0h.01m5.99 0h.01" />
+                                                </svg>
+                                                <div
+                                                    class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
+                                                    <p class="hover:bg-gray-500 text-start w-full h-full"
+                                                        @click="goDetail(item)">
+                                                        Chi tiết
+                                                    </p>
+                                                    <p v-if="item.status === 1"
+                                                        class="hover:bg-gray-500 text-start w-full h-full"
+                                                        @click="goEdit(item)">
+                                                        Chỉnh sửa
+                                                    </p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-</template>
+    </template>
 
 <script setup>
 import { useRouter } from "vue-router";
