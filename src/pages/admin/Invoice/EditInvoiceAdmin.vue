@@ -98,11 +98,14 @@
                                 <div class="flex flex-row justify-between w-full">
                                     <p class="font-medium">Trạng thái</p>
                                     <div class="text-white">
-                                        <p v-if="invoiceData?.status === 1" class="bg-green-500 p-2 rounded">Hoàn thành
-                                        </p>
-                                        <p v-if="invoiceData?.status === 2" class="bg-red-500 p-2 rounded">Bị huỷ</p>
-                                        <p v-if="invoiceData?.status === 3" class="bg-yellow-500 p-2 rounded">Đang sử
+                                        <p v-if="invoiceData?.status === 1" class="bg-yellow-500 p-2 rounded">Đang sử
                                             dụng</p>
+                                        <p v-else-if="invoiceData?.status === 2" class="bg-green-500 p-2 rounded">Hoàn
+                                            thành
+                                        </p>
+                                        <p v-else-if="invoiceData?.status === 3" class="bg-red-500 p-2 rounded">Bị huỷ
+                                        </p>
+
                                     </div>
                                 </div>
                                 <div class="flex flex-row justify-between w-full">
@@ -146,7 +149,8 @@
                                     <p class="text-sm ms-1">VNĐ</p>
                                 </div>
                             </div>
-                            <div class="flex flex-row gap-2 border rounded-lg p-2">
+                            <!-- Chỉ hiển thị nếu status === 1 -->
+                            <div v-if="invoiceData?.status === 1" class="flex flex-row gap-2 border rounded-lg p-2">
                                 <div class="rounded-lg border p-2 flex justify-center bg-green-500 items-center flex-1 hover:cursor-pointer hover:bg-green-300"
                                     @click="goSave">
                                     Lưu
@@ -156,6 +160,16 @@
                                     Trở về
                                 </div>
                             </div>
+
+                            <!-- Nếu status là 2 hoặc 3 chỉ hiện nút trở về -->
+                            <div v-else-if="invoiceData?.status === 2 || invoiceData?.status === 3"
+                                class="flex flex-row gap-2 border rounded-lg p-2">
+                                <div class="rounded-lg border p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-gray-300"
+                                    @click="goBack">
+                                    Trở về
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
