@@ -1,124 +1,125 @@
-<template>
-    <div class="auth-container">
-      <div class="back-to-home" @click="goHome">
-      ← Quay lại màn hình chính
-    </div>
-      <div class="auth-box">
-        <!-- Form đăng nhập -->
-        <form @submit.prevent="login" class="form" novalidate>
-          <h2>Đăng nhập vào tài khoản của bạn</h2>
-  
-          <label for="login-email" class="sr-only">Email</label>
-          <input
-            id="login-email"
-            type="email"
-            v-model="loginEmail"
-            placeholder="Email"
-            required
-            autocomplete="username"
-          />
-  
-          <label for="login-password" class="sr-only">Mật khẩu</label>
-          <input
-            id="login-password"
-            type="password"
-            v-model="loginPassword"
-            placeholder="Mật khẩu"
-            required
-            autocomplete="current-password"
-            minlength="6"
-          />
-  
-          <div class="links-row">
-            <a href="#" @click.prevent="forgotPassword" class="small-link">Quên mật khẩu?</a>
-            <span> | </span>
-            <router-link to="/register" class="small-link">Đăng ký</router-link>
-          </div>
-  
-          <button type="submit" class="btn-submit">Đăng nhập</button>
-  
-          <!-- Đăng nhập bằng các dịch vụ khác -->
-          <div class="alt-login">
-            <p>Đăng nhập bằng cách khác</p>
-            <div class="icon-row">
-              <button type="button" aria-label="Microsoft login" class="icon-btn microsoft" @click="loginWithMicrosoft">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" width="24" height="24" />
-              </button>
-              <button type="button" aria-label="Google login" class="icon-btn google" @click="loginWithGoogle">
-                <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="24" height="24" />
-              </button>
-              <button type="button" aria-label="Facebook login" class="icon-btn facebook" @click="loginWithFacebook">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook" width="24" height="24" />
-              </button>
-            </div>
-          </div>
-        </form>
+  <template>
+      <div class="auth-container">
+        <div class="back-to-home" @click="goHome">
+        ← Quay lại màn hình chính
       </div>
-    </div>
-  </template>
-  
-  <script setup>
-  import { ref } from 'vue'
-  import { useRouter } from 'vue-router'
-  import api from '../../services/api'
-  import Swal from 'sweetalert2'
-  const router = useRouter()
-  
-  const loginEmail = ref('')
-  const loginPassword = ref('')
-  
-  const goHome =()=>{
-    router.push({name:'users-home'})
-  }
-  function login() {
+        <div class="auth-box">
+          <!-- Form đăng nhập -->
+          <form @submit.prevent="login" class="form" novalidate>
+            <h2>Đăng nhập vào tài khoản của bạn</h2>
+    
+            <label for="login-email" class="sr-only">Email</label>
+            <input
+              id="login-email"
+              type="email"
+              v-model="loginEmail"
+              placeholder="Email"
+              required
+              autocomplete="username"
+            />
+    
+            <label for="login-password" class="sr-only">Mật khẩu</label>
+            <input
+              id="login-password"
+              type="password"
+              v-model="loginPassword"
+              placeholder="Mật khẩu"
+              required
+              autocomplete="current-password"
+              minlength="6"
+            />
+    
+            <div class="links-row">
+              <a href="#" @click.prevent="forgotPassword" class="small-link">Quên mật khẩu?</a>
+              <span> | </span>
+              <router-link to="/register" class="small-link">Đăng ký</router-link>
+            </div>
+    
+            <button type="submit" class="btn-submit">Đăng nhập</button>
+    
+            <!-- Đăng nhập bằng các dịch vụ khác -->
+            <div class="alt-login">
+              <p>Đăng nhập bằng cách khác</p>
+              <div class="icon-row">
+                <button type="button" aria-label="Microsoft login" class="icon-btn microsoft" @click="loginWithMicrosoft">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" width="24" height="24" />
+                </button>
+                <button type="button" aria-label="Google login" class="icon-btn google" @click="loginWithGoogle">
+                  <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="24" height="24" />
+                </button>
+                <button type="button" aria-label="Facebook login" class="icon-btn facebook" @click="loginWithFacebook">
+                  <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook" width="24" height="24" />
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </template>
+    
+    <script setup>
+    import { ref } from 'vue'
+    import { useRouter } from 'vue-router'
+    import api from '../../services/api'
+    import Swal from 'sweetalert2'
+    const router = useRouter()
+    
+    const loginEmail = ref('')
+    const loginPassword = ref('')
+    
+    const goHome =()=>{
+      router.push({name:'users-home'})
+    }
+    function login() {
 
-  api.post('/client/login', {
-    email: loginEmail.value,
-    password: loginPassword.value
-  })
-  .then((response) => {
-    Swal.fire({
-      title: 'Đăng nhập thành công!',
-      icon: 'success',
-      text: 'Chào mừng bạn đã quay lại!',
-      confirmButtonText: 'Tiếp tục'
-    }).then(() => {
-      // Lưu token sau khi đăng nhập thành công
-      localStorage.setItem('auth_token', response.data.token);
-      router.push({ name: 'users-home' });
-      localStorage.setItem('customerId', response.data.customer.id); //dsdsad
+    api.post('/client/login', {
+      email: loginEmail.value,
+      password: loginPassword.value
+    })
+    .then((response) => {
+      Swal.fire({
+        title: 'Đăng nhập thành công!',
+        icon: 'success',
+        text: 'Chào mừng bạn đã quay lại!',
+        confirmButtonText: 'Tiếp tục'
+      }).then(() => {
+        // Lưu token sau khi đăng nhập thành công
+        localStorage.setItem('auth_token', response.data.token);
+        // localStorage.setItem('customerId', response.data.customer.id);    
+        localStorage.setItem('customer_email', loginEmail.value);
+        localStorage.setItem('customer_password', loginPassword.value);
+        router.push({ name: 'users-home' });
+      });
+    })
+    .catch((error) => {
+      console.error('Lỗi đăng nhập:', error.response?.data || error.message);
+      Swal.fire({
+        title: 'Đăng nhập thất bại!',
+        icon: 'error',
+        text: 'Vui lòng kiểm tra lại thông tin đăng nhập của bạn!',
+        confirmButtonText: 'Thử lại'
+      });
     });
-  })
-  .catch((error) => {
-    console.error('Lỗi đăng nhập:', error.response?.data || error.message);
-    Swal.fire({
-      title: 'Đăng nhập thất bại!',
-      icon: 'error',
-      text: 'Vui lòng kiểm tra lại thông tin đăng nhập của bạn!',
-      confirmButtonText: 'Thử lại'
-    });
-  });
-}
-  
-function forgotPassword() {
-  if (!loginEmail.value) {
-    Swal.fire('Vui lòng nhập email trước!', '', 'warning')
-    return
   }
+  function forgotPassword() {
+    if (!loginEmail.value) {
+      Swal.fire('Vui lòng nhập email trước!', '', 'warning')
+      return
+    }
 
-  api.post('/client/forgot-password', { email: loginEmail.value })
-    .then((res) => {
-      console.log(' API response:', res)
-      Swal.fire('Thành công!', res.data.message, 'success')
-        .then(() => {
-          router.push({ name: 'users-reset-password', query: { email: loginEmail.value } })
-        })
-    })
-    .catch((err) => {
-      console.error(' Lỗi API:', err)
-      Swal.fire('Lỗi!', err.response?.data?.message || 'Có lỗi xảy ra.', 'error')
-    })
-}
+    api.post('/client/forgot-password', { email: loginEmail.value })
+      .then((res) => {
+        console.log(' API response:', res)
+        Swal.fire('Thành công!', res.data.message, 'success')
+          .then(() => {
+            router.push({ name: 'users-reset-password', query: { email: loginEmail.value } })
+          })
+      })
+      .catch((err) => {
+        console.error(' Lỗi API:', err)
+        Swal.fire('Lỗi!', err.response?.data?.message || 'Có lỗi xảy ra.', 'error')
+      })
+  }
 
 
   

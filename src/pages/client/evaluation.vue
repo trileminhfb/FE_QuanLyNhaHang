@@ -378,7 +378,7 @@ body {
 .app-container {
   background: white;
   width: 100%;
-  height: 90vh;
+  height: 100vh;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
   display: flex;

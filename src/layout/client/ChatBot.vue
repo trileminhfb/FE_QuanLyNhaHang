@@ -54,15 +54,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import api from '../../services/api'
-
+import { ref, onMounted, watch } from 'vue'
+import api from '../../services/api' // axios instance đã cấu hình
 const message = ref('')
-const messages = ref([]) // Lưu lịch sử chat
+const messages = ref([])
 const textareaRef = ref(null)
 const isOpen = ref(false)
 
+// Lấy thông tin người dùng từ localStorage
+const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {}
+const id_customer = userInfo.id || 1  // fallback ID giả định
+const id_user = 1 // bạn có thể thay bằng ID nhân viên thật nếu có login
+
+// Tự động resize textarea khi gõ
 const autoResize = () => {
     const textarea = textareaRef.value
     if (textarea) {
@@ -71,28 +75,36 @@ const autoResize = () => {
     }
 }
 
-const sendMessage = () => {
-    console.log(message.value); 
-
+// Gửi tin nhắn
+const sendMessage = async () => {
     if (!message.value.trim()) return
 
-    messages.value.push({ sender: 'user', text: message.value })
+    const userMessage = message.value
+    messages.value.push({ sender: 'user', text: userMessage })
 
-    api.post('/chat/send', { message: message.value })
-        .then((res) => {
-            const reply = res.data.reply || 'Không có phản hồi từ AI.'
-            messages.value.push({ sender: 'bot', text: reply })
+    try {
+        const res= await api.post('/chat/send', {
+            id_customer,
+            id_user,
+            message: userMessage
         })
-        .catch(() => {
-            messages.value.push({ sender: 'bot', text: 'Lỗi kết nối đến API.' })
-        })
+
+        messages.value.push({ sender: 'bot', text: res.data.reply })
+    } catch (err) {
+        console.error('Lỗi gửi tin nhắn:', err)
+        messages.value.push({ sender: 'bot', text: 'Lỗi gửi tin nhắn.' })
+    }
 
     message.value = ''
     autoResize()
 }
 
+
+
+
+
+// Auto resize khi mount
 onMounted(() => {
     autoResize()
 })
 </script>
-
