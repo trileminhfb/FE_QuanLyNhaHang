@@ -3,218 +3,186 @@
     <div class="header">
       <ul class="menu">
         <a href="" class="logo">
-          <img src="/imageicon/phefood.png" alt="">
+          <img src="/imageicon/phefood.png" alt="" />
         </a>
         <li>
           <router-link class="router-home" :to="{ name: 'users-home' }"><strong>HOME</strong></router-link>
         </li>
         <li class="servicefood">
-          <!-- cach 1 -->
-          <!-- <router-link class="router-introduce" to="/introduce" >INTRODUCE</router-link>  -->
-          <!-- cach 2 -->
           <router-link class="router-introduce" :to="{ name: 'users-introduce' }">INTRODUCE</router-link>
-
-
         </li>
-     
         <li class="servicefood">
-          <a href="">SERVICE FOOD</a>
-          <ul class="name-menu">
-            <li>
+          <a href="#">SERVICE FOOD</a>
+          <ul class="name-menu" v-if="types.length > 0">
+            <li v-for="type in types" :key="type.id">
               <div class="menu-row">
                 <div class="menu-list">
                   <div class="row-menu">
-                 
-                    <div class="col-6" @mouseover="currentImage = '/imageicon/lauthai.png'">
-                      <router-link :to="{name:'users-category'}">
-                      <p class="title-header">Khai vị </p>
-                      <ul class="List">
-                        <li><a href=""><i class="fa-solid fa-circle-dollar-to-slot"></i> Spot</a></li>
-                        <li><a href=""><i class="fa-solid fa-jet-fighter"></i> Margin vị akjddâddâda</a></li>
-                        <li><a href="P2P.html"><i class="fa-solid fa-credit-card"></i> P2P</a></li>
-                      </ul></router-link>
-                   
-                    </div>
-              
+                    <div class="col-6">
+                      <router-link :to="{ name: 'users-category', params: { typeId: type.id } }">
+                        <p @mouseover="currentImage = type.image || '/imageicon/phefood.png'" class="title-header">{{ type.name }} </p>
+                        <ul class="List" v-if="type.categories && type.categories.length > 0">
+  <li v-for="category in type.categories" :key="category.id">
+    <router-link :to="{ name: 'users-category', params: { categoryId: category.id } }">
+      <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ category.name }}
+    </router-link>
+  </li>
+</ul>
 
-                    <div class="col-6" @mouseover="currentImage = '/imageicon/bunbo.png'">
-                      <p class="title-header">Món chính</p>
-                      <ul  class="List">
-                        <li><a href="botGiaoDich.html"><i class="fa-solid fa-robot"></i> Bot giao dịch</a></li>
-                        <li><a href="saochepgiaodich.html"><i class="fa-solid fa-copy"></i> Sao chép giao dịch</a></li>
-                        <li><a href=""><i class="fa-solid fa-lock"></i> Cơm gà </a></li>
-                      </ul>
-                    </div>
-                  </div>
 
-                  <div class="row-menu">
-                    <div class="col-6" @mouseover="currentImage = '/imageicon/comga.png'">
-                      <router-link :to="{name: 'users-category'}"></router-link>
-                      <p class="title-header">Đồ uống</p>
-                      <ul  class="List">
-                        <li><a href="#"><i class="fa-solid fa-mug-hot"></i> Cà phêdddddd</a></li>
-                        <li><a href="#"><i class="fa-solid fa-wine-glass"></i> Nước ép cam </a></li>
-                        <li><a href="#"><i class="fa-solid fa-glass-water"></i> Nước ép thơm</a></li>
-                      </ul>
-                    </div>
-
-                    <div class="col-6" @mouseover="currentImage = '/imageicon/lautuxuyen.png'">
-                      <p class="title-header">Món tráng miệng</p>
-                      <ul  class="List">
-                        <li><a href="#"><i class="fa-solid fa-ice-cream"></i> Kem</a></li>
-                        <li><a href="#"><i class="fa-solid fa-cake-candles"></i> Bánh ngọt</a></li>
-                        <li><a href="#"><i class="fa-solid fa-cookie-bite"></i> Cookie</a></li>
-                      </ul>
+                        <ul class="List">
+                          <li v-for="item in type.items" :key="item.id">
+                            <a href="#">
+                              <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ item.name }}
+                            </a>
+                          </li>
+                        </ul>
+                      </router-link>
                     </div>
                   </div>
                 </div>
 
                 <div class="menu-image">
-                  <img style="width: 250px;" :src="currentImage" alt="Ảnh món ăn" />
-                </div>
+      <img :src="currentImage" alt="Ảnh món ăn" />
+    </div>
               </div>
             </li>
           </ul>
         </li>
+
         <li class="servicefood">
           <router-link :to="{ name: 'users-news' }">NEWS</router-link>
         </li>
         <li class="servicefood">
-          <router-link to="/booking"> BOOKING TABLE</router-link>
+          <router-link to="/booking">BOOKING TABLE</router-link>
         </li>
         <li class="servicefood">
-          <router-link to="/contact"> CONTACT</router-link>
+          <router-link to="/contact">CONTACT</router-link>
         </li>
         <div class="flex-1 justify-end flex me-10 items-center">
           <li>
             <div class="search-container" @click="handleClickOutside">
-  <div :class="isSearch ? 'w-[200px] search-box' : 'w-[40px] search-box'" @click="handleOpenSearch">
-    <input
-      type="text"
-      v-model="tuKhoa"
-      @blur="handleBlur"
-      placeholder="Tìm Món ..."
-    />
-    <div>
-      <i class="fas fa-solid fa-magnifying-glass"></i>
-    </div>
-  </div>
+              <div :class="isSearch ? 'w-[200px] search-box' : 'w-[40px] search-box'" @click="handleOpenSearch">
+                <input
+                  type="text"
+                  v-model="tuKhoa"
+                  @blur="handleBlur"
+                  placeholder="Tìm Món ..."
+                />
+                <div>
+                  <i class="fas fa-solid fa-magnifying-glass"></i>
+                </div>
+              </div>
 
-  <!-- Hiển thị kết quả tìm kiếm -->
-  <ul v-if="tuKhoa && monTimDuoc.length" class="result-box">
-    <li v-for="mon in monTimDuoc" :key="mon.id">
-      {{ mon.ten }}
-    </li>
-  </ul>
+              <!-- Hiển thị kết quả tìm kiếm -->
+              <ul v-if="tuKhoa && monTimDuoc.length" class="result-box">
+                <li v-for="mon in monTimDuoc" :key="mon.id">
+                  {{ mon.ten }}
+                </li>
+              </ul>
 
-  <p v-else-if="tuKhoa">Không tìm thấy món nào.</p>
-</div>
-
-
+              <p v-else-if="tuKhoa">Không tìm thấy món nào.</p>
+            </div>
           </li>
           <li>
-  <div class="cart-shopping">
-    <router-link :to="{ name: 'users-shoppingCart' }">
-      <i class="fa-solid fa-cart-shopping"></i>
-      <span class="cart-count" v-if="cartCount > 0">{{ cartCount }}</span>
-    </router-link>
-    
-  </div>
+            <div class="cart-shopping">
+              <router-link :to="{ name: 'users-shoppingCart' }">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <span class="cart-count" v-if="cartCount > 0">{{ cartCount }}</span>
+              </router-link>
+            </div>
+          </li>
+          <li>
+            <div class="cart-user">
+              <i v-if="!userEmail" class="fa-solid fa-user"></i>
+              <span v-else class="user-email">{{ userEmail }}</span>
 
-
-
-</li>
-<li>
-    <div class="cart-user">
-  <i v-if="!userEmail" class="fa-solid fa-user"></i>
-  <span v-else class="user-email">{{ userEmail }}</span>
-
-  <div class="user-info">
-    <router-link v-if="!userEmail" :to="{ name: 'users-login' }">Đăng nhập</router-link>
-    <button v-else @click="logout">Đăng xuất</button>
-  </div>
-</div>
-</li>
+              <div class="user-info">
+                <router-link v-if="!userEmail" :to="{ name: 'users-login' }">Đăng nhập</router-link>
+                <button v-else @click="logout">Đăng xuất</button>
+              </div>
+            </div>
+          </li>
 
           <li>
             <input type="checkbox" id="menu-toggle" hidden>
 
-<label for="menu-toggle" class="menu-toggle">
-  <i class="fa-solid fa-bars"></i>
-</label>
+            <label for="menu-toggle" class="menu-toggle">
+              <i class="fa-solid fa-bars"></i>
+            </label>
 
-<div class="user-menu">
-  <div class="menu-header">
-    <!-- Gói icon trong label để click vào sẽ đóng menu -->
-    <label for="menu-toggle">
-      <i class="fa-solid fa-bars"></i>
-    </label>
-    <h2>Menu</h2>
-  </div>
+            <div class="user-menu">
+              <div class="menu-header">
+                <label for="menu-toggle">
+                  <i class="fa-solid fa-bars"></i>
+                </label>
+                <h2>Menu</h2>
+              </div>
 
-  <router-link :to="{ name: 'users-home' }">
-    <div class="menu-item">
-      <i class="fa-solid fa-house"></i>
-      <h2>Home</h2>
-    </div>
-  </router-link>
+              <router-link :to="{ name: 'users-home' }">
+                <div class="menu-item">
+                  <i class="fa-solid fa-house"></i>
+                  <h2>Home</h2>
+                </div>
+              </router-link>
 
-  <div class="menu-item">
-    <i class="fa-solid fa-user"></i>
-    <router-link :to="{ name: 'users-personalinformation' }">
-      Account
-    </router-link>
-  </div>
-  <div class="menu-item">
-    <i class="fa-solid fa-ranking-star"></i>
-    <router-link :to="{ name: 'users-rank' }">
-      rank
-    </router-link>
-  </div>
-<router-link :to="{name :'users-evaluation'}">
-  <div class="menu-item">
-    <i class="fa-solid fa-gear"></i>
-    <h2>Rates</h2>
-  </div>
-</router-link>
+              <div class="menu-item">
+                <i class="fa-solid fa-user"></i>
+                <router-link :to="{ name: 'users-personalinformation' }">
+                  Account
+                </router-link>
+              </div>
+              <div class="menu-item">
+                <i class="fa-solid fa-ranking-star"></i>
+                <router-link :to="{ name: 'users-rank' }">
+                  rank
+                </router-link>
+              </div>
 
-  <router-link :to="{name:'History'}" class="menu-item">
-  <i class="fa-solid fa-wrench"></i>
-  <h2>History</h2>
-</router-link>
-<router-link :to="{name:'users-login'}" class="menu-item">
-  <i class="fa-solid fa-right-to-bracket"></i>
+              <router-link :to="{ name: 'users-evaluation' }">
+                <div class="menu-item">
+                  <i class="fas fa-pen"></i>
+                  <h2>Rates</h2>
+                </div>
+              </router-link>
 
-  <h2>login</h2>
-</router-link>
-  <div class="menu-item" @click="handleLogout">
-  <i class="fa-solid fa-right-from-bracket"></i>
-  <h2>Log Out</h2>
-</div>
-</div>
+              <router-link :to="{ name: 'History' }" class="menu-item">
+                <i class="fas fa-history"></i>
+                <h2>History</h2>
+              </router-link>
 
+              <router-link :to="{ name: 'users-login' }" class="menu-item">
+                <i class="fa-solid fa-right-to-bracket"></i>
+                <h2>login</h2>
+              </router-link>
+
+              <div class="menu-item" @click="handleLogout">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <h2>Log Out</h2>
+              </div>
+            </div>
           </li>
         </div>
-
-
       </ul>
-
-
     </div>
   </nav>
 </template>
+
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import Swal from 'sweetalert2';
-import '../../assets/css/Header.css'
+import '../../assets/css/Header.css';
 import { cartCount } from '../../stores/cartStore';
 import api from '../../services/api';
-import { useRouter} from 'vue-router';
-const currentImage = ref('/imageicon/food icon.png')
+import { useRouter } from 'vue-router';
+
+const currentImage = ref('/imageicon/default.png');
 const isSearch = ref(false);
 const tuKhoa = ref('');
 const monTimDuoc = ref([]);
-const router =useRouter();
+const userEmail = ref(null);  // Placeholder for email
+const types = ref([]);
+const router = useRouter();
 
 // Mở ô tìm kiếm
 const handleOpenSearch = () => {
@@ -243,10 +211,10 @@ watch(tuKhoa, (newVal) => {
   }
 
   api.get(`/tim-mon?ten=${encodeURIComponent(newVal)}`)
-    .then(response => {
-      monTimDuoc.value = response.data.mons; // tuỳ theo cấu trúc dữ liệu trả về
+    .then((response) => {
+      monTimDuoc.value = response.data.mons; // Tuỳ theo cấu trúc dữ liệu trả về
     })
-    .catch(error => {
+    .catch((error) => {
       console.error('Lỗi tìm kiếm món:', error);
       monTimDuoc.value = [];
     });
@@ -258,23 +226,23 @@ const handleLogout = async () => {
     icon: 'warning',
     showCancelButton: true,
     confirmButtonText: 'Đăng xuất',
-    cancelButtonText: 'Hủy'
+    cancelButtonText: 'Hủy',
   });
 
   if (result.isConfirmed) {
     try {
-      const response = await api.post('/client/logout'); 
+      const response = await api.post('/client/logout');
 
       if (response.data.message === 'Đăng xuất thành công') {
         Swal.fire({
           title: 'Đăng xuất thành công!',
           text: 'Bạn đã đăng xuất khỏi tài khoản.',
           icon: 'success',
-          confirmButtonText: 'OK'
+          confirmButtonText: 'OK',
         });
 
         localStorage.removeItem('users-login');
-        sessionStorage.removeItem('users-login'); 
+        sessionStorage.removeItem('users-login');
 
         router.push('/login');
       }
@@ -284,16 +252,20 @@ const handleLogout = async () => {
         title: 'Chưa đăng nhập mà đòi đăng xuất má ?!',
         text: 'Có lỗi xảy ra khi đăng xuất. Vui lòng thử lại.',
         icon: 'error',
-        confirmButtonText: 'OK'
+        confirmButtonText: 'OK',
       });
     }
   }
 };
 
-
-
-
-
+onMounted(async () => {
+  try {
+    const response = await api.get('/client/types');
+types.value = response.data.data;
+} catch (error) {
+console.error('Lỗi khi lấy loại món ăn:', error);
+}
+});
 </script>
 <style scoped>
 .List li:hover a {
@@ -448,11 +420,7 @@ const handleLogout = async () => {
   color: #d69c52;
 }
 
-.servicefood > a {
-  position: relative;
-  display: inline-block;
-  text-decoration: none;
-}
+
 
 .servicefood > a::after {
   content: "";
@@ -470,6 +438,103 @@ const handleLogout = async () => {
 .servicefood > a:hover::after {
   width: 100%;
   left: 50%;
+}
+
+
+.servicefood {
+  position: relative;
+}
+
+.servicefood > a {
+
+}
+.servicefood > a {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  display: flex ;
+  color: #333;
+  font-weight: bold;
+  transition: color 0.3s;
+}
+.servicefood > a:hover {
+  color: #e67e22;
+}
+
+/* Mega menu container */
+.mega-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 900px;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+}
+
+.menu-row {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Bên trái: danh sách loại món */
+.menu-list {
+  flex: 3;
+}
+
+.row-menu {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.col-type {
+  width: 200px;
+}
+
+.title-header {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #222;
+}
+
+.dish-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.dish-list li {
+  margin-bottom: 6px;
+}
+
+.dish-list a {
+  text-decoration: none;
+  font-size: 14px;
+  color: #444;
+  transition: color 0.3s;
+}
+
+.dish-list a:hover {
+  color: #e67e22;
+}
+
+/* Bên phải: ảnh */
+.menu-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.menu-image img {
+  width: 200px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ccc;
 }
 
 </style>

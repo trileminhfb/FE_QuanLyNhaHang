@@ -128,14 +128,17 @@
           Hạng
           <input type="number" v-model="informationpersonal.id_rank" disabled />
         </div>
-        <div class="group-information">
-          Kích hoạt
-          <input type="checkbox" v-model="informationpersonal.isActive" disabled />
-        </div>
+      
       </div>
     </div>
   </div>
+  <!-- Thêm vào cuối phần Thông tin cá nhân -->
+<div style="margin-top: 20px; text-align: right;">
+  <button @click="updatePersonalInfo" class="btn-update">Cập nhật thông tin</button>
 </div>
+
+</div>
+
 
 
               <div v-else-if="tab.ten === 'Quà tặng'">
@@ -168,22 +171,46 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref ,onMounted} from 'vue'
 import { Codemirror } from 'vue-codemirror'
+import api from '../../services/api'
+
+
 import { javascript } from '@codemirror/lang-javascript'
+
 const informationpersonal = ref({
-  mail: '',
   FullName: '',
   phoneNumber: '',
+  mail: '',
   birth: '',
-  password: '',
   image: '',
+  password: '',
   point: 0,
   id_rank: 1,
-  isActive: false
+  isActive: false,
 })
 
-const imagePreview = ref('')
+const imagePreview = ref(null)
+
+onMounted(() => {
+  const id = localStorage.getItem('customerId')
+  if (id) {
+    api.get(`/client/customers/${id}`)
+      .then((res) => {
+        informationpersonal.value = {
+          ...res.data.customer,
+          password: localStorage.getItem('customer_password') || '', 
+        }
+      })
+      .catch((err) => {
+        console.error('Lỗi khi lấy thông tin người dùng:', err)
+      })
+  }
+
+  // Gán lại email và password từ localStorage 
+  informationpersonal.value.mail = localStorage.getItem('customer_email') || ''
+  informationpersonal.value.password = localStorage.getItem('customer_password') || ''
+})
 
 const handleImageUpload = (event) => {
   const file = event.target.files[0]
@@ -194,6 +221,29 @@ const handleImageUpload = (event) => {
     informationpersonal.value.image = e.target.result
   }
   reader.readAsDataURL(file)
+}
+const updatePersonalInfo = () => {
+  const id = localStorage.getItem('customerId')
+  if (!id) return alert('Không tìm thấy ID người dùng')
+
+  // Tạo payload (có thể lọc thuộc tính nếu muốn gửi ít hơn)
+  const payload = {
+    FullName: informationpersonal.value.FullName,
+    phoneNumber: informationpersonal.value.phoneNumber,
+    mail: informationpersonal.value.mail,
+    birth: informationpersonal.value.birth,
+    image: informationpersonal.value.image,
+    password: informationpersonal.value.password,
+  }
+
+  api.put(`/client/customers/update/${id}`, payload)
+    .then(() => {
+      alert('Cập nhật thông tin thành công')
+    })
+    .catch((err) => {
+      console.error('Lỗi khi cập nhật thông tin:', err)
+      alert('Có lỗi xảy ra khi cập nhật')
+    })
 }
 
 
@@ -570,6 +620,18 @@ border-radius: 20px;
       box-shadow: 0 0 0 0 rgba(250, 229, 113, 0);
     }
   }
- 
+  .btn-update {
+  padding: 8px 16px;
+  background-color: #00b894;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-update:hover {
+  background-color: #019875;
+}
+
   </style>
   
