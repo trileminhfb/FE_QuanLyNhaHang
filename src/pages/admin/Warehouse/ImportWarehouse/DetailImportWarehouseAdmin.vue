@@ -8,7 +8,8 @@
                             <div class="flex flex-row px-5 gap-2">
                                 <p class="w-full">Hình ảnh:</p>
                                 <div class="w-32 h-32 flex justify-center items-center overflow-hidden border">
-                                    <img class=" w-full h-full object-cover" src="" alt="hình ảnh">
+                                    <img class=" w-full h-full object-cover"
+                                        :src="`${importMenuWarehouseData.ingredient.image}`" alt="hình ảnh">
                                 </div>
                             </div>
                             <div class="flex flex-row w-full items-center px-5">

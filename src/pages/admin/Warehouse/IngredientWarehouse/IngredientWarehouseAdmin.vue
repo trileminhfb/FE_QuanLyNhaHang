@@ -30,7 +30,7 @@
                                 <div class="h-full flex flex-row justify-start items-center">
                                     <div class="overflow-hidden flex flex-row justify-center items-center">
                                         <img class="hover:cursor-pointer overflow-auto object-cover h-32 w-24 rounded-lg shadow-md border"
-                                            :src="`/picture/food/${item.image}`" alt="Ảnh nhân viên" />
+                                            :src="item.image" alt="Ảnh nhân viên" />
                                         <div class="ps-5 flex flex-col gap-5">
                                             <p class="hover:cursor-pointer">{{ item.name_ingredient }}</p>
                                         </div>
@@ -127,8 +127,11 @@ const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPe
 const paginatedItems = computed(() => {
     const start = (currentPage.value - 1) * itemsPerPage;
     const end = start + itemsPerPage;
+
+    console.log('paginatedItems', filteredItems.value.slice(start, end));
     return filteredItems.value.slice(start, end);
 });
+
 
 async function fetchWarehouse() {
     try {

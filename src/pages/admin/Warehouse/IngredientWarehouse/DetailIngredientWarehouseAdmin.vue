@@ -56,7 +56,7 @@ const ingredientWarehouseData = route.query.data ? JSON.parse(route.query.data) 
 const showConfirm = ref(false)
 
 function goBack() {
-    router.push({ name: 'ỉngredient-warehouse-admin' })
+    router.push({ name: 'ingredient-warehouse-admin' })
 }
 
 // function goDelete() {
