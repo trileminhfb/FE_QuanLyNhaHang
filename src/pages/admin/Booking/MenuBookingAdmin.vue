@@ -36,8 +36,6 @@
             <Search v-model="searchQuery" />
             <input class="border border-gray-300 w-12 no-spinner text-center" type="number" min="0" max="23"
               placeholder="Time" @input="validateTime" v-model="selectedTime" />
-
-
             <input class="border border-gray-300" type="date" v-model="selectedDate" />
           </div>
         </div>
@@ -95,10 +93,10 @@
                     <p v-else-if="item.status === 2" class="bg-green-500 w-32 text-center p-2">
                       Hoàn thành
                     </p>
-                    <p v-else-if="item.status === 3" class="bg-red-500 w-32 text-center p-2">
+                    <p v-else-if="item.status === 3" class="bg-gray-500 w-32 text-center p-2 text-white">
                       Từ chối
                     </p>
-                    <p v-else-if="item.status === 4" class="bg-red-500 w-32 text-center p-2">
+                    <p v-else-if="item.status === 4" class="bg-red-500 w-32 text-center p-2 text-white">
                       Bị huỷ
                     </p>
                   </div>
