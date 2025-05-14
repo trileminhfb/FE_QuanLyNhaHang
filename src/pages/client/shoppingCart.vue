@@ -50,7 +50,6 @@
 
 <script setup>
 import { cartItems } from '../../stores/cartStore';
-import axios from 'axios';
 import api from '../../services/api';
 // Xóa món khỏi giỏ hàng
 async function xoaHang(id) {

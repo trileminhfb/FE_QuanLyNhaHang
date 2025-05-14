@@ -148,7 +148,7 @@
 
               <router-link :to="{ name: 'History' }" class="menu-item">
                 <i class="fas fa-history"></i>
-                <h2>History</h2>
+                <h2>History-Booking</h2>
               </router-link>
 
               <router-link :to="{ name: 'users-login' }" class="menu-item">
@@ -242,14 +242,17 @@ const handleLogout = async () => {
         });
 
         localStorage.removeItem('users-login');
-        sessionStorage.removeItem('users-login');
-
+        localStorage.removeItem('token');
+        localStorage.removeItem('customer_email');
+        localStorage.removeItem('customer_password');
+        localStorage.removeItem('user');
+        sessionStorage.clear(); 
         router.push('/login');
       }
     } catch (error) {
       console.error('Lỗi đăng xuất:', error);
       Swal.fire({
-        title: 'Chưa đăng nhập mà đòi đăng xuất má ?!',
+        title: 'Bạn chưa đăng nhập nên không thể đăng xuất?!',
         text: 'Có lỗi xảy ra khi đăng xuất. Vui lòng thử lại.',
         icon: 'error',
         confirmButtonText: 'OK',
@@ -445,9 +448,7 @@ console.error('Lỗi khi lấy loại món ăn:', error);
   position: relative;
 }
 
-.servicefood > a {
 
-}
 .servicefood > a {
   position: relative;
   display: inline-block;
@@ -499,6 +500,10 @@ console.error('Lỗi khi lấy loại món ăn:', error);
   font-weight: bold;
   margin-bottom: 10px;
   color: #222;
+  transition: 0.2s ease;
+}
+.title-header:hover {
+ transform: scale(1.1);
 }
 
 .dish-list {
