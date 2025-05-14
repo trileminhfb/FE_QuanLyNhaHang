@@ -26,14 +26,16 @@
                     </svg>
                 </div>
             </div>
-            <!-- chat content -->
+            <!-- Chat content -->
             <div class="flex-1 overflow-y-auto p-2">
-                <!-- Tin nhắn có thể hiển thị ở đây -->
+                <div v-for="msg in messages" :key="msg.id" :class="{'text-right': msg.sender === 'user', 'text-left': msg.sender === 'customer'}">
+                    <p class="text-sm">{{ msg.content }}</p>
+                </div>
             </div>
             <div class="h-auto w-full border-t rounded-b-xl flex flex-row justify-start items-center p-2 bg-white">
                 <textarea v-model="message" ref="textareaRef" rows="1" placeholder="Nhập tin nhắn..."
                     class="resize-none overflow-hidden w-full ps-2 focus:outline-none" @input="autoResize"></textarea>
-                <div class="h-[50px] w-[50px] flex justify-center items-center hover:cursor-pointer">
+                <div class="h-[50px] w-[50px] flex justify-center items-center hover:cursor-pointer" @click="sendMessage">
                     <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
                         viewBox="0 0 24 24">
                         <path
@@ -47,10 +49,16 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import api from '../../services/api'
 
 const message = ref('')
 const textareaRef = ref(null)
-const isOpen = ref(false) // <- Thêm dòng này
+const isOpen = ref(false) // Trạng thái mở/đóng chat
+const messages = ref([]) // Dữ liệu tin nhắn
+
+const customerId = 1 // Thay bằng ID khách hàng thực tế
+const staffId = 1 // Thay bằng ID nhân viên thực tế
 
 const autoResize = () => {
     const textarea = textareaRef.value
@@ -60,7 +68,35 @@ const autoResize = () => {
     }
 }
 
+// Hàm lấy tin nhắn từ API
+const fetchMessages = async () => {
+    try {
+        const response = await api.get(`/chat/get-messages/${customerId}/${staffId}`)
+        messages.value = response.data.messages
+    } catch (error) {
+        console.error('Lỗi khi lấy tin nhắn:', error)
+    }
+}
+
+// Hàm gửi tin nhắn
+const sendMessage = async () => {
+    if (message.value.trim() === '') return
+
+    try {
+        await api.post('/chat/send-message', {
+            id_customer: customerId,
+            id_user: staffId,
+            message: message.value
+        })
+        message.value = '' // Reset tin nhắn sau khi gửi
+        fetchMessages() // Lấy lại tin nhắn sau khi gửi
+    } catch (error) {
+        console.error('Lỗi khi gửi tin nhắn:', error)
+    }
+}
+
 onMounted(() => {
+    fetchMessages()
     autoResize()
 })
 </script>

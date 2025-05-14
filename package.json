@@ -16,6 +16,7 @@
     "chart": "^0.1.2",
     "chart.js": "^4.4.9",
     "codemirror": "^6.0.1",
+    "html5-qrcode": "^2.3.8",
     "openai": "^4.96.2",
     "pinia": "^3.0.2",
     "qrcode": "^1.5.4",

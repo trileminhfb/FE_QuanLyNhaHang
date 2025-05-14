@@ -42,9 +42,7 @@
                   </div>
                 </div>
 
-                <div class="menu-image">
-      <img :src="currentImage" alt="Ảnh món ăn" />
-    </div>
+                
               </div>
             </li>
           </ul>
