@@ -1,56 +1,56 @@
-<template>
-  <div class="shopping-cart">
-    <div class="container-shoppingCart">
-      <div class="col-left">
-        <div class="order-cart">
-          <h3 style="font-size: 30px;" class="order-title"><strong>Giỏ Hàng Của Bạn</strong></h3>
-          <div v-if="cartItems.length === 0">
-            Chưa có mặt hàng nào
-          </div>
-          <div v-else>
-            <div>
-              <ul class="header-cart">
-                <li>Thông tin sản phẩm</li>
-                <li>Đơn giá</li>
-                <li>Số lượng</li>
-                <li>Thành tiền</li>
-              </ul>
+  <template>
+    <div class="shopping-cart">
+      <div class="container-shoppingCart">
+        <div class="col-left">
+          <div class="order-cart">
+            <h3 style="font-size: 30px;" class="order-title"><strong>Giỏ Hàng Của Bạn</strong></h3>
+            <div v-if="cartItems.length === 0">
+              Chưa có mặt hàng nào
             </div>
-            <ul>
-              <li class="order-item" v-for="(item, index) in cartItems" :key="item.id || index">
-                <div class="item-col info">
-                  <img :src="item.image" />
-                  <span>{{ item.name }}</span>
-                </div>
-                <div style="margin-left: 20px;" class="item-col price">
-                  {{ item.price }}₫
-                </div>
-                <div class="item-col quantity">
-                  {{ item.quantity }}
-                </div>
-                <div class="item-col total">
-                  {{ item.price * item.quantity }}₫
-                  <button class="btn-delete" @click="xoaHang(item.id)">Xóa</button>
-                </div>
-              </li>
-            </ul>
-            <div class="order-btn-wrapper">
-              <p>Tổng tiền </p>
-              <router-link :to="{ name: 'users-pay' }">
-                <button class="btn-orderItem">Đặt Món</button>
-              </router-link>
+            <div v-else>
+              <div>
+                <ul class="header-cart">
+                  <li>Thông tin sản phẩm</li>
+                  <li>Đơn giá</li>
+                  <li>Số lượng</li>
+                  <li>Thành tiền</li>
+                </ul>
+              </div>
+              <ul>
+    <li class="order-item" v-for="(item, index) in cartItems" :key="item.id || index">
+      <div class="item-col info">
+        <img :src="item.image" />
+        <span>{{ item?.name || 'Không có tên' }}</span>
+      </div>
+      <div class="item-col price">
+        {{ item?.price || 'Không có giá' }}
+      </div>
+      <div class="item-col quantity">
+        {{ item.quantity }}
+      </div>
+      <div class="item-col total">
+        {{ (item?.price * item?.quantity)?.toLocaleString() }}₫
+        <button class="btn-delete" @click="xoaHang(item.id)">Xóa</button>
+      </div>
+    </li>
+  </ul>
+
+              <div class="order-btn-wrapper">
+                <p>Tổng tiền </p>
+                <router-link :to="{ name: 'users-pay' }">
+                  <button class="btn-orderItem">Đặt Món</button>
+                </router-link>
+              </div>
             </div>
           </div>
         </div>
+        <div class="col-right"></div>
       </div>
-      <div class="col-right"></div>
     </div>
-  </div>
-</template>
+  </template>
 
-<script setup>
+  <script setup>
 import { cartItems } from '../../stores/cartStore';
-import axios from 'axios';
 import api from '../../services/api';
 // Xóa món khỏi giỏ hàng
 async function xoaHang(id) {

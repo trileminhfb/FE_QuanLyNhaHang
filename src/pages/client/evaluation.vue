@@ -1,6 +1,5 @@
 <template>
   <div class="app-wrapper">
-    
     <div class="app-container">
       <div class="col-left">
         <header>
@@ -20,7 +19,6 @@
                 </button>
               </div>
             </div>
-
             <!-- Dropdown chọn món ăn có ảnh -->
             <div class="form-group">
               <label for="id_food">Food</label>
@@ -47,7 +45,6 @@
                 </ul>
               </div>
             </div>
-
             <!-- Thêm trường input cho id_customer -->
             <div class="form-group">
               <label for="id_customer">Customer ID</label>
@@ -86,7 +83,6 @@
             </button>
           </form>
         </section>
-
         <section v-if="reviews.length" class="reviews-section">
           <h2>Previous Reviews</h2>
           <ul class="reviews-list">
@@ -113,7 +109,6 @@
             </li>
           </ul>
         </section>
-
         <section v-else class="no-reviews">
           <p>No reviews yet</p>
         </section>
@@ -122,28 +117,22 @@
         <small>© 2025 Restaurant Reviews</small>
       </footer>
       </div>
-   
-    
       <div class="col-right">
         <div class="map">
-            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3833.663132104762!2d108.15967391020955!3d16.082961439006894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314218c30c993543%3A0xec01cc42d8352cff!2zNTIgR2nDoXAgVsSDbiBDxrDGoW5nLCBIb8OgIE1pbmgsIExpw6puIENoaeG7g3UsIMSQw6AgTuG6tW5nIDU1MDAwMCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1747078025558!5m2!1svi!2s" width="600" height="450" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3833.663132104762!2d108.15967391020955!3d16.082961439006894!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314218c30c993543%3A0xec01cc42d8352cff!2zNTIgR2nDoXAgVsSDbiBDxrDGoW5nLCBIb8OgIE1pbmgsIExpw6puIENoaeG7g3UsIMSQw6AgTuG6tW5nIDU1MDAwMCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1747078025558!5m2!1svi!2s" width="100%" height="700px " style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
       </div>
     </div>
   </div>
 </template>
-
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue";
 import api from "../../services/api";
-
-// Dữ liệu form đánh giá
 const formEvaluation = reactive({
   id_food: "",
   detail: "",
-  id_customer: "", // id khách hàng
+  id_customer: "", 
 });
-
 const rating = ref(0);
 const photoFiles = ref([]);
 const photoPreviews = ref([]);
@@ -157,28 +146,22 @@ const foodList = [
   { id: 2, name: 'Bánh Mì', image: 'imageicon/phefood.png' },
   { id: 3, name: 'Phở', image: 'imageicon/phefood.png' },
 ];
-
 // Computed
 const canSubmit = computed(() => {
   return rating.value > 0 && formEvaluation.detail.trim().length > 0;
 });
-
 const isEditing = computed(() => editingReview.value !== null);
-
 const selectedFood = computed(() => {
   return foodList.find((f) => f.id === formEvaluation.id_food) || null;
 });
-
 // Methods
 function toggleDropdown() {
   isDropdownOpen.value = !isDropdownOpen.value;
 }
-
 function selectFood(food) {
   formEvaluation.id_food = food.id;
   isDropdownOpen.value = false;
 }
-
 function handleFileChange(event) {
   const files = Array.from(event.target.files);
   for (const file of files) {
@@ -192,25 +175,20 @@ function handleFileChange(event) {
   }
   event.target.value = null;
 }
-
 function removePhoto(index) {
   photoFiles.value.splice(index, 1);
   photoPreviews.value.splice(index, 1);
 }
-
 function submitReview() {
   if (!canSubmit.value) return;
-
   const formData = new FormData();
   formData.append("id_food", formEvaluation.id_food);
   formData.append("star", rating.value);
   formData.append("detail", formEvaluation.detail);
   formData.append("id_customer", formEvaluation.id_customer);
-
   photoFiles.value.forEach((file) => {
     formData.append("photos[]", file);
   });
-
   if (isEditing.value) {
     formData.append("_method", "PUT");
     api
@@ -255,7 +233,6 @@ function submitReview() {
       });
   }
 }
-
 function editReview(review) {
   editingReview.value = review;
   formEvaluation.id_food = review.id_food;
@@ -282,7 +259,6 @@ function deleteReview(index) {
       });
   }
 }
-
 function formattedDate(dateStr) {
   const date = new Date(dateStr);
   return date.toLocaleDateString(undefined, {
@@ -291,7 +267,6 @@ function formattedDate(dateStr) {
     day: "numeric",
   });
 }
-
 function resetForm() {
   rating.value = 0;
   formEvaluation.id_food = "";
@@ -301,25 +276,19 @@ function resetForm() {
   photoPreviews.value = [];
   editingReview.value = null;
 }
-
 function saveReviewsToLocalStorage() {
   localStorage.setItem("restaurant_reviews", JSON.stringify(reviews.value));
 }
-
 function loadReviewsFromLocalStorage() {
   const saved = localStorage.getItem("restaurant_reviews");
   if (saved) {
     reviews.value = JSON.parse(saved);
   }
 }
-
 onMounted(() => {
   loadReviewsFromLocalStorage();
 });
 </script>
-
-
-
 <style scoped>
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600&display=swap");
 
@@ -378,11 +347,10 @@ body {
 .app-container {
   background: white;
   width: 100%;
-  height: 100vh;
+  height: 100%;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
   border-radius: 12px;
   display: flex;
-  flex-direction: column;
   overflow: hidden;
 }
 
@@ -558,6 +526,6 @@ textarea:focus {
 }
 .col-right{
   width: 60%;
+  margin-left: 20px;
 }
-
 </style>

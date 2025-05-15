@@ -80,7 +80,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="flex flex-col overflow-y-auto max-h-full">
                         <p class="uppercase font-bold">Đánh giá</p>
 

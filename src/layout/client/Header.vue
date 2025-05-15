@@ -12,43 +12,53 @@
           <router-link class="router-introduce" :to="{ name: 'users-introduce' }">INTRODUCE</router-link>
         </li>
         <li class="servicefood">
-          <a href="#">SERVICE FOOD</a>
-          <ul class="name-menu" v-if="types.length > 0">
-            <li v-for="type in types" :key="type.id">
-              <div class="menu-row">
-                <div class="menu-list">
-                  <div class="row-menu">
-                    <div class="col-6">
-                      <router-link :to="{ name: 'users-category', params: { typeId: type.id } }">
-                        <p @mouseover="currentImage = type.image || '/imageicon/phefood.png'" class="title-header">{{ type.name }} </p>
-                        <ul class="List" v-if="type.categories && type.categories.length > 0">
-  <li v-for="category in type.categories" :key="category.id">
-    <router-link :to="{ name: 'users-category', params: { categoryId: category.id } }">
-      <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ category.name }}
-    </router-link>
-  </li>
-</ul>
+  <a href="#">SERVICE FOOD</a>
+  <ul class="name-menu" v-if="types.length > 0">
+    <li v-for="type in types" :key="type.id">
+      <div class="menu-row">
+        <div class="menu-list">
+          <div class="row-menu" style="display: flex; align-items: flex-start; gap: 20px">
+       
 
+       
+            <div class="col-6">
+              <p
+                @mouseover="currentImage = type.image || '/imageicon/phefood.png'"
+                class="title-header"
+              >
+                <router-link :to="{ name: 'users-category', params: { typeId: type.id } }">
+                  {{ type.name }}
+                </router-link>
+              </p>
 
-                        <ul class="List">
-                          <li v-for="item in type.items" :key="item.id">
-                            <a href="#">
-                              <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ item.name }}
-                            </a>
-                          </li>
-                        </ul>
-                      </router-link>
-                    </div>
-                  </div>
-                </div>
+              <ul class="title-menu">
+                <li>Cơm gà</li>
+                <li>Bún</li>
+                <li>Lẩu</li>
+              </ul>
 
-                <div class="menu-image">
-      <img :src="currentImage" alt="Ảnh món ăn" />
-    </div>
-              </div>
-            </li>
-          </ul>
-        </li>
+              <ul class="List" v-if="type.categories && type.categories.length > 0">
+                <li v-for="category in type.categories" :key="category.id">
+                  <router-link :to="{ name: 'users-category', params: { categoryId: category.id } }">
+                    <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ category.name }}
+                  </router-link>
+                </li>
+              </ul>
+
+              <ul class="List">
+                <li v-for="item in type.items" :key="item.id">
+                  <a href="#">
+                    <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ item.name }}
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+</li>
 
         <li class="servicefood">
           <router-link :to="{ name: 'users-news' }">NEWS</router-link>
@@ -148,7 +158,7 @@
 
               <router-link :to="{ name: 'History' }" class="menu-item">
                 <i class="fas fa-history"></i>
-                <h2>History</h2>
+                <h2>History-Booking</h2>
               </router-link>
 
               <router-link :to="{ name: 'users-login' }" class="menu-item">
@@ -178,7 +188,7 @@ import { useRouter } from 'vue-router';
 
 const currentImage = ref('/imageicon/default.png');
 const isSearch = ref(false);
-const tuKhoa = ref('');
+const tuKhoa = ref('')
 const monTimDuoc = ref([]);
 const userEmail = ref(null);  // Placeholder for email
 const types = ref([]);
@@ -212,7 +222,7 @@ watch(tuKhoa, (newVal) => {
 
   api.get(`/tim-mon?ten=${encodeURIComponent(newVal)}`)
     .then((response) => {
-      monTimDuoc.value = response.data.mons; // Tuỳ theo cấu trúc dữ liệu trả về
+      monTimDuoc.value = response.data.mons; 
     })
     .catch((error) => {
       console.error('Lỗi tìm kiếm món:', error);
@@ -242,14 +252,17 @@ const handleLogout = async () => {
         });
 
         localStorage.removeItem('users-login');
-        sessionStorage.removeItem('users-login');
-
+        localStorage.removeItem('token');
+        localStorage.removeItem('customer_email');
+        localStorage.removeItem('customer_password');
+        localStorage.removeItem('user');
+        sessionStorage.clear(); 
         router.push('/login');
       }
     } catch (error) {
       console.error('Lỗi đăng xuất:', error);
       Swal.fire({
-        title: 'Chưa đăng nhập mà đòi đăng xuất má ?!',
+        title: 'Bạn chưa đăng nhập nên không thể đăng xuất?!',
         text: 'Có lỗi xảy ra khi đăng xuất. Vui lòng thử lại.',
         icon: 'error',
         confirmButtonText: 'OK',
@@ -445,8 +458,11 @@ console.error('Lỗi khi lấy loại món ăn:', error);
   position: relative;
 }
 
-.servicefood > a {
-
+.title-menu li{
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
 }
 .servicefood > a {
   position: relative;
@@ -499,6 +515,10 @@ console.error('Lỗi khi lấy loại món ăn:', error);
   font-weight: bold;
   margin-bottom: 10px;
   color: #222;
+  transition: 0.2s ease;
+}
+.title-header:hover {
+ transform: scale(1.1);
 }
 
 .dish-list {
