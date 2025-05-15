@@ -2,21 +2,38 @@
   <div class="container-cartegoryaooetizer">
     <h1>Danh Sách Menu</h1>
 
+    <div class="search-wrapper" style="text-align:center; margin-bottom: 1rem;">
+      <input
+        type="text"
+        v-model="searchTerm"
+        placeholder="Tìm kiếm món ăn... 🔎"
+        class="search-input"
+      />
+    </div>
+
     <div class="categories">
-      <button v-for="(category, index) in categories" :key="category.name" @click="selectCategory(index)"
-        class="category-button" :class="{ active: selectedCategoryIndex === index }" type="button">
+      <button
+        v-for="(category, index) in categories"
+        :key="category.name"
+        @click="selectCategory(index)"
+        class="category-button"
+        :class="{ active: selectedCategoryIndex === index }"
+        type="button"
+      >
         {{ category.name }}
       </button>
     </div>
 
-    <div class="food-items" v-if="selectedCategory && selectedCategory.dsMon.length > 0">
+    <div class="food-items" v-if="selectedCategory && filteredDishes.length > 0">
       <h2>{{ selectedCategory.name }}</h2>
 
       <div class="menu-grid">
-        <div class="card-menu" v-for="(dish, dishIndex) in selectedCategory.dsMon" :key="dishIndex">
-          <img :src="dish.image" alt="" />
+        <div class="card-menu" v-for="(dish, dishIndex) in filteredDishes" :key="dishIndex">
+          <img :src="getImageUrl(dish.image)" alt="Ảnh món ăn" style="width: 100%; height: auto;" />
           <div class="info-card">
-            <div class="card-name"><strong>{{ dish.name }}</strong></div>
+            <div class="card-name" @click="handleShowRating(dish)">
+              <strong>{{ dish.name }}</strong>
+            </div>
             <div class="card-cost"><strong>{{ dish.cost }}</strong></div>
 
             <div class="card-title">{{ dish.detail }}</div>
@@ -33,41 +50,61 @@
 
               <div class="gio-hang-icon">
                 <span class="so-luong" v-if="soLuong > 0">{{ soLuong }}</span>
-
               </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+
     <div class="food-items" v-else>
-      <p>Vui lòng chọn danh mục để xem món ăn.</p>
+      <p>Vui lòng chọn danh mục để xem món ăn hoặc không tìm thấy món ăn phù hợp.</p>
     </div>
+
+    <!-- Component đánh giá món ăn -->
+    <DishRating
+      v-if="showRating"
+      :dish="selectedDish"
+      @close="showRating = false"
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '../../services/api'
-
 import { useRouter } from 'vue-router'
 import { cartItems, addToCart } from '../../stores/cartStore'
+import DishRating from './DishRating.vue'
 
 const router = useRouter()
 
 const categories = ref([])
-
 const selectedCategoryIndex = ref(null)
+const selectedDish = ref(null)
+const showRating = ref(false)
 
+const searchTerm = ref('')
 
 function selectCategory(index) {
   selectedCategoryIndex.value = index
-  console.log("Danh mục đã chọn:", selectedCategory.value)
 }
 
 // Hàm lấy danh mục đã chọn
 const selectedCategory = computed(() => {
-  return selectedCategoryIndex.value !== null ? categories.value[selectedCategoryIndex.value] : null
+  return selectedCategoryIndex.value !== null
+    ? categories.value[selectedCategoryIndex.value]
+    : null
+})
+
+// Lọc món ăn theo từ khóa tìm kiếm  
+const filteredDishes = computed(() => {
+  if (!selectedCategory.value) return []
+  if (!searchTerm.value.trim()) return selectedCategory.value.dsMon
+  const keyword = searchTerm.value.trim().toLowerCase()
+  return selectedCategory.value.dsMon.filter(dish =>
+    dish.name.toLowerCase().includes(keyword)
+  )
 })
 
 // Tính tổng số lượng trong giỏ hàng
@@ -77,35 +114,23 @@ const soLuong = computed(() => {
 
 // Tải danh mục và món ăn từ API khi component được mount
 onMounted(async () => {
-  fetchCategories()
+  await fetchCategories()
   try {
     const response = await api.get('/client/foods')
     const foods = response.data
-    console.log('ád', foods);
-
-
     const categorizedFoods = categorizeFoods(foods)
     categories.value = categorizedFoods
-    console.log("Danh sách danh mục:", categories.value)
   } catch (error) {
-    console.error('Error fetching food data:', error)
+    console.error('Lỗi khi tải món ăn:', error)
   }
 })
 
-const fetchCategories = () => {
-  api.get('/client/categories').then((res) => {
-    categories.value = res.data
-  })
+const fetchCategories = async () => {
+  const res = await api.get('/client/categories')
+  categories.value = res.data
 }
 
 function categorizeFoods(foods) {
-  // const categorized = [
-  //   { name: 'Gà Rán', dsMon: [] },
-  //   { name: 'Gà Nướng', dsMon: [] },
-  //   { name: 'Giảm giá', dsMon: [] },
-  //   { name: 'Mới', dsMon: [] },
-  //   { name: 'Giá', dsMon: [] } 
-  // ]
   const categorized = categories.value.map((item) => {
     return {
       name: item.name,
@@ -114,21 +139,34 @@ function categorizeFoods(foods) {
     }
   })
 
-  foods.forEach(food => {
-    food.categories.forEach(category => {
-      console.log('ádâ', category);
-      const categoryIndex = categorized.findIndex(c => c.name === category.name)
+  foods.forEach((food) => {
+    food.categories.forEach((category) => {
+      const categoryIndex = categorized.findIndex((c) => c.name === category.name)
       if (categoryIndex !== -1) {
         categorized[categoryIndex].dsMon.push(food)
       }
     })
   })
-  console.log('food', foods);
+
   return categorized
 }
 
+// Trả về URL ảnh đầy đủ
+function getImageUrl(image) {
+  if (!image) return ''
+  if (image.startsWith('http')) return image
+  return `http://localhost:8000/storage/foods/${image}`
+}
+
+// Thêm vào giỏ hàng
 function handleAddToCart(dish) {
   addToCart(dish)
+}
+
+// Mở component đánh giá
+function handleShowRating(dish) {
+  selectedDish.value = dish
+  showRating.value = true
 }
 </script>
 
@@ -216,9 +254,9 @@ h1 {
   transition: transform 0.3s ease;
 }
 
-.card-menu:hover img {
+/* .card-menu:hover img {
   transform: translateY(-6px);
-}
+} */
 
 .btn-wrapper {
   margin-top: 0.5rem;
@@ -266,5 +304,28 @@ h1 {
   color: red;
   font-weight: bold;
   font-size: 18px;
+}
+.card-name{
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+.card-name:hover{
+  transform: scale(1.1);
+  color: #4caf50;
+}
+
+.search-input {
+  padding: 0.5rem 1rem;
+  margin-bottom: 10px;
+  width: 200px;
+  border-radius: 6px;
+  border: 1.5px solid #4caf50;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #388e3c;
 }
 </style>

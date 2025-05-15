@@ -20,26 +20,7 @@
 
           <div class="main-content">
             <div class="row">
-              <div class="row-col-left">
-                <label for="fullname">Họ và tên</label>
-                <input type="text" id="fullname" v-model="form.fullname" placeholder="Nhập họ và tên" />
-
-                <label for="email">Email</label>
-                <input type="email" id="email" v-model="form.email" placeholder="Nhập email" />
-                <label for="email">id table</label>
-                <input type="number" id="" v-model="form.id_table" placeholder="Nhập " />
-                <label for="email">Total</label>
-                <input type="number" id="" v-model="form.total" placeholder="Nhập " />
-
-                <label for="id_user">Người tạo đơn (ID user)</label>
-                <input type="number" id="id_user" v-model="form.id_user" placeholder="Nhập ID người dùng" />
-
-                <label for="id_customer">Khách hàng (ID)</label>
-                <input type="number" id="id_customer" v-model="form.id_customer" placeholder="Nhập ID khách hàng" />
-
-                <label for="id_sale">Mã giảm giá (ID Sale)</label>
-                <input type="number" id="id_sale" v-model="form.id_sale" placeholder="Nhập mã giảm giá" />
-              </div>
+            
 
               <div class="row-col-right">
                 <div class="name-pay"><p>Thanh Toán</p></div>
@@ -82,17 +63,17 @@
                   <img :src="item.hinh" alt="" />
                   <span>{{ item.ten }}</span>
                 </div>
-                <div class="item-col price">{{ item.gia }}₫</div>
-                <div class="item-col quantity">x{{ item.soLuong }}</div>
+                <div class="item-col price">{{ item.price }}₫</div>
+                <div class="item-col quantity">x{{ item.quantity }}</div>
                 <div class="item-col total">
-                  {{ item.gia * item.soLuong }}₫
+                  {{ item.price * item.quantity }}₫
                   <button class="btn-delete" @click="xoaHang(item.id)">Xóa</button>
                 </div>
               </li>
             </ul>
 
             <div class="order-btn-wrapper">
-              <button class="btn-orderItem" @click="datMon">Đặt Món</button>
+              <button class="btn-orderItem">Đặt Món</button>
             </div>
           </div>
         </div>
@@ -110,57 +91,55 @@ import { cartItems } from '../../stores/cartStore'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const form = ref({
-  fullname: '',
-  email: '',
-  id_table: '',
-  total: '',
-  id_user: '',
-  id_customer: '',
-  id_sale: ''
-})
-
+// const form = ref({
+//   fullname: '',
+//   email: '',
+//   id_table: '',
+//   total: '',
+//   id_user: '',
+//   id_customer: '',
+//   id_sale: ''
+// })
 const selectedPayment = ref('')
 const namePay = [
   { name: 'Thanh toán khi giao hàng' },
   { name: 'Thanh toán online' }
 ]
 const paymentSuccessful = ref(false)
+// const datMon = async () => {
+//   if (!form.value.fullname || !form.value.email || !form.value.id_user || !form.value.id_customer || !selectedPayment.value) {
+//     alert("Vui lòng nhập đầy đủ thông tin!");
+//     return;
+//   }
 
+//   const payload = {
+//     fullname: form.value.fullname,
+//     email: form.value.email,
+//     id_user: form.value.id_user,
+//     id_table: form.value.id_table,
+//   total: form.value.total,
+//     id_customer: form.value.id_customer,
+//     id_sale: form.value.id_sale,
+//     payment_method: selectedPayment.value,
+//     items: cartItems.value.map(item => ({
+//       id_product: item.id,
+//       quantity: item.soLuong,
+//       price: item.gia
+//     }))
+//   };
 
+//   try {
+//     const response = await api.post('/client/invoices/create', payload)
+//     console.log('Invoice created successfully:', response.data);
+//     paymentSuccessful.value = true;
+//     alert('Thanh toán thành công');
+//   } catch (error) {
+//     console.error('Lỗi:', error)
+//     alert('Có lỗi xảy ra khi thanh toán.')
+//   }
+// }
+console.log(cartItems.value); 
 
-const datMon = async () => {
-  if (!form.value.fullname || !form.value.email || !form.value.id_user || !form.value.id_customer || !selectedPayment.value) {
-    alert("Vui lòng nhập đầy đủ thông tin!");
-    return;
-  }
-
-  const payload = {
-    fullname: form.value.fullname,
-    email: form.value.email,
-    id_user: form.value.id_user,
-    id_table: form.value.id_table,
-  total: form.value.total,
-    id_customer: form.value.id_customer,
-    id_sale: form.value.id_sale,
-    payment_method: selectedPayment.value,
-    items: cartItems.value.map(item => ({
-      id_product: item.id,
-      quantity: item.soLuong,
-      price: item.gia
-    }))
-  };
-
-  try {
-    const response = await api.post('/client/invoices/create', payload)
-    console.log('Invoice created successfully:', response.data);
-    paymentSuccessful.value = true;
-    alert('Thanh toán thành công');
-  } catch (error) {
-    console.error('Lỗi:', error)
-    alert('Có lỗi xảy ra khi thanh toán.')
-  }
-}
 async function xoaHang(id) {
   try {
     await api.delete(`/client/carts/${id}`); // Gửi yêu cầu xóa món từ giỏ hàng
@@ -173,11 +152,6 @@ async function xoaHang(id) {
   }
 }
 </script>
-
-
-
-
-
 <style scoped>
 .container-pay {
   width: 100%;

@@ -45,7 +45,7 @@
         </div>
         <!-- FORM ĐẶT MÓN ĂN -->
         <div class="col-left" v-if="formStage === 'order'">
-          <h3 style="color: white;">🍽️ Chọn món ăn (ID booking: {{ bookingId }})</h3>
+          <h3 style="color: white; font-size: 30px; padding-bottom: 20px;">🍽️ Chọn món ăn </h3>
           <div v-for="(item, index) in foodForm" :key="index" class="form-row">
             <label>Món ăn {{ index + 1 }}:</label>
             <select v-model="item.id_foods">
@@ -64,6 +64,8 @@
         </div>
         <!-- THÔNG TIN XÁC NHẬN & MÃ QR -->
         <div v-if="formStage === 'confirmation'" class="col-left card-info">
+          <button @click="formStage = 'choose'" style="margin-top: 10px;">⬅️ Quay lại</button>
+
           <h3 style="color: white; display: flex; justify-content: center;margin-bottom: 20px; font-size: 30px;">Thông tin đặt bàn của bạn</h3>
           <div class="user-info">
             <img :src="userInfo.avatar" alt="Ảnh đại diện" class="avatar" />
@@ -89,10 +91,14 @@ import api from '../../services/api';
 import Swal from 'sweetalert2';
 import QRCode from 'qrcode';
 import { useBookingHistoryStore } from '../../stores/bookingHistoryStore';
+import { useToast } from 'vue-toastification';
+import { useRouter } from 'vue-router';
+const toast =useToast();
 const bookingStore = useBookingHistoryStore();
 const bookingSuccess = ref(false);
 const formStage = ref('choose');
 const errors = ref({});
+const router =useRouter();
 const bookingId = ref(null); 
 const form = reactive({
   timeBooking: ''
@@ -144,7 +150,7 @@ const formatDateTime = (datetime) => {
   return `${y}-${m}-${d} ${h}:${min}:00`;
 };
 const createBooking = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('auth_token');
   errors.value = {};
 
   if (!form.timeBooking) {
@@ -158,11 +164,16 @@ const createBooking = () => {
   api.post('/client/bookings/create', payload)
     .then((res) => {
       if (res.status === 201) {
-        alert('Bạn đã đặt bàn thành công');
+        toast.success('Bạn đã đặt bàn thành công', {
+  toastClassName: 'vue-toastification__toast'
+});
+
         bookingSuccess.value = true;
         formStage.value = 'choose';
-        bookingStore.addBooking(res.data);
-        localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings));
+        bookingStore.addBooking(res.data.booking);
+        localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
+
+
         bookingId.value = res.data.booking.id;
 
         getFoods();
@@ -180,6 +191,9 @@ const createBooking = () => {
     });
 };
 const submitFoodOrder = () => {
+  localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
+
+
   const invalid = foodForm.value.some(item => !item.id_foods || item.quantity < 1);
   if (invalid) {
     alert('Vui lòng chọn món và số lượng hợp lệ cho tất cả các món.');
@@ -195,15 +209,29 @@ const submitFoodOrder = () => {
   };
 
   api.post('/client/booking-food', payload)
+  
     .then(() => {
-      alert('Đặt món thành công!');
+      toast.success('Đặt món thành công!');
+      localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
+
+      // Cập nhật lịch sử đặt bàn với danh sách món đã chọn
+      const updatedBooking = {
+        id: bookingId.value,
+        foods: foodForm.value.map(item => ({
+          id_foods: item.id_foods,
+          quantity: item.quantity
+        }))
+      };
+
+      bookingStore.updateBookingFoods(updatedBooking);
+      localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
+
       router.push({ name: 'users-home' });
     })
     .catch((err) => {
       console.log('Lỗi đặt món:', err.response?.data || err.message);
     });
 };
-
 
 const submitDeposit = () => {
   userInfo.name = localStorage.getItem('customer_name') || 'Chưa có tên';
@@ -494,5 +522,12 @@ p a:hover {
 }
 .user-info .avatar{
   border-radius: 50% ;
+}
+.vue-toastification__toast {
+  font-size: 0.75rem;
+  padding: 0.5em 1em;
+  border-radius: 6px;
+  min-height: unset;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 </style>

@@ -26,12 +26,12 @@
                 <td colspan="4">Không có dữ liệu đặt món.</td>
               </tr>
               <tr v-else v-for="(item, index) in orders" :key="index">
-                <td>{{ formatDateTime(item.timeBooking) }}</td>
+                <td>{{ formatDate(item.timeBooking) }}</td>
                 <td>{{ item.foodName }}</td>
                 <td>{{ item.quantity }}</td>
                 <td>
-                  <button class="action-btn delete-btn" @click="deleteOrder(index)">Xoá</button>
-                  <button class="action-btn update-btn" @click="updateOrder(item, index)">Update</button>
+                  <button class="action-btn delete-btn" @click="deleteOrder(item.bookingId, item.id_foods)">Xoá</button>
+                  <button class="action-btn update-btn" @click="increaseQuantity(item)">Tăng SL</button>
                 </td>
               </tr>
             </tbody>
@@ -51,10 +51,11 @@ import { ref, onMounted } from 'vue';
 import api from '../../services/api';
 
 const orders = ref([]);
-const isLoading = ref(false);
-const foods = ref([]);
+const isLoading = ref(true);
+const foodsList = ref([]);
 
-const formatDateTime = (datetime) => {
+// Format ngày giờ theo định dạng VN
+const formatDate = (datetime) => {
   const date = new Date(datetime);
   return date.toLocaleString('vi-VN', {
     year: 'numeric',
@@ -65,54 +66,94 @@ const formatDateTime = (datetime) => {
   });
 };
 
-const deleteOrder = (index) => {
-  if (confirm('Bạn có chắc muốn xóa món này?')) {
-    const currentData = JSON.parse(localStorage.getItem('bookings')) || [];
-    currentData.splice(index, 1);
-    localStorage.setItem('bookings', JSON.stringify(currentData));
-    orders.value.splice(index, 1);
-    alert('Xóa thành công!');
-  }
-};
-
-const updateOrder = (item, index) => {
-  // Gửi yêu cầu cập nhật từ frontend tới backend
-  const updatedItem = { ...item, quantity: item.quantity + 1 };  // Ví dụ, tăng số lượng món ăn
-  api.put(`/admin/bookings/${item.id}`, updatedItem)
-    .then(response => {
-      alert('Cập nhật thành công!');
-      orders.value[index] = { ...response.data.booking };  // Cập nhật dữ liệu sau khi nhận phản hồi từ server
-    })
-    .catch(error => {
-      console.error('Lỗi khi cập nhật:', error);
-      alert('Cập nhật thất bại');
-    });
-};
-
-const getFoods = async () => {
+// Lấy danh sách món ăn từ API
+const fetchFoods = async () => {
   try {
     const res = await api.get('/client/foods');
-    foods.value = res.data;
+    foodsList.value = res.data;
   } catch (err) {
-    console.error('Lỗi khi lấy danh sách món:', err);
+    console.error('Lỗi khi lấy món ăn:', err);
   }
 };
 
-onMounted(async () => {
-  await getFoods();
-  const stored = JSON.parse(localStorage.getItem('bookings')) || [];
+// Gộp lịch sử đặt món từ localStorage
+const loadOrders = () => {
+  const history = JSON.parse(localStorage.getItem('bookingHistory')) || [];
+  const result = [];
 
-  orders.value = stored.map((item) => {
-    const food = foods.value.find(f => f.id === item.booking_food.id_food);
-    return {
-      id: item.id,
-      timeBooking: item.timeBooking,
-      foodName: food ? food.name : 'Không tìm thấy',
-      quantity: item.booking_food.quantity
-    };
+  history.forEach(booking => {
+    if (Array.isArray(booking.foods)) {
+      booking.foods.forEach(food => {
+        const matchedFood = foodsList.value.find(f => f.id === food.id_foods);
+        result.push({
+          bookingId: booking.id,
+          id_foods: food.id_foods,
+          timeBooking: booking.timeBooking || new Date().toISOString(),
+          foodName: matchedFood ? matchedFood.name : 'Không rõ',
+          quantity: food.quantity,
+        });
+      });
+    }
   });
+
+  orders.value = result;
+};
+
+// Xoá món ăn trong một đơn
+const deleteOrder = (bookingId, foodId) => {
+  if (!confirm('Bạn có chắc muốn xoá món này không?')) return;
+
+  const history = JSON.parse(localStorage.getItem('bookingHistory')) || [];
+
+  const updatedHistory = history
+    .map(booking => {
+      if (booking.id === bookingId) {
+        return {
+          ...booking,
+          foods: booking.foods.filter(f => f.id_foods !== foodId)
+        };
+      }
+      return booking;
+    })
+    .filter(booking => booking.foods.length > 0);
+
+  localStorage.setItem('bookingHistory', JSON.stringify(updatedHistory));
+  loadOrders();
+  alert('Đã xoá món thành công!');
+};
+
+// Tăng số lượng món ăn
+const increaseQuantity = (item) => {
+  const history = JSON.parse(localStorage.getItem('bookingHistory')) || [];
+
+  const updatedHistory = history.map(booking => {
+    if (booking.id === item.bookingId) {
+      return {
+        ...booking,
+        foods: booking.foods.map(f => {
+          if (f.id_foods === item.id_foods) {
+            return { ...f, quantity: f.quantity + 1 };
+          }
+          return f;
+        })
+      };
+    }
+    return booking;
+  });
+
+  localStorage.setItem('bookingHistory', JSON.stringify(updatedHistory));
+  loadOrders();
+  alert('Tăng số lượng thành công!');
+};
+
+// Khởi tạo dữ liệu khi vào trang
+onMounted(async () => {
+  await fetchFoods();
+  loadOrders();
+  isLoading.value = false;
 });
 </script>
+
 
 
 

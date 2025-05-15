@@ -60,7 +60,8 @@ body {
     position: absolute;
     background: #C0C0C0;
     margin-right: 300px;
-    width: 800px;
+    width: 400px;
+    height: auto;
     transform: translateX(-20%);
     margin-top: 16px;
   }
