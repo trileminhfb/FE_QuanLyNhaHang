@@ -138,6 +138,7 @@ async function toggleStatus(item) {
   try {
     await axios.put(`http://127.0.0.1:8000/api/admin/foods/${item.id}`, {
       ...item,
+      originImg: item.image,
       status: newStatus
     })
     item.status = newStatus
@@ -152,6 +153,7 @@ async function toggleBestSeller(item) {
   try {
     await axios.put(`http://127.0.0.1:8000/api/admin/foods/${item.id}`, {
       ...item,
+      originImg: item.image,
       bestSeller: newStatus
     })
     item.bestSeller = newStatus
@@ -194,9 +196,6 @@ function goEdit(item) {
     params: {
       id: item.id,
     },
-    query: {
-      data: JSON.stringify(item)
-    }
   });
 }
 

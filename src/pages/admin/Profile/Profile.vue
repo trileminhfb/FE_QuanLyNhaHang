@@ -15,10 +15,14 @@
             </div>
             <div v-else class="flex flex-col items-center">
                 <div class="relative">
-                    <img :src="user.image || '/imageicon/placeholder.png'" alt="Avatar"
+                    <img :src="img.preview || '/imageicon/placeholder.png'" alt="Avatar"
                         class="w-36 h-36 rounded-full border-4 border-white shadow-lg" />
                     <div class="absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white"
                         :class="user.status === 'active' ? 'bg-green-400' : 'bg-gray-400'"></div>
+                    <div onclick="document.querySelector('input[type=file]').click()"
+                        class="absolute top-0 left-0 w-full h-full bg-transparent hover:bg-gray-500/20 cursor-pointer rounded-full">
+                    </div>
+                    <input type="file" accept="image/*" class="hidden" :onchange="onFileChange">
                 </div>
                 <h2 class="mt-4 text-3xl font-bold text-gray-900">{{ user.name }}</h2>
                 <p v-if="user.role == 'admin'" class="text-gray-500 font-medium capitalize">Quản trị viên</p>
@@ -147,9 +151,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
+import api from '../../../services/api';
 
 const router = useRouter();
 const message = ref(''); // For success message
@@ -179,6 +184,10 @@ const editProfileForm = ref({
     phone_number: '',
     birth: '',
 });
+const img = reactive({
+    origin: null,
+    preview: null
+});
 
 // Form data for changing password
 const changePassForm = ref({
@@ -197,14 +206,12 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await api.get('/admin/users/profile');
 
         // API returns data in response.data.data
         user.value = response.data.data;
+        img.origin = user.value.image;
+        img.preview = user.value.image;
         // Initialize edit form with current user data
         editProfileForm.value = {
             name: user.value.name,
@@ -233,17 +240,15 @@ async function updateProfile() {
             throw new Error('No authentication token found.');
         }
 
-        // Ensure image field retains original value if not updated
-        const payload = {
-            ...editProfileForm.value,
-            image: editProfileForm.value.image || user.value.image || '',
-        };
+        const formData = new FormData()
+        formData.append('_method', 'PUT')
+        formData.append('name', editProfileForm.value.name)
+        formData.append('phone_number', editProfileForm.value.phone_number)
+        formData.append('image', editProfileForm.value.image)
+        formData.append('birth', editProfileForm.value.birth)
+        formData.append('originImg', img.origin)
 
-        const response = await axios.put('http://127.0.0.1:8000/api/admin/users/profile-update', payload, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
+        const response = await api.post('/admin/users/profile-update/' + user.value.id, formData);
 
         // Update user data with response
         user.value = response.data.data || {
@@ -258,7 +263,7 @@ async function updateProfile() {
         showEditProfileModal.value = false; // Close modal
     } catch (error) {
         console.error('Error changing information:', error.response?.data || error.message);
-        editError.value = error.response?.data?.message || 'Không thể đổi!';
+        // editError.value = error.response?.data?.message || 'Không thể đổi!';
     }
 }
 
@@ -301,6 +306,14 @@ const logout = () => {
         }, 1500);
     }
 };
+
+const onFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+        editProfileForm.value.image = file
+        img.preview = URL.createObjectURL(file)
+    }
+}
 
 // Fetch profile data when component is mounted
 onMounted(fetchUserProfile);

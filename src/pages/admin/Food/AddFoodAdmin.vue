@@ -38,7 +38,7 @@
                     <div class="border flex flex-1 gap-2 flex-col items-center p-2 rounded-e-lg">
                         <div class="flex flex-col gap-2 justify-center items-center">
                             <div class="h-[200px] w-[200px] border rounded-lg overflow-hidden">
-                                <img class="object-cover w-full h-full" :src="foodData.image || '/placeholder.png'"
+                                <img class="object-cover w-full h-full" :src="virtualImg || '/placeholder.png'"
                                     alt="Hình ảnh hiển thị">
                             </div>
                             <input type="file" class="hidden" ref="imageInput" @change="handleImage">
@@ -102,6 +102,7 @@ const foodData = ref({
 const imageInput = ref(null);
 const allItemsTypes = ref([]);
 const allItemsCategories = ref([]);
+const virtualImg = ref(null)
 
 const fetchType = async () => {
     const res = await axios.get("http://127.0.0.1:8000/api/admin/types");
@@ -131,7 +132,8 @@ function handleImage(event) {
     if (file) {
         const reader = new FileReader();
         reader.onload = () => {
-            foodData.value.image = reader.result;
+            foodData.value.image = file;
+            virtualImg.value = reader.result
         };
         reader.readAsDataURL(file);
     }
@@ -139,16 +141,17 @@ function handleImage(event) {
 
 async function goSave() {
     try {
-        await axios.post("http://127.0.0.1:8000/api/admin/foods", {
-            name: foodData.value.name,
-            id_type: foodData.value.type,
-            bestSeller: foodData.value.best_seller === 1,
-            cost: foodData.value.cost,
-            detail: foodData.value.detail,
-            status: foodData.value.status,
-            category_ids: foodData.value.categories,
-            image: foodData.value.image || null
-        });
+        const formData = new FormData()
+        formData.append('name', foodData.value.name)
+        formData.append('id_type', foodData.value.type)
+        // formData.append('bestSeller', foodData.value.best_seller === 1)
+        formData.append('cost', foodData.value.cost)
+        formData.append('detail', foodData.value.detail)
+        formData.append('status', foodData.value.status)
+        formData.append('category_ids', foodData.value.categories)
+        formData.append('image', foodData.value.image)
+
+        await axios.post("http://127.0.0.1:8000/api/admin/foods/create", formData);
         alert("Tạo món ăn thành công!");
         router.push({ name: 'admin-foods' });
     } catch (err) {
