@@ -12,53 +12,50 @@
           <router-link class="router-introduce" :to="{ name: 'users-introduce' }">INTRODUCE</router-link>
         </li>
         <li class="servicefood">
-  <a href="#">SERVICE FOOD</a>
-  <ul class="name-menu" v-if="types.length > 0">
-    <li v-for="type in types" :key="type.id">
-      <div class="menu-row">
-        <div class="menu-list">
-          <div class="row-menu" style="display: flex; align-items: flex-start; gap: 20px">
-       
+          <a href="#">SERVICE FOOD</a>
+          <ul class="name-menu" v-if="types.length > 0">
+            <li v-for="type in types" :key="type.id">
+              <div class="menu-row">
+                <div class="menu-list">
+                  <div class="row-menu" style="display: flex; align-items: flex-start; gap: 20px">
 
-       
-            <div class="col-6">
-              <p
-                @mouseover="currentImage = type.image || '/imageicon/phefood.png'"
-                class="title-header"
-              >
-                <router-link :to="{ name: 'users-category', params: { typeId: type.id } }">
-                  {{ type.name }}
-                </router-link>
-              </p>
 
-              <ul class="title-menu">
-                <li>Cơm gà</li>
-                <li>Bún</li>
-                <li>Lẩu</li>
-              </ul>
 
-              <ul class="List" v-if="type.categories && type.categories.length > 0">
-                <li v-for="category in type.categories" :key="category.id">
-                  <router-link :to="{ name: 'users-category', params: { categoryId: category.id } }">
-                    <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ category.name }}
-                  </router-link>
-                </li>
-              </ul>
+                    <div class="col-6">
+                      <p @mouseover="currentImage = type.image || '/imageicon/phefood.png'" class="title-header">
+                        <router-link :to="{ name: 'users-category', params: { typeId: type.id } }">
+                          {{ type.name }}
+                        </router-link>
+                      </p>
 
-              <ul class="List">
-                <li v-for="item in type.items" :key="item.id">
-                  <a href="#">
-                    <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ item.name }}
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </li>
-  </ul>
-</li>
+                      <ul class="title-menu">
+                        <li>Cơm gà</li>
+                        <li>Bún</li>
+                        <li>Lẩu</li>
+                      </ul>
+
+                      <ul class="List" v-if="type.categories && type.categories.length > 0">
+                        <li v-for="category in type.categories" :key="category.id">
+                          <router-link :to="{ name: 'users-category', params: { categoryId: category.id } }">
+                            <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ category.name }}
+                          </router-link>
+                        </li>
+                      </ul>
+
+                      <ul class="List">
+                        <li v-for="item in type.items" :key="item.id">
+                          <a href="#">
+                            <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ item.name }}
+                          </a>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </li>
+          </ul>
+        </li>
 
         <li class="servicefood">
           <router-link :to="{ name: 'users-news' }">NEWS</router-link>
@@ -73,12 +70,7 @@
           <li>
             <div class="search-container" @click="handleClickOutside">
               <div :class="isSearch ? 'w-[200px] search-box' : 'w-[40px] search-box'" @click="handleOpenSearch">
-                <input
-                  type="text"
-                  v-model="tuKhoa"
-                  @blur="handleBlur"
-                  placeholder="Tìm Món ..."
-                />
+                <input type="text" v-model="tuKhoa" @blur="handleBlur" placeholder="Tìm Món ..." />
                 <div>
                   <i class="fas fa-solid fa-magnifying-glass"></i>
                 </div>
@@ -94,26 +86,29 @@
               <p v-else-if="tuKhoa">Không tìm thấy món nào.</p>
             </div>
           </li>
+
           <li>
-            <div class="cart-shopping">
+            <div class="cart-user">
+              <span style="font-size: 15px; font-weight: bold;" v-if="userEmail" class="user-email">Xin chào, {{
+                userEmail }}</span>
+              <i v-else class="fa-solid fa-user"></i>
+
+              <div class="user-info">
+                <router-link v-if="!userEmail" :to="{ name: 'users-login' }">Đăng nhập</router-link>
+                <button v-else @click="handleLogout">Đăng xuất</button>
+              </div>
+            </div>
+          </li>
+          <li>
+            <!-- GIỎ HÀNG (đặt ref="cartIcon" để làm mục tiêu bay tới) -->
+            <div class="cart-shopping" ref="cartIcon">
               <router-link :to="{ name: 'users-shoppingCart' }">
                 <i class="fa-solid fa-cart-shopping"></i>
                 <span class="cart-count" v-if="cartCount > 0">{{ cartCount }}</span>
               </router-link>
             </div>
-          </li>
-          <li>
-            <div class="cart-user">
-              <i v-if="!userEmail" class="fa-solid fa-user"></i>
-              <span v-else class="user-email">{{ userEmail }}</span>
 
-              <div class="user-info">
-                <router-link v-if="!userEmail" :to="{ name: 'users-login' }">Đăng nhập</router-link>
-                <button v-else @click="logout">Đăng xuất</button>
-              </div>
-            </div>
           </li>
-
           <li>
             <input type="checkbox" id="menu-toggle" hidden>
 
@@ -190,7 +185,7 @@ const currentImage = ref('/imageicon/default.png');
 const isSearch = ref(false);
 const tuKhoa = ref('')
 const monTimDuoc = ref([]);
-const userEmail = ref(null);  // Placeholder for email
+const userEmail = ref(null);
 const types = ref([]);
 const router = useRouter();
 
@@ -222,7 +217,7 @@ watch(tuKhoa, (newVal) => {
 
   api.get(`/tim-mon?ten=${encodeURIComponent(newVal)}`)
     .then((response) => {
-      monTimDuoc.value = response.data.mons; 
+      monTimDuoc.value = response.data.mons;
     })
     .catch((error) => {
       console.error('Lỗi tìm kiếm món:', error);
@@ -256,7 +251,7 @@ const handleLogout = async () => {
         localStorage.removeItem('customer_email');
         localStorage.removeItem('customer_password');
         localStorage.removeItem('user');
-        sessionStorage.clear(); 
+        sessionStorage.clear();
         router.push('/login');
       }
     } catch (error) {
@@ -274,16 +269,25 @@ const handleLogout = async () => {
 onMounted(async () => {
   try {
     const response = await api.get('/client/types');
-types.value = response.data.data;
-} catch (error) {
-console.error('Lỗi khi lấy loại món ăn:', error);
-}
+    types.value = response.data.data;
+  } catch (error) {
+    console.error('Lỗi khi lấy loại món ăn:', error);
+  }
 });
+onMounted(() => {
+  userEmail.value = localStorage.getItem('customer_email') || '';
+});
+
+function logout() {
+  localStorage.removeItem('customer_email');
+  userEmail.value = '';
+}
 </script>
 <style scoped>
 .List li:hover a {
-  transform: scale(1.1); 
-  transition: transform 0.2s ease; /* độ mượt */
+  transform: scale(1.1);
+  transition: transform 0.2s ease;
+  /* độ mượt */
 }
 
 .search-box {
@@ -377,7 +381,7 @@ console.error('Lỗi khi lấy loại món ăn:', error);
   font-weight: bold;
 }
 
-#menu-toggle:checked ~ .user-menu {
+#menu-toggle:checked~.user-menu {
   transform: translateX(0);
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
@@ -435,20 +439,20 @@ console.error('Lỗi khi lấy loại món ăn:', error);
 
 
 
-.servicefood > a::after {
+.servicefood>a::after {
   content: "";
   position: absolute;
-  bottom: -6px; 
+  bottom: -6px;
   left: 50%;
   width: 0;
-  height: 3px;   
+  height: 3px;
   background-color: yellow;
   transition: width 0.3s ease, left 0.3s ease;
   transform: translateX(-50%);
-  
+
 }
 
-.servicefood > a:hover::after {
+.servicefood>a:hover::after {
   width: 100%;
   left: 50%;
 }
@@ -458,22 +462,24 @@ console.error('Lỗi khi lấy loại món ăn:', error);
   position: relative;
 }
 
-.title-menu li{
-display: flex;
-flex-direction: column;
-justify-content: center;
-align-items: center;
+.title-menu li {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
-.servicefood > a {
+
+.servicefood>a {
   position: relative;
   display: inline-block;
   text-decoration: none;
-  display: flex ;
+  display: flex;
   color: #333;
   font-weight: bold;
   transition: color 0.3s;
 }
-.servicefood > a:hover {
+
+.servicefood>a:hover {
   color: #e67e22;
 }
 
@@ -517,8 +523,9 @@ align-items: center;
   color: #222;
   transition: 0.2s ease;
 }
+
 .title-header:hover {
- transform: scale(1.1);
+  transform: scale(1.1);
 }
 
 .dish-list {
@@ -557,4 +564,23 @@ align-items: center;
   border: 1px solid #ccc;
 }
 
+.cart-shopping {
+  position: relative;
+  display: inline-block;
+}
+
+.cart-shopping .cart-count {
+  position: absolute;
+  top: -6px;
+  right: -15px;
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  user-select: none;
+  pointer-events: none;
+}
 </style>

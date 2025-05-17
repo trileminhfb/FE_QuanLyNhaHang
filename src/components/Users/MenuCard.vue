@@ -1,183 +1,247 @@
 <template>
   <div class="container">
+
+    <!-- Phần Banner Lớn (Hero Section) -->
+    <div
+      class="hero-banner"
+      style="background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1470&q=80') center/cover no-repeat; height: 350px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 0 20px;"
+    >
+      <div>
+        <h1
+          style="font-size: 3em; font-weight: bold; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); margin-bottom: 15px;"
+        >
+          Khám Phá Hương Vị Ẩm Thực Đỉnh Cao
+        </h1>
+        <router-link 
+        :to="{name: 'users-booking'}">
+        <button
+          style="background-color: #ff6f61; color: white; border: none; padding: 12px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);"
+        >
+          Đặt Bàn Ngay
+        </button></router-link>
+     
+      </div>
+    </div>
+
+    <!-- Phần Ưu Đãi / Khuyến Mãi -->
+    <div
+      class="promo-section"
+      style="margin: 40px 0; padding: 20px; background: #fff8f0; border-radius: 12px; box-shadow: 0 4px 10px rgba(255,111,97,0.2);"
+    >
+      <h2
+        style="text-align: center; color: #ff6f61; margin-bottom: 20px; font-weight: 700;"
+      >
+        Ưu Đãi Đặc Biệt Trong Tháng
+      </h2>
+      <div
+        style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;"
+      >
+        <div
+          style="background: white; padding: 20px; border-radius: 12px; width: 280px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;"
+        >
+          <h3 style="color: #ff6f61; margin-bottom: 10px;">
+            Giảm 20% cho đơn trên 500.000đ
+          </h3>
+          <p>Áp dụng cho khách hàng đặt bàn trước qua website.</p>
+        </div>
+        <div
+          style="background: white; padding: 20px; border-radius: 12px; width: 280px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;"
+        >
+          <h3 style="color: #ff6f61; margin-bottom: 10px;">
+            Combo Family - Tiết kiệm đến 30%
+          </h3>
+          <p>Thưởng thức trọn vẹn hương vị cho gia đình với ưu đãi hấp dẫn.</p>
+        </div>
+        <div
+          style="background: white; padding: 20px; border-radius: 12px; width: 280px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;"
+        >
+          <h3 style="color: #ff6f61; margin-bottom: 10px;">
+            Voucher 100.000đ cho khách mới
+          </h3>
+          <p>Đăng ký tài khoản và nhận ưu đãi lần đầu đặt hàng.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phần nội dung bạn đã có -->
     <div class="title">
-            <p>
-                <strong>
-                    <i class="fa-solid fa-utensils"></i>Thực Đơn Của Chúng Tôi <i class="fa-solid fa-utensils"></i>
-
-                </strong>
-            </p>
-        </div>
-        <div class="card-food">
-  <ul class="list-food">
-    <li v-for="(item, index) in danhSachDanhMuc" :key="index">
-      <router-link :to="{name :'users-category'}"> <!-- Thay đổi đường dẫn ở đây -->
-        <div class="food-item">
-          <img :src="item.hinh" :alt="item.ten" />
-          <div class="food-info">
-            <div class="name-food"><strong>{{ item.ten }}</strong></div>
-            <p class="detail">Bảng giá chi tiết cho từng món</p>
-          </div>
-        </div>
-      </router-link>
-    </li>
-  </ul>
-</div>
-
+      <p>
+        <strong>
+          <i class="fa-solid fa-utensils"></i>Thực Đơn Của Chúng Tôi
+          <i class="fa-solid fa-utensils"></i>
+        </strong>
+      </p>
+    </div>
+    <div class="card-food">
+      <ul class="list-food">
+        <li v-for="(item, index) in danhSachDanhMuc" :key="index">
+          <router-link :to="{ name: 'users-category' }">
+            <!-- Thay đổi đường dẫn ở đây -->
+            <div class="food-item">
+              <img :src="item.hinh" :alt="item.ten" />
+              <div class="food-info">
+                <div class="name-food"><strong>{{ item.ten }}</strong></div>
+                <p class="detail">Bảng giá chi tiết cho từng món</p>
+              </div>
+            </div>
+          </router-link>
+        </li>
+      </ul>
+    </div>
 
     <div class="title">
       <p>
         <strong>
-          <i class="fa-solid fa-utensils"></i>  Danh Mục Nổi Bật
+          <i class="fa-solid fa-utensils"></i> Danh Mục Nổi Bật
           <i class="fa-solid fa-utensils"></i>
         </strong>
       </p>
     </div>
     <div class="container-fluid">
-  <Swiper
-    class="food-grid"
-    :modules="[Pagination, Autoplay]"
-    :slides-per-view="3"
-    :space-between="30"
-    :pagination="{ clickable: true }"
-    :loop="true"
-    :autoplay="{ delay: 2000, disableOnInteraction: false }"
-  >
-    <SwiperSlide
-      v-for="(mon, index) in danhSachMonAn"
-      :key="'mon-' + index"
-    >
-      <div class="food-card">
-        <img :src="mon.hinh"  />
-        <div class="info-food">
-          <div class="food-name"><strong>{{ mon.ten }}</strong></div>
-          <div class="food-title">{{ mon.noidung }}</div>
-        </div>
-      </div>
-    </SwiperSlide>
-  </Swiper>
-</div>
-<!-- // Phần Thực đơn -->
-<div class="title">
+      <Swiper
+        class="food-grid"
+        :modules="[Pagination, Autoplay]"
+        :slides-per-view="3"
+        :space-between="30"
+        :pagination="{ clickable: true }"
+        :loop="true"
+        :autoplay="{ delay: 2000, disableOnInteraction: false }"
+      >
+        <SwiperSlide
+          v-for="(mon, index) in danhSachMonAn"
+          :key="'mon-' + index"
+        >
+          <div class="food-card">
+            <img :src="mon.hinh" />
+            <div class="info-food">
+              <div class="food-name"><strong>{{ mon.ten }}</strong></div>
+              <div class="food-title">{{ mon.noidung }}</div>
+            </div>
+          </div>
+        </SwiperSlide>
+      </Swiper>
+    </div>
+    <!-- // Phần Thực đơn -->
+    <div class="title">
       <p>
         <strong>
-          <i class="fa-solid fa-utensils"></i>  Danh Sách Menu Nổi Bật Trong Tuần
+          <i class="fa-solid fa-utensils"></i> Danh Sách Menu Nổi Bật Trong Tuần
           <i class="fa-solid fa-utensils"></i>
         </strong>
       </p>
     </div>
     <div class="tab-wrapper">
-    <ul class="tab-links">
-      <li
-        v-for="(tab, index) in tabs"
-        :key="index"
-        :class="['tab-link', 'has-content', { current: currentTab === index }]"
-        @click="currentTab = index"
-      >
-        {{ tab.ten }}
-      </li>
-    </ul>
-    <div class="tab-contents">
+      <ul class="tab-links">
+        <li
+          v-for="(tab, index) in tabs"
+          :key="index"
+          :class="['tab-link', 'has-content', { current: currentTab === index }]"
+          @click="currentTab = index"
+        >
+          {{ tab.ten }}
+        </li>
+      </ul>
+      <div class="tab-contents">
         <!-- xí tra  -->
 
-      <div
-        v-for="(tab, index) in tabs"
-        :key="'content-' + index"
-        v-show="currentTab === index"  
-        
-        class="tab-content" >
-       <p> {{ tab.noiDung }}
-      </p>
-      <div class="menu-grid" v-if="tab.dsMon && tab.dsMon.length">
-    <div class="card-menu" v-for="(mon, monIndex) in tab.dsMon" :key="monIndex">
-      <img :src="mon.hinh" alt="" />
-      <div class="info-card">
-        <div class="card-name"><strong>{{ mon.ten }}</strong></div>
-        <div class="card-price">{{ mon.gia }}</div>
-        <div class="card-title">{{ mon.moTa }}</div>
-        <div class="btn-wrapper">
-          <button class="btn-oder">Đặt Hàng </button>
-          <button class="btn-add" @click="handleAddToCart(mon)">
-  Thêm vào giỏ <i class="fas fa-shopping-cart"></i>
-</button>
-          <div class="gio-hang-icon">
-      <span class="so-luong" v-if="soLuong > 0">{{ soLuong }}</span>
-    </div>
+        <div
+          v-for="(tab, index) in tabs"
+          :key="'content-' + index"
+          v-show="currentTab === index"
+          class="tab-content"
+        >
+          <p> {{ tab.noiDung }}</p>
+          <div class="menu-grid" v-if="tab.dsMon && tab.dsMon.length">
+            <div
+              class="card-menu"
+              v-for="(mon, monIndex) in tab.dsMon"
+              :key="monIndex"
+            >
+              <img :src="mon.hinh" alt="" />
+              <div class="info-card">
+                <div class="card-name"><strong>{{ mon.ten }}</strong></div>
+                <div class="card-price">{{ mon.gia }}</div>
+                <div class="card-title">{{ mon.moTa }}</div>
+                <div class="btn-wrapper">
+                  <button class="btn-oder">Đặt Hàng </button>
+                  <button class="btn-add" @click="handleAddToCart(mon)">
+                    Thêm vào giỏ <i class="fas fa-shopping-cart"></i>
+                  </button>
+                  <div class="gio-hang-icon">
+                    <span class="so-luong" v-if="soLuong > 0">{{ soLuong }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
-  </div>
-      </div>
-    </div>
-  </div>
- <div class="title">
+    <div class="title">
       <p>
         <strong>
-          <i class="fa-solid fa-utensils"></i>  Tin Tức
+          <i class="fa-solid fa-utensils"></i> Tin Tức
           <i class="fa-solid fa-utensils"></i>
         </strong>
       </p>
     </div>
-  <!-- Phần tin tức  -->
- <div class="menu-list">
-  <div v-for="(mon, index) in danhSachMonHienTai" :key="index" class="menu-card">
-    <router-link :to="{name :'users-news'}">
-      <img :src="mon.hinh" alt="" />
-    <div class="menu-info">
-      <h3>{{ mon.ten }}</h3>
-      <p>{{ mon.noiDung }}</p>
-    </div>
-    </router-link>
-   
-  </div>
-</div>
-<div style="text-align: center; ">
-  <button @click="xemThemMon" class="xemthem-btn">
-  {{ daXemThem ? 'Ẩn bớt' : 'Xem thêm' }}
-</button>
-
-
-</div>
-
-  </div>
-  <div class="title">
-  <p>
-    <strong>
-      <i class="fa-solid fa-star"></i>  Top Bảng Xếp Hạng Đánh Giá Trong Tuần
-      <i class="fa-solid fa-star"></i>
-    </strong>
-  </p>
-</div>
-
-<Swiper
-    class="review-section"
-    :modules="[Autoplay]"
-    :slides-per-view="3"
-    :space-between="30"
-    :autoplay="{ delay: 0, disableOnInteraction: false , pauseOnMouseEnter: true }"
-    :loop="true"
-    :speed="3000"  
-  >
-    <SwiperSlide
-      v-for="(review, index) in danhSachDanhGia"
-      :key="'review-' + index"
-    >
-      <div class="review-card">
-        <div class="review-content">
-          <h3>{{ review.ten }}</h3>
-          <div class="sao-danh-gia">
-    <span v-for="i in 5" :key="i">
-      <i class="fa" :class="i <= soSao ? 'fa-star' : 'fa-star-o'"></i>
-    </span>
-  </div>
-          <p>{{ review.noiDung }}</p>
-        </div>
-        <div class="review-image">
-          <img :src="review.hinh" alt="Ảnh người dùng" />
-        </div>
+    <!-- Phần tin tức  -->
+    <div class="menu-list">
+      <div v-for="(mon, index) in danhSachMonHienTai" :key="index" class="menu-card">
+        <router-link :to="{ name: 'users-news' }">
+          <img :src="mon.hinh" alt="" />
+          <div class="menu-info">
+            <h3>{{ mon.ten }}</h3>
+            <p>{{ mon.noiDung }}</p>
+          </div>
+        </router-link>
       </div>
-    </SwiperSlide>
-  </Swiper>
+    </div>
+    <div style="text-align: center;">
+      <button @click="xemThemMon" class="xemthem-btn">
+        {{ daXemThem ? 'Ẩn bớt' : 'Xem thêm' }}
+      </button>
+    </div>
+
+    <div class="title">
+      <p>
+        <strong>
+          <i class="fa-solid fa-star"></i> Top Bảng Xếp Hạng Đánh Giá Trong Tuần
+          <i class="fa-solid fa-star"></i>
+        </strong>
+      </p>
+    </div>
+
+    <Swiper
+      class="review-section"
+      :modules="[Autoplay]"
+      :slides-per-view="3"
+      :space-between="30"
+      :autoplay="{ delay: 0, disableOnInteraction: false , pauseOnMouseEnter: true }"
+      :loop="true"
+      :speed="3000"
+    >
+      <SwiperSlide
+        v-for="(review, index) in danhSachDanhGia"
+        :key="'review-' + index"
+      >
+        <div class="review-card">
+          <div class="review-content">
+            <h3>{{ review.ten }}</h3>
+            <div class="sao-danh-gia">
+              <span v-for="i in 5" :key="i">
+                <i class="fa" :class="i <= soSao ? 'fa-star' : 'fa-star-o'"></i>
+              </span>
+            </div>
+            <p>{{ review.noiDung }}</p>
+          </div>
+          <div class="review-image">
+            <img :src="review.hinh" alt="Ảnh người dùng" />
+          </div>
+        </div>
+      </SwiperSlide>
+    </Swiper>
+  </div>
 </template>
 
 <script setup>
@@ -186,7 +250,6 @@ import { onMounted, ref, computed } from 'vue'
 import { addToCart } from '../../stores/cartStore'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import 'aos/dist/aos.css'
-
 import { useRoute } from 'vue-router'
 import 'swiper/css'
 import 'swiper/css/pagination'

@@ -54,6 +54,7 @@
                 {{ food.name }} - {{ food.cost.toLocaleString() }} VNĐ
               </option>
             </select>
+            
             <label>Số lượng:</label>
             <input type="number" v-model="item.quantity" min="1" style="width: 80px;" />
             <button @click="removeFoodItem(index)" v-if="foodForm.length > 1" style="margin-left: 10px;">❌</button>
@@ -192,8 +193,6 @@ const createBooking = () => {
 };
 const submitFoodOrder = () => {
   localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
-
-
   const invalid = foodForm.value.some(item => !item.id_foods || item.quantity < 1);
   if (invalid) {
     alert('Vui lòng chọn món và số lượng hợp lệ cho tất cả các món.');

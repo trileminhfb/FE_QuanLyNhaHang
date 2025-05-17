@@ -3,66 +3,103 @@
     <div class="col-left">
       <div class="card-news">
         <p class="title-news">Các Tin tức liên quan</p>
-        <div class="info-news" v-for="(news, index) in dsNews" :key="index" @click="chonTinTuc(index)">
-          <img :src="news.hinh" alt="">
+        <div
+          class="info-news"
+          v-for="(news, index) in dsNews"
+          :key="index"
+          @click="chonTinTuc(index)"
+          :class="{ active: tinTucChiTietDangXem === chitiet[index].chitiet }"
+        >
+          <img :src="news.hinh" :alt="news.noiDung" />
           <p class="content-news">{{ news.noiDung }}</p>
         </div>
       </div>
     </div>
     <div class="col-right">
-        <div class="title-see" v-if="cardChiTietDangXem" style="height: 100%;">
-        <button @click="cardChiTietDangXem = null" style="margin-bottom: 10px;">← Quay lại</button>
-        <div class="time" style="display: flex;">
-          <p>Thời gian hiện tại : {{ time }}</p>
-          <p style="margin-left: 10px;"> <i class="fa-solid fa-user " style="color: gold;"></i> Admin : Khánh</p>
+      <div class="title-see" v-if="cardChiTietDangXem">
+        <button class="back-button" @click="cardChiTietDangXem = null">
+          ← Quay lại
+        </button>
+        <div class="meta-info">
+          <p><i class="fas fa-calendar-alt"></i> Thời gian hiện tại: {{ time }}</p>
+          <p>
+            <i class="fa-solid fa-user" style="color: #ffd700;"></i> Admin: Khánh
+          </p>
         </div>
-        <p style="font-size: 20px;">Mách bạn công thức làm canh cá nấu mẻ thơm ngon đậm vị </p>
+        <h2>Mách bạn công thức làm canh cá nấu mẻ thơm ngon đậm vị</h2>
         <h3>{{ cardChiTietDangXem.ten }}</h3>
-        <img :src="cardChiTietDangXem.hinh" alt="" style="width: 300px;">
-        <p style="font-size: 20px;">{{ cardChiTietDangXem.noiDung }}</p>
-        <p>Vậy cần chuẩn bị những nguyên liệu gì, cách chế biến canh cá nấu mẻ như thế nào để có bát canh thơm ngon,
-          chuẩn vị nhất. Hãy cùng Dola theo dõi bài viết dưới đây bạn nhé.</p>
-        <p style="font-size: 20px;"><strong>Công thức làm canh cá nấu mẻ cả nhà đều mê</strong></p>
-        <p>Để ra được một món canh thơm ngon, bổ dưỡng thì việc lựa chọn các nguyên liệu là điều rất cần thiết nên chị
-          em cần phải lựa chọn thật kỹ. Nguyên liệu để nấu món canh này vô cùng đơn giản và dễ tìm.
-        </p>
-        <p style="font-size: 20px;">Nguyên liệu cần chuẩn bị</p>
-        <p>Cá tươi.
-        </p>
-        <p>
-          Cà chua.
-        </p>
-        <p>
-          Cơm mẻ.
-        </p>
-        <p>
-          Nghệ.
-        </p>
-        <p>
-          Hành tím, hành lá, thì là, mùi tàu, ớt.
-        </p>
-        <p>
-          Một số gia vị cần thiết cho món ăn: muối, hạt nêm, nước mắm, tiêu xay, …
-        </p>
+        <img
+          :src="cardChiTietDangXem.hinh"
+          :alt="cardChiTietDangXem.ten"
+          class="detail-image"
+        />
+        <div class="detail-content">
+          <p>{{ cardChiTietDangXem.noiDung }}</p>
+          <p>
+            Vậy cần chuẩn bị những nguyên liệu gì, cách chế biến canh cá nấu mẻ
+            như thế nào để có bát canh thơm ngon, chuẩn vị nhất. Hãy cùng Dola
+            theo dõi bài viết dưới đây bạn nhé.
+          </p>
+          <h4>Công thức làm canh cá nấu mẻ cả nhà đều mê</h4>
+          <p>
+            Để ra được một món canh thơm ngon, bổ dưỡng thì việc lựa chọn các
+            nguyên liệu là điều rất cần thiết nên chị em cần phải lựa chọn thật
+            kỹ. Nguyên liệu để nấu món canh này vô cùng đơn giản và dễ tìm.
+          </p>
+          <h5>Nguyên liệu cần chuẩn bị</h5>
+          <ul class="ingredient-list">
+            <li>Cá tươi (trắm, basa, hoặc lóc)</li>
+            <li>Cà chua (2 quả)</li>
+            <li>Cơm mẻ (2 thìa)</li>
+            <li>Nghệ tươi (1 củ nhỏ)</li>
+            <li>Hành tím, hành lá, thì là, mùi tàu, ớt</li>
+            <li>Gia vị: muối, hạt nêm, nước mắm, tiêu xay</li>
+          </ul>
+          <h5>Cách chế biến</h5>
+          <ol class="step-list">
+            <li>Sơ chế cá: Rửa sạch, ướp với muối và nghệ trong 15 phút.</li>
+            <li>Phi thơm hành tím, thêm cà chua xào chín.</li>
+            <li>Cho nước vào nồi, đun sôi, thêm cơm mẻ đã lọc.</li>
+            <li>Thả cá vào, nấu khoảng 10 phút, nêm gia vị.</li>
+            <li>Thêm hành lá, thì là, mùi tàu trước khi tắt bếp.</li>
+          </ol>
+          <div class="action-buttons">
+            <button
+              class="share-button"
+              :disabled="!cardChiTietDangXem"
+              @click="shareNews(cardChiTietDangXem)"
+            >
+              <i class="fas fa-share-alt"></i> Share
+            </button>
+            <button
+              class="like-button"
+              :disabled="!cardChiTietDangXem"
+              @click="addToFavorite(cardChiTietDangXem)"
+            >
+              <i class="fas fa-heart"></i> Like
+            </button>
+          </div>
+        </div>
       </div>
       <div class="all-title" v-else>
-        <div class="title-card" v-for="(news, index) in tinTucChiTietDangXem" :key="index" @click="xemChiTiet(news)">
-          <img :src="news.hinh" alt="">
-          <div class="info-card" style="">
+        <div
+          class="title-card"
+          v-for="(news, index) in tinTucChiTietDangXem"
+          :key="index"
+          @click="xemChiTiet(news)"
+        >
+          <img :src="news.hinh" :alt="news.ten" />
+          <div class="info-card">
             <h4>Đăng bởi: Admin Khánh</h4>
             <p class="info-name">{{ news.ten }}</p>
-            <p style="color: yellow;"><strong>Xem chi tiết →</strong></p>
+            <p class="view-detail"><strong>Xem chi tiết →</strong></p>
           </div>
-          <hr>
         </div>
       </div>
-     
-
-   
-      
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 const dsNews = ref([
@@ -79,7 +116,6 @@ const chitiet = ref([
       { ten: 'Cách chế biến', hinh: '/imageicon/bunbo.png', noiDung: 'Luộc xương, nêm mắm ruốc...' },
       { ten: 'Cách chế biến', hinh: '/imageicon/bunbo.png', noiDung: 'Luộc xương, nêm mắm ruốc...' },
       { ten: 'Cách chế biến', hinh: '/imageicon/bunbo.png', noiDung: 'Luộc xương, nêm mắm ruốc...' },
-
     ]
   },
   {
@@ -98,7 +134,6 @@ const chitiet = ref([
       { ten: 'Món ăn 2', hinh: '/imageicon/bunbo.png', noiDung: '...' },
       { ten: 'Món ăn 2', hinh: '/imageicon/bunbo.png', noiDung: '...' },
       { ten: 'Món ăn 2', hinh: '/imageicon/bunbo.png', noiDung: '...' },
-
     ]
   }
 ])
@@ -133,104 +168,370 @@ function chonTinTuc(index) {
 function xemChiTiet(card) {
   cardChiTietDangXem.value = card
 }
+
+function shareNews(news) {
+  if (!news || !news.ten) {
+    alert('Không thể chia sẻ: Vui lòng chọn một tin tức trước!')
+    return
+  }
+  const url = window.location.href || 'https://example.com/news'
+  const text = `Khám phá công thức: ${news.ten}`
+  if (navigator.share) {
+    navigator.share({ title: news.ten, text, url })
+      .catch(err => {
+        console.error('Lỗi chia sẻ:', err)
+        alert('Không thể chia sẻ: Lỗi hệ thống, vui lòng thử lại sau!')
+      })
+  } else {
+    alert(`Chia sẻ công thức "${news.ten}":\n${text}\n${url}`)
+  }
+}
+
+function addToFavorite(news) {
+  if (!news || !news.ten) {
+    alert('Không thể thêm vào yêu thích: Vui lòng chọn một tin tức trước!')
+    return
+  }
+  localStorage.setItem(`favorite_${news.ten}`, JSON.stringify(news))
+  alert('Đã thêm vào yêu thích!')
+}
 </script>
+
 <style scoped>
-body {}
-
-
 .container-news {
   display: flex;
   background: #143b36;
+  width: 100%;
+  min-height: 100vh;
+  padding: 24px;
 }
+
 .col-left {
   width: 30%;
 }
+
 .col-right {
   width: 70%;
   height: 100%;
   display: flex;
   flex-wrap: wrap;
 }
-.all-title{
-  display: flex;
-  flex-wrap: wrap;
-}
-.title-news {
-  background: #d69c52;
-  text-align: center;
-  font-weight: bold;
-}
+
 .card-news {
-  border: 1px solid#d69c52;
+  background: #ffffff;
+  border: 1px solid #d69c52;
   border-radius: 10px;
   width: 90%;
   margin: 10px 0 10px 10px;
   overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
+
+.title-news {
+  background: #d69c52;
+  text-align: center;
+  font-weight: bold;
+  color: #ffffff;
+  font-size: 20px;
+  padding: 12px;
+  margin: 0;
+}
+
 .info-news {
   display: flex;
+  align-items: center;
   padding: 10px;
-  display: flex;
   cursor: pointer;
-  flex-wrap: wrap;
-  background-color: rgba(0, 0, 0, 0.5);
+  background-color: rgba(0, 0, 0, 0.05);
+  transition: background 0.3s ease, transform 0.2s ease;
 }
+
 .info-news:hover {
   background-color: rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.info-news.active {
+  background: rgba(214, 156, 82, 0.2);
+  border-left: 4px solid #d69c52;
 }
 
 .info-news img {
-  width: 100px;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 6px;
 }
 
 .content-news {
-  margin: 5px 0 0 5px;
-  color: #fff;
+  margin: 0 0 0 10px;
+  color: #143b36;
   white-space: normal;
   flex: 1;
+  font-size: 16px;
+  transition: color 0.3s ease;
 }
 
-.content-news:hover {
-  color: yellow;
+.info-news:hover .content-news {
+  color: #ffd700;
+}
+
+.all-title {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 12px;
 }
 
 .title-card {
-  border: 1px solid red;
+  background: #ffffff;
   width: 300px;
   height: 300px;
   border-radius: 10px;
   margin: 12px 0 10px 10px;
   overflow: hidden;
-  display: flex;
-  flex-wrap: wrap;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
 
+.title-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
 }
 
 .title-card img {
-  height: 200px;
+  height: 180px;
   width: 100%;
   object-fit: cover;
-  transition: transform 0.5s ease;
+  transition: transform 0.2s ease;
 }
 
-.title-card img:hover {
+.title-card:hover img {
   transform: scale(1.1);
 }
 
 .info-card {
-  color: white;
-  margin-left: 10px;
-
+  color: #143b36;
+  padding: 10px;
 }
 
-.info-name:hover {
-  color: yellow;
+.info-card h4 {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 8px;
+}
+
+.info-card .info-name {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  transition: color 0.3s ease;
+}
+
+.title-card:hover .info-name {
+  color: #ffd700;
+}
+
+.info-card .view-detail {
+  font-size: 14px;
+  color: #ffd700;
+  margin: 0;
+  font-weight: bold;
+}
+
+.title-card:hover .view-detail {
+  color: #d69c52;
 }
 
 .title-see {
-  padding: 20px;
-  color: white;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  color: #143b36;
+}
 
+.back-button {
+  background: #d69c52;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-bottom: 10px;
+  transition: background 0.3s ease;
+}
+
+.back-button:hover {
+  background: #b57c3e;
+}
+
+.meta-info {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.meta-info i {
+  margin-right: 6px;
+}
+
+.detail-image {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+  margin: 16px 0;
+}
+
+.detail-content h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 16px 0;
+}
+
+.detail-content h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 12px 0;
+}
+
+.detail-content h4 {
+  font-size: 18px;
+  font-weight: 600;
+  margin: 12px 0;
+}
+
+.detail-content h5 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 12px 0;
+}
+
+.detail-content p {
+  font-size: 16px;
+  margin: 8px 0;
+}
+
+.ingredient-list,
+.step-list {
+  padding-left: 20px;
+  margin: 12px 0;
+  font-size: 16px;
+}
+
+.ingredient-list li,
+.step-list li {
+  margin-bottom: 8px;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.share-button,
+.like-button {
+  background: #4caf50;
+  color: #ffffff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.share-button:disabled,
+.like-button:disabled {
+  background: #cccccc;
+  cursor: not-allowed;
+}
+
+.share-button:hover:not(:disabled) {
+  background: #388e3c;
+}
+
+.like-button {
+  background: #e63946;
+}
+
+.like-button:hover:not(:disabled) {
+  background: #c62828;
+}
+
+@media (max-width: 768px) {
+  .container-news {
+    flex-direction: column;
+    padding: 16px;
+  }
+
+  .col-left,
+  .col-right {
+    width: 100%;
+  }
+
+  .col-left {
+    max-height: 40vh;
+    overflow-y: auto;
+  }
+
+  .title-card {
+    width: 100%;
+    max-width: 300px;
+  }
+
+  .detail-image {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .info-news img {
+    width: 60px;
+    height: 60px;
+  }
+
+  .content-news {
+    font-size: 14px;
+  }
+
+  .title-card {
+    height: 280px;
+  }
+
+  .title-card img {
+    height: 160px;
+  }
+
+  .info-card .info-name {
+    font-size: 16px;
+  }
+
+  .detail-content h2 {
+    font-size: 20px;
+  }
+
+  .detail-content h3 {
+    font-size: 18px;
+  }
+
+  .detail-content p,
+  .ingredient-list,
+  .step-list {
+    font-size: 14px;
+  }
 }
 </style>

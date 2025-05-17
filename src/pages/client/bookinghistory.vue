@@ -25,7 +25,7 @@
               <tr v-else-if="orders.length === 0">
                 <td colspan="4">Không có dữ liệu đặt món.</td>
               </tr>
-              <tr v-else v-for="(item, index) in orders" :key="index">
+              <tr v-else v-for="item in orders" :key="item.bookingId + '-' + item.id_foods">
                 <td>{{ formatDate(item.timeBooking) }}</td>
                 <td>{{ item.foodName }}</td>
                 <td>{{ item.quantity }}</td>
@@ -73,6 +73,7 @@ const fetchFoods = async () => {
     foodsList.value = res.data;
   } catch (err) {
     console.error('Lỗi khi lấy món ăn:', err);
+    alert('Không thể tải danh sách món ăn. Vui lòng thử lại sau.');
   }
 };
 
@@ -88,7 +89,7 @@ const loadOrders = () => {
         result.push({
           bookingId: booking.id,
           id_foods: food.id_foods,
-          timeBooking: booking.timeBooking || new Date().toISOString(),
+          timeBooking: booking.timeBooking,
           foodName: matchedFood ? matchedFood.name : 'Không rõ',
           quantity: food.quantity,
         });
