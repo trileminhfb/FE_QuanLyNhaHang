@@ -29,17 +29,27 @@
         <!-- chat content -->
         <div class="flex-1 overflow-y-auto p-2">
           <div v-for="msg in messages" :key="msg.id" :class="msg.sender === 'customer' ? 'text-right' : 'text-left'">
+            <p class="text-xs text-gray-500 mb-1">
+               <!-- Tên người gửi -->
+    {{ msg.sender === 'customer' ? 'Admin' : 'Khách hàng' }}
+  </p>
             <p class="inline-block px-3 py-2 rounded-lg max-w-[70%] break-words"
               :class="msg.sender === 'customer' ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'">
-              {{ msg.content }}
+            {{ msg.content }}
             </p>
           </div>
         </div>
   
         <!-- Nhập tin nhắn -->
         <div class="h-auto w-full border-t rounded-b-xl flex flex-row justify-start items-center p-2 bg-white">
+               
+
           <textarea v-model="message" ref="textareaRef" rows="1" placeholder="Nhập tin nhắn..."
-            class="resize-none overflow-hidden w-full ps-2 focus:outline-none" @input="autoResize"></textarea>
+  class="resize-none overflow-hidden w-full ps-2 focus:outline-none"
+  @input="autoResize" 
+  @keyup.enter.exact.prevent="sendMessage">
+</textarea>
+
           <div @click="sendMessage" class="h-[50px] w-[50px] flex justify-center items-center hover:cursor-pointer">
             <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24">
               <path
@@ -99,7 +109,13 @@
     })
     messages.value = res.data.messages
   }
-  
+  const handleEnter = (e) => {
+  if (!e.shiftKey) {
+    e.preventDefault()
+    sendAdminMessage()
+  }
+}
+
   onMounted(() => {
     getMessages()  // Load messages on mount
   })

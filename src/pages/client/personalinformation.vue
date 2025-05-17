@@ -100,17 +100,17 @@
           <input type="number" v-model="informationpersonal.phoneNumber" />
         </div>
         <div class="group-information">
-          Email
-          <i class="fa fa-envelope"></i>
-          <input type="email" v-model="informationpersonal.mail" />
-        </div>
+  Email
+  <i class="fa fa-envelope"></i>
+  <input type="email" :value="informationpersonal.mail" disabled />
+</div>
       </div>
 
       <div class="row-information">
         <div class="group-information">
           Mật khẩu
           <i class="fa fa-lock"></i>
-          <input type="password" v-model="informationpersonal.password" />
+          <input type="password" v-model="informationpersonal.password" disabled />
         </div>
         <div class="group-information">
           Ảnh đại diện
@@ -157,8 +157,6 @@
     </ul>
   </div>
 </div>
-
-
               <div v-else>
                 <p>{{ tab.noiDung }}</p>
               </div>
@@ -189,7 +187,7 @@ const informationpersonal = ref({
   id_rank: 1,
   isActive: false,
 })
-
+const currentTab = ref(0)
 const imagePreview = ref(null)
 
 onMounted(() => {
@@ -279,9 +277,6 @@ const tabs = ref([
     noiDung: 'Đây là nội dung về chính sách thành viên.',
   },
 ])
-
-const currentTab = ref(0)
-
 
 </script>
   <style scoped>

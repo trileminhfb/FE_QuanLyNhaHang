@@ -6,16 +6,19 @@ export const useBookingHistoryStore = defineStore('bookingHistory', () => {
 
   const addBooking = (booking) => {
     bookings.value.push(booking);
+    saveToLocalStorage();
   };
 
   const deleteBooking = (index) => {
     bookings.value.splice(index, 1);
+    saveToLocalStorage();
   };
 
   const updateBookingFoods = (updatedBooking) => {
     const index = bookings.value.findIndex(b => b.id === updatedBooking.id);
     if (index !== -1) {
-      bookings.value[index].foods = updatedBooking.foods;
+      bookings.value[index] = { ...bookings.value[index], foods: updatedBooking.foods };
+      saveToLocalStorage();
     }
   };
 
@@ -26,11 +29,16 @@ export const useBookingHistoryStore = defineStore('bookingHistory', () => {
     }
   };
 
+  const saveToLocalStorage = () => {
+    localStorage.setItem('bookingHistory', JSON.stringify(bookings.value));
+  };
+
   return {
     bookings,
     addBooking,
     deleteBooking,
     updateBookingFoods,
     loadFromLocalStorage,
+    saveToLocalStorage,
   };
 });
