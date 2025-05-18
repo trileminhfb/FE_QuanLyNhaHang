@@ -12,13 +12,13 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ["login", "register", "users-home"]; // các route không cần login
+  const publicPages = ["login", "admin-login", "register", "users-home"]; // các route không cần login
   const authRequired = !publicPages.includes(to.name);
   const isLoggedIn = !!localStorage.getItem("auth_token");
 
   if (authRequired && !isLoggedIn) {
     // Nếu chưa login, chuyển sang trang login
-    return next({ name: "login" });
+    return next({ name: "ogin" });
   }
 
   next(); // Cho phép đi tiếp nếu đã login hoặc là trang công khai
