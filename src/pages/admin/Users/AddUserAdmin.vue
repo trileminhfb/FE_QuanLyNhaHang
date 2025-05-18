@@ -1,16 +1,22 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
+    <div class="h-[calc(100vh-100px)] fixed z-0 mt-20 w-full ms-[300px] flex flex-col p-2">
         <div class="h-full w-full flex flex-col font-semibold">
-            <div class="uppercase font-bold text-2xl">Chỉnh sửa người dùng</div>
+            <div class="uppercase font-bold text-2xl">Thêm mới người dùng</div>
 
             <div class="w-[40vw] h-full flex justify-center items-start text-xl">
-                <div class="w-full border h-fit flex flex-col">
-                    <div class="border flex flex-row">
+                <div class="w-full border h-fit flex flex-col items-center justify-center">
+                    <div class="border flex ">
                         <!-- Ảnh đại diện -->
                         <div class="flex flex-col flex-1 justify-center items-center p-2">
-                            <!-- <img :src="form.image"
-                                class="w-[150px] h-[150px] object-cover border rounded-full cursor-pointer hover:opacity-80"
-                                alt="Ảnh người dùng" /> -->
+                            <div class="relative ">
+                                <img :src="img.preview || 'http://127.0.0.1:8000/storage/images/avt.png'" alt="Avatar"
+                                    class="w-36 h-36 rounded-full border-4 border-white shadow-lg" />
+
+                                <div onclick="document.querySelector('input[type=file]').click()"
+                                    class="absolute top-0 left-0 w-full h-full bg-transparent hover:bg-gray-500/20 cursor-pointer rounded-full">
+                                </div>
+                                <input type="file" accept="image/*" class="hidden" :onchange="onFileChange">
+                            </div>
                         </div>
 
                         <!-- Form -->
@@ -87,12 +93,15 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 
 const router = useRouter()
 const fileInput = ref(null)
+const img = reactive({
+    preview: null
+});
 
 const form = ref({
     name: '',
@@ -104,6 +113,14 @@ const form = ref({
     birth: '',
     image: '', // <-- ảnh mặc định
 })
+
+const onFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+        form.value.image = file
+        img.preview = URL.createObjectURL(file)
+    }
+}
 
 async function goSave() {
     if (!form.value.name || !form.value.password || !form.value.email || !form.value.role) {

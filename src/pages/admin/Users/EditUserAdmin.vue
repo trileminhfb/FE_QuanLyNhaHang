@@ -9,8 +9,17 @@
                 <div class="w-full border h-fit flex flex-col">
                     <div class=" border flex flex-row">
                         <div class="flex flex-col flex-1 justify-center items-center">
-                            <!-- <img class="w-full h-full object-cover" :src="`/picture/rank/${userData.image}`"
-                                alt="Ảnh người dùng" /> -->
+                            <div class="flex flex-col flex-1 justify-center items-center p-2">
+                                <div class="relative ">
+                                    <img :src="img.preview || 'http://127.0.0.1:8000/storage/images/avt.png'"
+                                        alt="Avatar" class="w-36 h-36 rounded-full border-4 border-white shadow-lg" />
+
+                                    <div onclick="document.querySelector('input[type=file]').click()"
+                                        class="absolute top-0 left-0 w-full h-full bg-transparent hover:bg-gray-500/20 cursor-pointer rounded-full">
+                                    </div>
+                                    <input type="file" accept="image/*" class="hidden" :onchange="onFileChange">
+                                </div>
+                            </div>
                         </div>
 
                         <div class="border flex flex-[2] flex-col p-2 gap-1">
@@ -83,20 +92,24 @@
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue';
 import axios from 'axios'
+import api from '../../../services/api';
 
 const router = useRouter()
 const route = useRoute()
 const userData = route.query.data ? JSON.parse(route.query.data) : null;
-console.log("User data:", userData);
 
 const showConfirm = ref(false)
+const img = reactive({
+    origin: userData?.image,
+    preview: userData?.image
+});
 
 const form = ref({
     id: userData?.id || '',
-    // image: userData?.image || '',
+    image: '',
     name: userData?.name || '',
     role: userData?.role || '',
     phone_number: userData?.phone_number || '',
@@ -108,25 +121,25 @@ const form = ref({
 })
 
 async function goSave() {
-    // Kiểm tra các trường bắt buộc trước khi gửi dữ liệu
     if (!form.value.name || !form.value.email || !form.value.birth) {
         alert("Vui lòng điền đầy đủ Tên, Email và Ngày sinh.");
         return;
     }
 
-    // Nếu không có lỗi, gửi dữ liệu lên server
     try {
-        const response = await axios.put(`http://127.0.0.1:8000/api/admin/users/update/${userData.id}`, {
-            id: form.value.id,
-            name: form.value.name,
-            role: form.value.role,
-            status: form.value.status,
-            phone_number: form.value.phone_number,
-            email: form.value.email,
-            birth: form.value.birth,
-            // password: form.value.password,
-            // image: form.value.image
-        });
+        const formData = new FormData()
+        formData.append('_method', 'PUT')
+        formData.append('name', form.value.name)
+        formData.append('id', form.value.id)
+        formData.append('role', form.value.role)
+        formData.append('phone_number', form.value.phone_number)
+        formData.append('image', form.value.image)
+        formData.append('birth', form.value.birth)
+        formData.append('originImg', img.origin)
+        formData.append('status', form.value.status)
+        formData.append('email', form.value.email)
+
+        const response = await api.post(`admin/users/update/${userData.id}`, formData);
 
         // Kiểm tra response và thông báo cho người dùng
         if (response.status === 200) {
@@ -147,7 +160,13 @@ async function goSave() {
     }
 }
 
-
+const onFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+        form.value.image = file
+        img.preview = URL.createObjectURL(file)
+    }
+}
 function goBack() {
     router.push({ name: 'admin-users' })
 }

@@ -8,8 +8,7 @@
                     <div class="border flex flex-row">
                         <!-- Ảnh -->
                         <div class="flex flex-col flex-1 justify-center items-center">
-                            <img class="w-full h-full object-cover" :src="`/picture/rank/${customerData.image}`"
-                                alt="Ảnh rank" />
+                            <img class="w-full h-full object-cover" :src="`${customerData.image}`" alt="Ảnh đại diện" />
                         </div>
 
                         <!-- Thông tin -->

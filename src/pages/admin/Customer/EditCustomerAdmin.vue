@@ -8,8 +8,14 @@
                     <div class="border flex flex-row">
                         <!-- Ảnh -->
                         <div class="flex flex-col flex-1 justify-center items-center">
-                            <img class="w-full h-full object-cover" :src="`/picture/customer/${customerData.image}`"
-                                alt="Ảnh người dùng" />
+                            <div class="relative">
+                                <img :src="img.preview" alt="Avatar"
+                                    class="w-36 h-36 rounded-full border-4 border-white shadow-lg" />
+                                <div onclick="document.querySelector('input[type=file]').click()"
+                                    class="absolute top-0 left-0 w-full h-full bg-transparent hover:bg-gray-500/20 cursor-pointer rounded-full">
+                                </div>
+                                <input type="file" accept="image/*" class="hidden" :onchange="onFileChange">
+                            </div>
                         </div>
 
                         <!-- Thông tin -->
@@ -68,23 +74,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue'
 import axios from 'axios'
+import api from '../../../services/api'
 
 const router = useRouter()
 const route = useRoute()
 const customerData = route.query.data ? JSON.parse(route.query.data) : null
 const showConfirm = ref(false)
 const itemToDelete = ref(null)
+const img = reactive({
+    origin: customerData.image,
+    preview: customerData.image
+});
 
 // Khởi tạo form từ customerData
 const form = ref({
     FullName: customerData?.FullName || '',
     mail: customerData?.mail || '',
     phoneNumber: customerData?.phoneNumber || '',
-    birth: formatDateForInput(customerData?.birth || '')
+    birth: formatDateForInput(customerData?.birth || ''),
+    image: ''
 })
 
 // Chuyển ngày sinh về dạng YYYY-MM-DD
@@ -127,14 +139,25 @@ async function confirmDelete() {
     }
 }
 
+const onFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+        form.value.image = file
+        img.preview = URL.createObjectURL(file)
+    }
+}
+
 async function goSave() {
     try {
-        const response = await axios.put(`http://127.0.0.1:8000/api/admin/customers/update/${customerData.id}`, {
-            name: form.value.FullName,
-            birth: form.value.birth,
-            mail: form.value.mail,
-            phoneNumber: form.value.phoneNumber,
-        })
+        const formData = new FormData()
+        formData.append('_method', 'PUT')
+        formData.append('FullName', form.value.FullName)
+        formData.append('mail', form.value.mail)
+        formData.append('phoneNumber', form.value.phoneNumber)
+        formData.append('image', form.value.image)
+        formData.append('birth', form.value.birth)
+        formData.append('originImg', img.origin)
+        await api.post(`admin/customers/update/${customerData.id}`, formData)
         alert("Cập nhật thành công!")
         router.push({ name: 'admin-customers' })
     } catch (error) {

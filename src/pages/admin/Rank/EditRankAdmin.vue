@@ -88,7 +88,6 @@ const id = route.params.id
 const rank = ref(null)
 const rankData = ref({})
 
-
 onMounted(async () => {
     try {
         const response = await axios.get(`http://127.0.0.1:8000/api/admin/ranks/${id}`)
@@ -98,6 +97,7 @@ onMounted(async () => {
         form.necessaryPoint = response.data.necessaryPoint
         form.saleRank = response.data.saleRank
         form.originImg = response.data.image
+        imagePreview.value = response.data.image
     } catch (error) {
         console.error("Lỗi khi lấy thông tin rank:", error)
     }
@@ -156,7 +156,7 @@ async function goSave() {
             formData,
             { headers: { 'Content-Type': 'multipart/form-data' } }
         )
-        if (response.data.status === 1) {
+        if (response.status === 200) {
             alert(response.data.message || 'Cập nhật thành công!')
             router.push({ name: 'admin-ranks' })
         } else {

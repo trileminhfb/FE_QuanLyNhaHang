@@ -34,7 +34,7 @@
               <div class="h-full flex flex-row justify-start items-center">
                 <div class="overflow-hidden flex flex-row justify-center items-center">
                   <img class="hover:cursor-pointer overflow-auto object-cover h-32 w-24 rounded-lg shadow-md border"
-                    :src="`/picture/profile/${item.image}`" alt="Ảnh nhân viên" />
+                    :src="`${item.image}`" alt="Ảnh nhân viên" />
                   <p class="ps-5 hover:cursor-pointer">{{ item.FullName }}</p>
                 </div>
               </div>

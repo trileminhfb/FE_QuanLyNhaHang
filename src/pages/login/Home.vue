@@ -91,7 +91,7 @@ async function login() {
         console.log("Dữ liệu trả về từ backend:", response.data);
 
         const token = response.data?.key;
-        const user = { name: response.data?.name };
+        const user = { name: response.data?.name, image: response.data?.image };
 
         if (!token || !user) {
             throw new Error("Thiếu token hoặc user trong phản hồi.");
