@@ -1,69 +1,93 @@
 <template>
   <div class="container-cartegoryaooetizer">
     <h1>Danh Sách Menu</h1>
+    <div class="search-wrapper" style="text-align: center; margin-bottom: 1rem;">
+          <input
+            type="text"
+            v-model="searchTerm"
+            placeholder="Tìm kiếm món ăn... 🔎"
+            class="search-input"
+          />
+        </div>
 
-    <div class="search-wrapper" style="text-align:center; margin-bottom: 1rem;">
-      <input
-        type="text"
-        v-model="searchTerm"
-        placeholder="Tìm kiếm món ăn... 🔎"
-        class="search-input"
-      />
+    <!-- Icon giỏ hàng cố định -->
+    <div class="gio-hang-icon">
+      <span class="so-luong" v-if="soLuong > 0">{{ soLuong }}</span>
     </div>
 
-    <div class="categories">
-      <button
-        v-for="(category, index) in categories"
-        :key="category.name"
-        @click="selectCategory(index)"
-        class="category-button"
-        :class="{ active: selectedCategoryIndex === index }"
-        type="button"
-      >
-        {{ category.name }}
-      </button>
-    </div>
+    <div class="main-content">
+      <!-- Cột trái: Lọc theo giá và sắp xếp -->
+      <div class="col-left">
+        <h3>Lọc theo giá</h3>
+        <div class="price-filter">
+          <button
+            v-for="(range, index) in priceRanges"
+            :key="index"
+            @click="selectPriceRange(index)"
+            class="price-button"
+            :class="{ active: selectedPriceRangeIndex === index }"
+          >
+            {{ range.label }}
+          </button>
+        </div>
 
-    <div class="food-items" v-if="selectedCategory && filteredDishes.length > 0">
-      <h2>{{ selectedCategory.name }}</h2>
+        <h3>Sắp xếp theo giá</h3>
+        <div class="sort-filter">
+          <select v-model="sortOrder" class="sort-select">
+            <option value="asc">Tăng dần (A-Z)</option>
+            <option value="desc">Giảm dần (Z-A)</option>
+          </select>
+        </div>
+      </div>
 
-      <div class="menu-grid">
-        <div class="card-menu" v-for="(dish, dishIndex) in filteredDishes" :key="dishIndex">
-          <div class="img-wrapper">
-            <img :src="getImageUrl(dish.image)" alt="Ảnh món ăn" />
-            <div class="hover-icons">
-              <span class="icon eye" @click="handleShowRating(dish)" title="Xem chi tiết">
-                <i class="fas fa-eye"></i>
-              </span>
-              <span class="icon cart" @click="(e) => handleAddToCart(dish, e)" title="Thêm vào giỏ">
-                <i class="fas fa-shopping-cart"></i>
-              </span>
-            </div>
-          </div>
+      <!-- Cột phải: Danh mục và món ăn -->
+      <div class="col-right">
+      
+        <div class="categories">
+          <button
+            v-for="(category, index) in categories"
+            :key="category.name"
+            @click="selectCategory(index)"
+            class="category-button"
+            :class="{ active: selectedCategoryIndex === index }"
+            type="button"
+          >
+            {{ category.name }}
+          </button>
+        </div>
 
-          <div class="info-card">
-            <div class="card-name" @click="handleShowRating(dish)">
-              <strong>{{ dish.name }}</strong>
-            </div>
-            <div class="card-cost"><strong>{{ dish.cost }}</strong></div>
-            <div class="card-title">{{ dish.detail }}</div>
-            <div class="card-price">
-              <span class="old-price" v-if="dish.oldPrice">{{ dish.oldPrice.toLocaleString() }}đ</span>
-              <span class="new-price" v-if="dish.newPrice">{{ dish.newPrice.toLocaleString() }}đ</span>
-            </div>
+        <div class="food-items" v-if="selectedCategory && filteredDishes.length > 0">
+          <h2>{{ selectedCategory.name }}</h2>
+          <div class="menu-grid">
+            <div class="card-menu" v-for="(dish, dishIndex) in filteredDishes" :key="dishIndex">
+              <img :src="getImageUrl(dish.image)" alt="Ảnh món ăn" style="width: 100%; height: 200px;" />
+              <div class="info-card">
+                <div class="card-name" @click="handleShowRating(dish)">
+                  <strong>{{ dish.name }}</strong>
+                </div>
+                <div class="card-cost"><strong>{{ dish.cost }}</strong></div>
 
-            <button class="btn-view-detail" @click="handleShowRating(dish)">Xem chi tiết</button>
+                <div class="card-title">{{ dish.detail }}</div>
+                <div class="card-price">
+                  <span class="old-price" v-if="dish.oldPrice">{{ dish.oldPrice.toLocaleString() }}đ</span>
+                  <span class="new-price" v-if="dish.newPrice">{{ dish.newPrice.toLocaleString() }}đ</span>
+                </div>
 
-            <div class="gio-hang-icon">
-              <span class="so-luong" v-if="soLuong > 0">{{ soLuong }}</span>
+                <div class="btn-wrapper">
+                  <button class="btn-order">Đặt Hàng</button>
+                  <button class="btn-add" @click="(e) => handleAddToCart(dish, e)">
+                    Thêm vào giỏ <i class="fas fa-shopping-cart"></i>
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="food-items" v-else>
-      <p>Vui lòng chọn danh mục để xem món ăn hoặc không tìm thấy món ăn phù hợp.</p>
+        <div class="food-items" v-else>
+          <p>Vui lòng chọn danh mục để xem món ăn hoặc không tìm thấy món ăn phù hợp.</p>
+        </div>
+      </div>
     </div>
 
     <!-- Component đánh giá món ăn -->
@@ -80,12 +104,23 @@ import { ref, computed, onMounted } from 'vue'
 import api from '../../services/api'
 import { cartItems, addToCart } from '../../stores/cartStore'
 import DishRating from './DishRating.vue'
-
+import { useToast } from 'vue-toastification'
+const toast =useToast();
 const categories = ref([])
 const selectedCategoryIndex = ref(null)
 const selectedDish = ref(null)
 const showRating = ref(false)
 const searchTerm = ref('')
+const selectedPriceRangeIndex = ref(null)
+const sortOrder = ref('asc') 
+
+// Định nghĩa các khoảng giá
+const priceRanges = ref([
+  { label: 'Tất cả', min: 0, max: Infinity },
+  { label: 'Dưới 50k', min: 0, max: 50000 },
+  { label: '50k - 100k', min: 50000, max: 100000 },
+  { label: 'Trên 100k', min: 100000, max: Infinity },
+])
 
 const gioHangIcon = ref(null)
 
@@ -119,6 +154,10 @@ function selectCategory(index) {
   selectedCategoryIndex.value = index
 }
 
+function selectPriceRange(index) {
+  selectedPriceRangeIndex.value = index
+}
+
 const selectedCategory = computed(() => {
   return selectedCategoryIndex.value !== null
     ? categories.value[selectedCategoryIndex.value]
@@ -127,11 +166,33 @@ const selectedCategory = computed(() => {
 
 const filteredDishes = computed(() => {
   if (!selectedCategory.value) return []
-  if (!searchTerm.value.trim()) return selectedCategory.value.dsMon
-  const keyword = searchTerm.value.trim().toLowerCase()
-  return selectedCategory.value.dsMon.filter(dish =>
-    dish.name.toLowerCase().includes(keyword)
-  )
+  let dishes = [...selectedCategory.value.dsMon] // Tạo bản sao để tránh thay đổi gốc
+
+  // Lọc theo từ khóa tìm kiếm
+  if (searchTerm.value.trim()) {
+    const keyword = searchTerm.value.trim().toLowerCase()
+    dishes = dishes.filter(dish =>
+      dish.name.toLowerCase().includes(keyword)
+    )
+  }
+
+  // Lọc theo khoảng giá
+  if (selectedPriceRangeIndex.value !== null) {
+    const { min, max } = priceRanges.value[selectedPriceRangeIndex.value]
+    dishes = dishes.filter(dish => {
+      const price = dish.newPrice || dish.cost || 0
+      return price >= min && price <= max
+    })
+  }
+
+  // Sắp xếp theo giá
+  dishes.sort((a, b) => {
+    const priceA = a.newPrice || a.cost || 0
+    const priceB = b.newPrice || b.cost || 0
+    return sortOrder.value === 'asc' ? priceA - priceB : priceB - priceA
+  })
+
+  return dishes
 })
 
 const soLuong = computed(() => {
@@ -152,17 +213,29 @@ function animateAddToCart(imageUrl, event) {
 
   const img = document.createElement('img')
   img.src = imageUrl
-  img.classList.add('fly-img') // ← THÊM DÒNG NÀY
-  img.style.left = `${event.clientX}px`
-  img.style.top = `${event.clientY}px`
+  img.style.position = 'fixed'
+  img.style.width = '40px'
+  img.style.height = '40px'
+  img.style.borderRadius = '50%'
+  img.style.zIndex = 10000
+  img.style.pointerEvents = 'none'
+
+  // Lấy vị trí nút bấm
+  const start = event.currentTarget.getBoundingClientRect()
+  img.style.left = `${start.left}px`
+  img.style.top = `${start.top}px`
 
   document.body.appendChild(img)
 
+  // Lấy vị trí icon giỏ hàng
   const end = gioHangIcon.value.getBoundingClientRect()
+
+  const deltaX = end.left - start.left
+  const deltaY = end.top - start.top
 
   const animation = img.animate([
     { transform: 'translate(0, 0)', opacity: 1 },
-    { transform: `translate(${end.left - event.clientX}px, ${end.top - event.clientY}px) scale(0.1)`, opacity: 0 }
+    { transform: `translate(${deltaX}px, ${deltaY}px) scale(0.1)`, opacity: 0.5 }
   ], {
     duration: 600,
     easing: 'ease-in-out'
@@ -173,8 +246,8 @@ function animateAddToCart(imageUrl, event) {
   }
 }
 
-
 function handleAddToCart(dish, event) {
+  toast.success('đã thêm món ăn vào giỏ ')
   addToCart(dish)
   animateAddToCart(getImageUrl(dish.image), event)
 }
@@ -186,6 +259,13 @@ function handleShowRating(dish) {
 </script>
 
 <style scoped>
+html,
+body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: white;
+}
 
 .container-cartegoryaooetizer {
   background: white;
@@ -198,6 +278,63 @@ h1 {
   color: #4caf50;
   font-size: 50px;
   margin-bottom: 20px;
+}
+
+.main-content {
+  display: flex;
+  gap: 1rem;
+}
+
+.col-left {
+  flex: 1;
+  max-width: 200px;
+  background: #f5f5f5;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.col-right {
+  flex: 3;
+}
+
+.price-filter, .sort-filter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.price-button {
+  background-color: #e0f2f1;
+  border: 2px solid #4caf50;
+  border-radius: 6px;
+  padding: 0.6rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.price-button:hover,
+.price-button.active {
+  background-color: #4caf50;
+  color: white;
+  font-weight: bold;
+}
+
+.sort-select {
+  padding: 0.6rem;
+  border: 2px solid #4caf50;
+  border-radius: 6px;
+  font-size: 1rem;
+  background-color: #e0f2f1;
+  cursor: pointer;
+  transition: border-color 0.3s;
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: #388e3c;
 }
 
 .categories {
@@ -248,154 +385,103 @@ h1 {
   border-radius: 12px;
   text-align: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  width: auto;
+  width: 100%;
   height: auto;
   transition: all 0.3s ease;
 }
 
-.img-wrapper {
-  position: relative;
-  width: 100%;
+.card-menu img {
+  width: 300px;
   height: 160px;
-  overflow: hidden;
-  border-radius: 8px;
-}
-
-.img-wrapper img {
-  width: 100%;
-  height: 100%;
   object-fit: cover;
-  display: block;
+  border-radius: 8px;
   transition: transform 0.3s ease;
 }
 
-.hover-icons {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 100%;
+.btn-wrapper {
+  margin-top: 0.5rem;
   display: flex;
-  gap: 50px; /* giảm khoảng cách giữa 2 icon */
-  justify-content: center; /* Đưa cả 2 icon về giữa và gần nhau */
-  padding: 0 1rem;
-  transform: translateY(-50%);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
 }
 
-.icon-view {
-  transform: translateX(-100%);
-  transition: transform 0.4s ease;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  padding: 0.5rem;
-  font-size: 18px;
-  color: #4caf50;
+.btn-order,
+.btn-add {
+  margin: 0.2rem;
+  padding: 15px;
+  border: none;
+  border-radius: 4px;
+  background: #4caf50;
+  color: white;
   cursor: pointer;
-}
-
-/* Icon bên phải (giỏ hàng) */
-.icon-cart {
-  transform: translateX(100%);
-  transition: transform 0.4s ease;
-  background: rgba(255, 255, 255, 0.9);
-  border-radius: 50%;
-  padding: 0.5rem;
-  font-size: 18px;
-  color: #4caf50;
-  cursor: pointer;
-}
-.img-wrapper:hover .hover-icons {
-  opacity: 1;
-  pointer-events: auto;
-}
-
-/* Hover ảnh thì icon trượt vào */
-.img-wrapper:hover .icon-view {
-  transform: translateX(0);
-}
-
-.img-wrapper:hover .icon-cart {
-  transform: translateX(0);
-}
-
-.hover-icons .icon {
-background: white;
-border-radius: 50%;
-padding: 10px;
-font-size: 18px;
-cursor: pointer;
-color: #4caf50;
-transition: background 0.3s;
-}
-
-.hover-icons .icon:hover {
-background: #4caf50;
-color: white;
-}
-
-.card-name {
-font-size: 18px;
-margin-top: 10px;
-cursor: pointer;
-color: #333;
-font-weight: bold;
-}
-
-.card-cost,
-.card-title,
-.card-price {
-margin-top: 5px;
-color: #666;
-}
-
-.card-price {
-margin: 10px 0;
-}
-
-.old-price {
-text-decoration: line-through;
-color: #999;
-margin-right: 8px;
-}
-
-.new-price {
-color: #e53935;
-font-weight: bold;
-}
-
-.btn-view-detail {
-margin-top: 10px;
-padding: 8px 16px;
-background-color: #4caf50;
-color: white;
-border: none;
-border-radius: 6px;
-cursor: pointer;
-transition: background-color 0.3s;
-}
-
-.btn-view-detail:hover {
-background-color: #388e3c;
+  font-size: 11px;
 }
 
 .gio-hang-icon {
-position: fixed;
-top: 20px;
-right: 20px;
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  cursor: pointer;
+  z-index: 2000;
+  color: #555;
+  margin-top: 0.4rem;
 }
 
-.so-luong {
-background-color: red;
-color: white;
-padding: 2px 6px;
-border-radius: 50%;
-position: absolute;
-top: -10px;
-right: -10px;
+.gio-hang-icon .so-luong {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: red;
+  color: white;
+  padding: 0.1rem 0.4rem;
+  border-radius: 50%;
+  font-weight: bold;
+  font-size: 12px;
 }
-/* Animation cho ảnh bay vào giỏ hàng */
+
+.card-price {
+  margin-top: 0.4rem;
+}
+
+.old-price {
+  text-decoration: line-through;
+  color: #999;
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.new-price {
+  color: red;
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.card-name {
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.card-name:hover {
+  transform: scale(1.1);
+  color: #4caf50;
+}
+
+.search-input {
+  padding: 0.5rem 1rem;
+  margin-bottom: 10px;
+  width: 200px;
+  border-radius: 6px;
+  border: 1.5px solid #4caf50;
+  font-size: 16px;
+  transition: border-color 0.3s;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: #388e3c;
+}
+
 .fly-img {
   position: fixed;
   width: 40px !important;
@@ -405,35 +491,4 @@ right: -10px;
   pointer-events: none;
   transition: transform 0.6s ease-in-out, opacity 0.6s ease-in-out;
 }
-.search-wrapper {
-  text-align: center;
-  margin-bottom: 1.5rem;
-}
-
-.search-input {
-  width: 320px;
-  max-width: 90vw;
-  padding: 0.6rem 1.2rem 0.6rem 2.8rem; 
-  font-size: 1.1rem;
-  border: 2px solid #ccc;
-  border-radius: 30px;
-  outline: none;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  background-image: url("data:image/svg+xml,%3csvg fill='gray' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3e%3cpath d='M21 20l-5.6-5.6a7 7 0 1 0-1.4 1.4L20 21zM10 16a6 6 0 1 1 0-12 6 6 0 0 1 0 12z'/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: 10px center;
-  background-size: 18px 18px;
-}
-
-.search-input::placeholder {
-  color: #999;
-  font-style: italic;
-}
-
-.search-input:focus {
-  border-color: #4caf50;
-  box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
-}
-
 </style>

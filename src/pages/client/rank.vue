@@ -1,10 +1,10 @@
 <template>
   <div class="restaurant-ranking">
-    <h1 class="main-title">🏆 Bảng Xếp Hạng Nhà Hàng</h1>
+    <h1 class="main-title">🏆 Bảng Xếp Hạng Khách Hàng</h1>
     <div class="ranking-container">
-      <!-- Phần trái: Carousel món ăn -->
+      <!-- Phần trái: Carousel khách hàng -->
       <div class="featured-dishes">
-        <h2 class="section-title">Món Đặc Biệt</h2>
+        <h2 class="section-title">Khách Hàng Nổi Bật</h2>
         <div class="carousel">
           <div class="carousel-item" v-for="(dish, index) in featuredDishes" :key="index" :class="{ active: currentDishIndex === index }">
             <img :src="dish.image" :alt="dish.name" />
@@ -20,7 +20,7 @@
 
       <!-- Phần phải: Bảng xếp hạng -->
       <div class="ranking-list">
-        <h2 class="section-title">Top Món Yêu Thích</h2>
+        <h2 class="section-title">Top Khách Hàng</h2>
         <div class="danh-sach-rank">
           <div
             v-for="(rank, index) in ranks"
@@ -44,7 +44,7 @@
       </div>
     </div>
 
-    <!-- Modal chi tiết món ăn -->
+    <!-- Modal chi tiết khách hàng -->
     <div class="modal-overlay" v-if="showModal" @click="closeModal">
       <div class="modal-content" @click.stop>
         <button class="close-button" @click="closeModal">
@@ -53,9 +53,9 @@
         <h2>{{ selectedRank.nameRank }}</h2>
         <img :src="selectedRank.image" :alt="selectedRank.nameRank" class="modal-image" />
         <p>{{ selectedRank.description }}</p>
-        <p><strong>Giá:</strong> {{ selectedRank.price }}</p>
-        <p><strong>Đánh giá:</strong> {{ selectedRank.rating }} / 5</p>
-        <button class="add-to-cart" @click="addToCart(selectedRank)">Thêm vào giỏ hàng</button>
+        <p><strong>Số Đơn Hàng:</strong> {{ selectedRank.orderCount }}</p>
+        <p><strong>Điểm Tích Lũy:</strong> {{ selectedRank.points }} điểm</p>
+        <button class="add-to-cart" @click="addToCart(selectedRank)">Xem Hồ Sơ</button>
       </div>
     </div>
   </div>
@@ -66,16 +66,16 @@ import { ref, onMounted } from 'vue'
 import api from '../../services/api'
 
 const ranks = ref([
-  { id: 1, nameRank: 'Banana Smoothie', image: '/imageicon/bunbo.png', description: 'Sinh tố chuối thơm ngon, bổ dưỡng.', price: '50,000đ', rating: 4.8 },
-  { id: 2, nameRank: 'Orange Juice', image: '/imageicon/comga.png', description: 'Nước cam ép tươi, giàu vitamin C.', price: '40,000đ', rating: 4.5 },
-  { id: 3, nameRank: 'Apple Pie', image: '/imageicon/lauthai.png', description: 'Bánh táo giòn, ngọt ngào.', price: '60,000đ', rating: 4.7 },
-  { id: 4, nameRank: 'Fruit Salad', image: '/imageicon/fruit_salad.png', description: 'Salad trái cây tươi mát.', price: '45,000đ', rating: 4.3 }
+  { id: 1, nameRank: 'Nguyễn Văn An', image: '/imageicon/vuadaubep1.png', description: 'Khách hàng thân thiết, mua sắm thường xuyên.', orderCount: 120, points: 1500 },
+  { id: 2, nameRank: 'Trần Thị Bình', image: '/imageicon/vuadaubep2.png', description: 'Yêu thích các sản phẩm chất lượng cao.', orderCount: 95, points: 1200 },
+  { id: 3, nameRank: 'Lê Minh Châu', image: '/imageicon/vuadaubep3.png', description: 'Tham gia nhiều chương trình khuyến mãi.', orderCount: 80, points: 1000 },
+  { id: 4, nameRank: 'Phạm Quốc Dũng', image: '/imageicon/vuadaubep4.png', description: 'Khách hàng mới nhưng rất tích cực.', orderCount: 50, points: 600 }
 ])
 
 const featuredDishes = ref([
-  { name: 'Banana Smoothie', image: '/imageicon/bunbo.png', description: 'Sinh tố chuối mịn màng, bổ dưỡng.' },
-  { name: 'Orange Juice', image: '/imageicon/comga.png', description: 'Nước cam ép nguyên chất, tươi mát.' },
-  { name: 'Apple Pie', image: '/imageicon/lauthai.png', description: 'Bánh táo ấm áp, giòn thơm.' }
+  { name: 'Nguyễn Văn An', image: '/imageicon/vuadaubep1.png', description: 'Khách hàng thân thiết với hơn 100 đơn hàng.' },
+  { name: 'Trần Thị Bình', image: '/imageicon/vuadaubep2.png', description: 'Yêu thích các sản phẩm cao cấp.' },
+  { name: 'Lê Minh Châu', image: '/imageicon/vuadaubep3.png', description: 'Thích săn các chương trình ưu đãi.' }
 ])
 
 const currentDishIndex = ref(0)
@@ -87,7 +87,7 @@ onMounted(async () => {
     const response = await api.get('client/ranks')
     ranks.value = response.data.map(item => ({
       ...item,
-      image: item.image ? `http://localhost:8000/images/ranks/${item.image}` : '/imageicon/phefood.png'
+      image: item.image ? `http://localhost:8000/images/ranks/${item.image}` : '/imageicon/default_user.png'
     }))
   } catch (error) {
     console.error('Lỗi khi lấy dữ liệu rank:', error)
@@ -117,7 +117,7 @@ function closeModal() {
 }
 
 function addToCart(dish) {
-  alert(`Đã thêm ${dish.nameRank} vào giỏ hàng!`)
+  alert(`Đang xem hồ sơ của ${dish.nameRank}!`)
   closeModal()
 }
 </script>

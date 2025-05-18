@@ -95,7 +95,7 @@
 
               <div class="user-info">
                 <router-link v-if="!userEmail" :to="{ name: 'users-login' }">Đăng nhập</router-link>
-                <button v-else @click="handleLogout">Đăng xuất</button>
+                <button class="user-info-logout" v-else @click="handleLogout">Đăng xuất</button>
               </div>
             </div>
           </li>
@@ -361,7 +361,7 @@ function logout() {
   padding: 20px;
   background: white;
   display: flex;
-  z-index: 1;
+  z-index: 1000;
   flex-direction: column;
   gap: 20px;
   transition: transform 0.3s;
@@ -582,5 +582,8 @@ function logout() {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
   user-select: none;
   pointer-events: none;
+}
+.user-info-logout{
+  z-index: 1;
 }
 </style>

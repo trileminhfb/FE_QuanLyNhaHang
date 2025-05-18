@@ -1,180 +1,185 @@
-<template>
-
-  <div class="container-personalinformation">
-    <div class="rank-box">
-      <div class="member-info">
-        <img src="/imageicon/logo.png" class="avatar" />
-        <div class="member-details">
-          <h3>Le Minh Tri</h3>
-          <p>69 Stars</p>
-        </div>
-      </div>
-
-      <div class="total-spending">
-        <p class="label">
-          <span>Total Spending <strong style="color: aqua;">2025</strong></span>
-          <span class="amount">5.787.000 đ</span>
-        </p>
-
-        <div class="progress-bar">
-          <div class="milestone">
-            <span>0 đ</span>
-            <div class="icon start"></div>
-          </div>
-          <div class="milestone">
-            <span>2.000.000 đ</span>
-            <div class="icon mid"></div>
-          </div>
-          <div class="milestone">
-            <span>4.000.000 đ</span>
-            <div class="icon current"></div>
+  <template>
+    <div class="container-personalinformation">
+      <div class="rank-box">
+        <div class="member-info">
+          <img src="/imageicon/logo.png" class="avatar" />
+          <div class="member-details">
+            <h3>Le Minh Tri</h3>
+            <p>69 Stars</p>
           </div>
         </div>
-      </div>
-    </div>
 
-    <div class="info-box">
-      <div class="category-container">
-        <div class="tab-wrapper">
-          <ul class="tab-links">
-            <li
-              v-for="(tab, index) in tabs"
-              :key="index"
-              :class="['tab-link', { current: currentTab === index }]"
-              @click="currentTab = index"
-            >
-              {{ tab.ten }}
-            </li>
-          </ul>
+        <div class="total-spending">
+          <p class="label">
+            <span>Total Spending <strong style="color: aqua;">2025</strong></span>
+            <span class="amount">5.787.000 đ</span>
+          </p>
 
-          <div class="tab-contents">
-            <div
-              v-for="(tab, index) in tabs"
-              :key="'content-' + index"
-              v-show="currentTab === index"
-              class="tab-content"
-            >
-              <div v-if="tab.ten === 'Thông báo'">
-                <ul class="notification-list">
-                  <li class="notification-item">
-                    <strong>🎉 Chúc mừng!</strong> Bạn vừa đạt
-                    <strong>69 sao</strong> trong hệ thống tích điểm của chúng
-                    tôi. Hãy tiếp tục mua sắm để đạt các mốc quà tặng hấp dẫn
-                    tiếp theo như phiếu giảm giá, thẻ thành viên VIP và nhiều ưu
-                    đãi độc quyền khác.
-                  </li>
-                  <li class="notification-item">
-                    <strong>🔥 Ưu đãi tháng 5:</strong> Giảm ngay
-                    <strong>20%</strong> cho đơn hàng từ <strong>500.000đ</strong>
-                    trở lên, chỉ áp dụng trong tháng này. Nhanh tay kẻo lỡ vì số
-                    lượng có hạn!
-                  </li>
-                  <li class="notification-item">
-                    <strong>📢 Lời nhắc:</strong> Vui lòng cập nhật đầy đủ
-                    <strong>thông tin cá nhân</strong> để đảm bảo quyền lợi thành
-                    viên, nhận ưu đãi sinh nhật và các thông báo quan trọng từ
-                    chúng tôi. Cập nhật ngay trong mục "Thông tin cá nhân".
-                  </li>
-                </ul>
-              </div>
-
-              <div v-else-if="tab.ten === 'Thông tin cá nhân'">
-  <div class="information-personal">
-    <div class="input-information">
-      <div class="row-information">
-        <div class="group-information">
-          Họ và tên
-          <i class="fa fa-user"></i>
-          <input type="text" v-model="informationpersonal.FullName" />
-        </div>
-        <div class="group-information">
-          Ngày sinh 
-          <input type="date" v-model="informationpersonal.birth" />
-        </div>
-      </div>
-
-      <div class="row-information">
-        <div class="group-information">
-          Số điện thoại
-          <i class="fa fa-phone"></i>
-          <input type="number" v-model="informationpersonal.phoneNumber" />
-        </div>
-        <div class="group-information">
-  Email
-  <i class="fa fa-envelope"></i>
-  <input type="email" :value="informationpersonal.mail" disabled />
-</div>
-      </div>
-
-      <div class="row-information">
-        <div class="group-information">
-          Mật khẩu
-          <i class="fa fa-lock"></i>
-          <input type="password" v-model="informationpersonal.password" disabled />
-        </div>
-        <div class="group-information">
-          Ảnh đại diện
-          <input type="file" @change="handleImageUpload" accept="image/*" />
-          <img v-if="imagePreview" :src="imagePreview" alt="Ảnh preview" style="width: 80px; margin-top: 5px;" />
-        </div>
-      </div>
-
-      <div class="row-information">
-        <div class="group-information">
-          Điểm
-          <input type="number" v-model="informationpersonal.point" disabled />
-        </div>
-        <div class="group-information">
-          Hạng
-          <input type="number" v-model="informationpersonal.id_rank" disabled />
-        </div>
-      
-      </div>
-    </div>
-  </div>
-  <!-- Thêm vào cuối phần Thông tin cá nhân -->
-<div style="margin-top: 20px; text-align: right;">
-  <button @click="updatePersonalInfo" class="btn-update">Cập nhật thông tin</button>
-</div>
-
-</div>
-
-
-
-              <div v-else-if="tab.ten === 'Quà tặng'">
-  <div v-if="tab.danhSachQuaTang.length === 0">
-    <p>Hiện tại bạn chưa có quà tặng nào.</p>
-  </div>
-  <div v-else>
-    <ul class="gift-list">
-      <li v-for="(gift, index) in tab.danhSachQuaTang" :key="index" class="gift-item">
-        <div class="gift-header">
-          <strong>{{ gift.ten }}</strong>
-          <span class="gift-description">{{ gift.moTa }}</span>
-        </div>
-        <button class="claim-gift-btn">Nhận quà</button>
-      </li>
-    </ul>
-  </div>
-</div>
-              <div v-else>
-                <p>{{ tab.noiDung }}</p>
-              </div>
+          <div class="progress-bar">
+            <div class="milestone">
+              <span>0 đ</span>
+              <div class="icon start"></div>
+            </div>
+            <div class="milestone">
+              <span>2.000.000 đ</span>
+              <div class="icon mid"></div>
+            </div>
+            <div class="milestone">
+              <span>4.000.000 đ</span>
+              <div class="icon current"></div>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="info-box">
+  <div class="category-container">
+    <div class="tab-wrapper">
+      <ul class="tab-links">
+        <li v-for="(tab, index) in tabs" :key="index" :class="['tab-link', { current: currentTab === index }]"
+          @click="currentTab = index">
+          {{ tab.ten }}
+        </li>
+      </ul>
+
+      <div class="tab-contents">
+        <div v-for="(tab, index) in tabs" :key="'content-' + index" v-show="currentTab === index"
+          class="tab-content">
+          <div v-if="tab.ten === 'Lịch sử giao dịch'">
+            <div v-if="historyPoints.length === 0">
+              <p>Bạn chưa có giao dịch nào.</p>
+            </div>
+            <div v-else>
+              <ul class="transaction-list">
+                <li v-for="history in historyPoints" :key="history.id" class="transaction-item">
+                  <img :src="history.image || '/imageicon/default-transaction.png'" class="transaction-image" alt="Transaction Image" />
+                  <div class="transaction-details">
+                    <strong>{{ history.description }}</strong>
+                    <p class="transaction-name">Người thực hiện: {{ history.name || informationpersonal.FullName || 'Khách hàng' }}</p>
+                    <p>Số điểm: {{ history.points }} | Ngày: {{ formatDate(history.created_at) }}</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div v-else-if="tab.ten === 'Thông báo'">
+            <ul class="notification-list">
+              <li class="notification-item">
+                <strong>🎉 Chúc mừng!</strong> Bạn vừa đạt
+                <strong>69 sao</strong> trong hệ thống tích điểm của chúng
+                tôi. Hãy tiếp tục mua sắm để đạt các mốc quà tặng hấp dẫn
+                tiếp theo như phiếu giảm giá, thẻ thành viên VIP và nhiều ưu
+                đãi độc quyền khác.
+              </li>
+              <li class="notification-item">
+                <strong>🔥 Ưu đãi tháng 5:</strong> Giảm ngay
+                <strong>20%</strong> cho đơn hàng từ <strong>500.000đ</strong>
+                trở lên, chỉ áp dụng trong tháng này. Nhanh tay kẻo lỡ vì số
+                lượng có hạn!
+              </li>
+              <li class="notification-item">
+                <strong>📢 Lời nhắc:</strong> Vui lòng cập nhật đầy đủ
+                <strong>thông tin cá nhân</strong> để đảm bảo quyền lợi thành
+                viên, nhận ưu đãi sinh nhật và các thông báo quan trọng từ
+                chúng tôi. Cập nhật ngay trong mục "Thông tin cá nhân".
+              </li>
+            </ul>
+          </div>
+
+          <div v-else-if="tab.ten === 'Thông tin cá nhân'">
+            <div class="information-personal">
+              <div class="input-information">
+                <div class="row-information">
+                  <div class="group-information">
+                    Họ và tên
+                    <i class="fa fa-user"></i>
+                    <input type="text" v-model="informationpersonal.FullName" />
+                  </div>
+                  <div class="group-information">
+                    Ngày sinh
+                    <input type="date" v-model="informationpersonal.birth" />
+                  </div>
+                </div>
+
+                <div class="row-information">
+                  <div class="group-information">
+                    Số điện thoại
+                    <i class="fa fa-phone"></i>
+                    <input type="number" v-model="informationpersonal.phoneNumber" />
+                  </div>
+                  <div class="group-information">
+                    Email
+                    <i class="fa fa-envelope"></i>
+                    <input type="email" :value="informationpersonal.mail" disabled />
+                  </div>
+                </div>
+
+                <div class="row-information">
+                  <div class="group-information">
+                    Mật khẩu
+                    <i class="fa fa-lock"></i>
+                    <input type="password" v-model="informationpersonal.password" disabled />
+                  </div>
+                  <div class="group-information">
+                    Ảnh đại diện
+                    <input type="file" @change="handleImageUpload" accept="image/*" />
+                    <img v-if="imagePreview" :src="imagePreview" alt="Ảnh preview"
+                      style="width: 80px; margin-top: 5px;" />
+                  </div>
+                </div>
+
+                <div class="row-information">
+                  <div class="group-information">
+                    Điểm
+                    <input type="number" v-model="informationpersonal.point" disabled />
+                  </div>
+                  <div class="group-information">
+                    Hạng
+                    <input type="number" v-model="informationpersonal.id_rank" disabled />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-top: 20px; text-align: right;">
+              <button @click="updatePersonalInfo" class="btn-update">Cập nhật thông tin</button>
+              <button @click="deletePersonalInfo" class="btn-delete" style="margin-left: 10px;">Xóa tài khoản</button>
+            </div>
+          </div>
+
+          <div v-else-if="tab.ten === 'Quà tặng'">
+            <div v-if="tab.danhSachQuaTang.length === 0">
+              <p>Hiện tại bạn chưa có quà tặng nào.</p>
+            </div>
+            <div v-else>
+              <ul class="gift-list">
+                <li v-for="(gift, index) in tab.danhSachQuaTang" :key="index" class="gift-item">
+                  <div class="gift-header">
+                    <strong>{{ gift.nameSale }}</strong>
+                    <span class="gift-description">Giảm {{ gift.percent }}% từ {{ gift.startTime }} đến {{ gift.endTime }}</span>
+                  </div>
+                  <button class="claim-gift-btn">Nhận quà</button>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div v-else>
+            <p>{{ tab.noiDung }}</p>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
-</template>
+</div>
+    </div>
+  </template>
 
 <script setup>
-import { ref ,onMounted} from 'vue'
-import { Codemirror } from 'vue-codemirror'
-import api from '../../services/api'
+import { ref, onMounted } from 'vue';
+import api from '../../services/api';
+import { useRouter } from 'vue-router';
 
-
-import { javascript } from '@codemirror/lang-javascript'
+const router = useRouter();
 
 const informationpersonal = ref({
   FullName: '',
@@ -186,99 +191,120 @@ const informationpersonal = ref({
   point: 0,
   id_rank: 1,
   isActive: false,
-})
-const currentTab = ref(0)
-const imagePreview = ref(null)
+});
+const currentTab = ref(0);
+const imagePreview = ref(null);
+const historyPoints = ref([]);
+const tabs = ref([
+  { ten: 'Lịch sử giao dịch', noiDung: '' },
+  { ten: 'Thông tin cá nhân', noiDung: '' },
+  { ten: 'Thông báo', noiDung: '' },
+  { ten: 'Quà tặng', noiDung: '', danhSachQuaTang: [] },
+  { ten: 'Chính sách', noiDung: 'Đây là nội dung về chính sách thành viên.' },
+]);
 
-onMounted(() => {
-  const id = localStorage.getItem('customerId')
+onMounted(async () => {
+  const id = localStorage.getItem('customerId');
   if (id) {
-    api.get(`/client/customers/${id}`)
-      .then((res) => {
-        informationpersonal.value = {
-          ...res.data.customer,
-          password: localStorage.getItem('customer_password') || '', 
-        }
-      })
-      .catch((err) => {
-        console.error('Lỗi khi lấy thông tin người dùng:', err)
-      })
+    try {
+      const res = await api.get(`/client/customers/${id}`);
+      informationpersonal.value = {
+        ...res.data.customer,
+        password: localStorage.getItem('customer_password') || '',
+      };
+    } catch (err) {
+      console.error('Lỗi khi lấy thông tin người dùng:', err);
+    }
   }
 
-  // Gán lại email và password từ localStorage 
-  informationpersonal.value.mail = localStorage.getItem('customer_email') || ''
-  informationpersonal.value.password = localStorage.getItem('customer_password') || ''
-})
+  informationpersonal.value.mail = localStorage.getItem('customer_email') || '';
+  informationpersonal.value.password = localStorage.getItem('customer_password') || '';
+
+  try {
+    const historyResponse = await api.get('/client/history-points');
+    historyPoints.value = (historyResponse.data || []).map(history => ({
+      ...history,
+      image: history.image || '/imageicon/default-transaction.png', // API cung cấp image hoặc dùng mặc định
+      name: history.name || informationpersonal.value.FullName || 'Khách hàng', // API cung cấp name hoặc dùng FullName
+    }));
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách lịch sử điểm:', error.response || error);
+    historyPoints.value = [];
+  }
+
+  try {
+    const salesResponse = await api.get('/client/sales');
+    tabs.value.find(tab => tab.ten === 'Quà tặng').danhSachQuaTang = salesResponse.data.data || [];
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách khuyến mãi:', error.response || error);
+    tabs.value.find(tab => tab.ten === 'Quà tặng').danhSachQuaTang = [];
+  }
+});
 
 const handleImageUpload = (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
   reader.onload = (e) => {
-    imagePreview.value = e.target.result
-    informationpersonal.value.image = e.target.result
-  }
-  reader.readAsDataURL(file)
-}
-const updatePersonalInfo = () => {
-  const id = localStorage.getItem('customerId')
-  if (!id) return alert('Không tìm thấy ID người dùng')
+    imagePreview.value = e.target.result;
+    informationpersonal.value.image = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
 
-  // Tạo payload (có thể lọc thuộc tính nếu muốn gửi ít hơn)
+const updatePersonalInfo = async () => {
+  const id = localStorage.getItem('customerId');
+  if (!id) return alert('Không tìm thấy ID người dùng');
+
   const payload = {
     FullName: informationpersonal.value.FullName,
     phoneNumber: informationpersonal.value.phoneNumber,
-    mail: informationpersonal.value.mail,
     birth: informationpersonal.value.birth,
-    image: informationpersonal.value.image,
-    password: informationpersonal.value.password,
+    image_base64: informationpersonal.value.image,
+  };
+
+  try {
+    const response = await api.put(`/client/customers/update/${id}`, payload);
+    alert('Cập nhật thông tin thành công');
+    informationpersonal.value = {
+      ...response.data.customer,
+      password: localStorage.getItem('customer_password') || '',
+    };
+  } catch (err) {
+    console.error('Lỗi khi cập nhật thông tin:', err);
+    alert('Có lỗi xảy ra khi cập nhật');
   }
+};
 
-  api.put(`/client/customers/update/${id}`, payload)
-    .then(() => {
-      alert('Cập nhật thông tin thành công')
-    })
-    .catch((err) => {
-      console.error('Lỗi khi cập nhật thông tin:', err)
-      alert('Có lỗi xảy ra khi cập nhật')
-    })
-}
+const deletePersonalInfo = async () => {
+  if (!confirm('Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác.')) return;
 
+  const id = localStorage.getItem('customerId');
+  if (!id) return alert('Không tìm thấy ID người dùng');
 
-const tabs = ref([
-  {
-    ten: 'Lịch sử giao dịch',
-    noiDung: 'Bạn chưa có giao dịch nào.',
-  },
-  {
-    ten: 'Thông tin cá nhân',
-    noiDung: '',
-  },
-  {
-    ten: 'Thông báo',
-    noiDung: '',
-  },
-  {
-    ten: 'Quà tặng',
-    noiDung: '',
-    danhSachQuaTang: [
-      {
-        ten: 'Phiếu giảm giá 20%',
-        moTa: 'Giảm ngay 20% cho đơn hàng từ 500.000đ',
-      },
-      {
-        ten: 'Thẻ thành viên VIP',
-        moTa: 'Thẻ VIP cho ưu đãi đặc biệt',
-      },
-    ]
-  },
-  {
-    ten: 'Chính sách ',
-    noiDung: 'Đây là nội dung về chính sách thành viên.',
-  },
-])
+  try {
+    await api.delete(`/client/customers/${id}`);
+    alert('Xóa tài khoản thành công');
+    localStorage.removeItem('customerId');
+    localStorage.removeItem('customer_email');
+    localStorage.removeItem('customer_password');
+    router.push('/login');
+  } catch (err) {
+    console.error('Lỗi khi xóa tài khoản:', err);
+    alert('Có lỗi xảy ra khi xóa tài khoản');
+  }
+};
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+};
 </script>
+
   <style scoped>
 .gift-list {
   list-style: none;
@@ -627,6 +653,30 @@ border-radius: 20px;
 .btn-update:hover {
   background-color: #019875;
 }
+/* Thêm style cho danh sách lịch sử giao dịch */
+.transaction-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
 
+.transaction-item {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transaction-details strong {
+  font-size: 16px;
+  color: #143b36;
+}
+
+.transaction-details p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #666;
+}
   </style>
   
