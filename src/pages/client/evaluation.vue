@@ -22,7 +22,7 @@
                   </button>
                 </div>
               </div>
-              <div class="form-group"> <label for="userEmail"></label> Xin chào ,<strong> {{ userEmail }}</strong> </div>
+              <div class="form-group"> <label for="userName"></label> Xin chào ,<strong> {{ userName }}</strong> </div>
               <!-- Dropdown chọn món ăn -->
               <div class="form-group">
                 <label for="id_food">Món ăn</label>
@@ -115,7 +115,7 @@ const formEvaluation = reactive({
   detail: "",
   id_customer: "1", // Giá trị mặc định
 });
-const userEmail = ref(null);
+const userName = ref(null);
 const toast =useToast();
 const rating = ref(0);
 const photoFiles = ref([]);
@@ -282,7 +282,7 @@ function loadReviewsFromLocalStorage() {
   }
 }
 onMounted(() => {
-  userEmail.value = localStorage.getItem('customer_email') || '';
+  userName.value = localStorage.getItem('FullName') || '';
   loadReviewsFromLocalStorage();
 });
 </script>

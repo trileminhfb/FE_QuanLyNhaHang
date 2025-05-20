@@ -79,52 +79,49 @@ const fetchFoods = async () => {
 
 // Gộp lịch sử đặt món từ localStorage
 const loadOrders = () => {
-  // const history = JSON.parse(localStorage.getItem('bookingHistory')) || [];// sai từ bước ni luôn r, tức là sai từ đầu
-  // const result = [];
-
-  // history.forEach(booking => {
-  //   if (Array.isArray(booking.foods)) {
-  //     booking.foods.forEach(food => {
-  //       const matchedFood = foodsList.value.find(f => f.id === food.id_foods);
-  //       result.push({
-  //         bookingId: booking.id,
-  //         id_foods: food.id_foods,
-  //         timeBooking: booking.timeBooking,
-  //         foodName: matchedFood ? matchedFood.name : 'Không rõ',
-  //         quantity: food.quantity,
-  //       });
-  //     });
-  //   }
-  // });
-  // orders.value = result;
   api.get('client/bookings/history')
     .then((res) => {
-      console.log('abc:', res.data);
-      orders.value = res.data.data
+      // res.data.data là mảng booking
+      const data = res.data.data;
+      const flattenedOrders = [];
+
+      data.forEach(booking => {
+        booking.foods.forEach(food => {
+          flattenedOrders.push({
+            bookingId: booking.id,
+            timeBooking: booking.timeBooking,
+            id_foods: food.id_foods,
+            foodName: food.name,
+            quantity: food.quantity
+          });
+        });
+      });
+
+      orders.value = flattenedOrders;
+      isLoading.value = false;
     })
+    .catch(err => {
+      console.error(err);
+      isLoading.value = false;
+    });
 };
 
-// Xoá món ăn trong một đơn
+
 const deleteOrder = (bookingId, foodId) => {
+  console.log('bookingId:', bookingId, 'foodId:', foodId);
+
   if (!confirm('Bạn có chắc muốn xoá món này không?')) return;
 
-  const history = JSON.parse(localStorage.getItem('bookingHistory')) || [];
-
-  const updatedHistory = history
-    .map(booking => {
-      if (booking.id === bookingId) {
-        return {
-          ...booking,
-          foods: booking.foods.filter(f => f.id_foods !== foodId)
-        };
-      }
-      return booking;
+  api.delete(`/client/bookings/${bookingId}/foods/${foodId}`)
+    .then((res) => {
+      console.log('Đã xoá:', res.data);
+      alert('Đã xoá món thành công!');
+      loadOrders();
     })
-    .filter(booking => booking.foods.length > 0);
-
-  localStorage.setItem('bookingHistory', JSON.stringify(updatedHistory));
-  loadOrders();
-  alert('Đã xoá món thành công!');
+    .catch((error) => {
+      console.error('Lỗi khi xoá hàng:', error.response?.data || error.message);
+      alert('Lỗi khi xoá hàng!');
+    });
 };
 
 // Tăng số lượng món ăn

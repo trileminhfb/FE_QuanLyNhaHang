@@ -84,7 +84,6 @@
               <p v-else-if="tuKhoa">Không tìm thấy món nào.</p>
             </div>
           </li>
-
           <li>
             <div class="cart-user">
               <span style="font-size: 15px; font-weight: bold;" v-if="userEmail" class="user-email">Xin chào, {{
@@ -99,6 +98,7 @@
           </li>
 
           <li>
+           
             <!-- GIỎ HÀNG (đặt ref="cartIcon" để làm mục tiêu bay tới) -->
             <div class="cart-shopping" ref="cartIcon">
               <router-link :to="{ name: 'users-shoppingCart' }">
@@ -153,10 +153,7 @@
                 <h2>History-Booking</h2>
               </router-link>
 
-              <router-link :to="{ name: 'users-login' }" class="menu-item">
-                <i class="fa-solid fa-right-to-bracket"></i>
-                <h2>login</h2>
-              </router-link>
+        
 
               <div class="menu-item" @click="handleLogout">
                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -186,7 +183,12 @@ const userEmail = ref(null);
 const userName = ref(null);
 const types = ref([]);
 const router = useRouter();
+const userName = ref([])
+const avatar = ref(localStorage.getItem('avatar') || '/default-avatar.png');
 
+window.addEventListener('storage', () => {
+  avatar.value = localStorage.getItem('avatar') || '/default-avatar.png';
+});
 // Mở ô tìm kiếm
 const handleOpenSearch = () => {
   isSearch.value = true;
