@@ -15,14 +15,10 @@
             </div>
             <div v-else class="flex flex-col items-center">
                 <div class="relative">
-                    <img :src="img.preview || '/imageicon/placeholder.png'" alt="Avatar"
+                    <img :src="user.image || '/imageicon/placeholder.png'" alt="Avatar"
                         class="w-36 h-36 rounded-full border-4 border-white shadow-lg" />
                     <div class="absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white"
                         :class="user.status === 'active' ? 'bg-green-400' : 'bg-gray-400'"></div>
-                    <div onclick="document.querySelector('input[type=file]').click()"
-                        class="absolute top-0 left-0 w-full h-full bg-transparent hover:bg-gray-500/20 cursor-pointer rounded-full">
-                    </div>
-                    <input type="file" accept="image/*" class="hidden" :onchange="onFileChange">
                 </div>
                 <h2 class="mt-4 text-3xl font-bold text-gray-900">{{ user.name }}</h2>
                 <p v-if="user.role == 'admin'" class="text-gray-500 font-medium capitalize">Quản trị viên</p>
@@ -84,6 +80,17 @@
             <div class="bg-white p-6 rounded-lg w-[30vw]">
                 <h2 class="text-2xl font-bold mb-4">Chỉnh sửa thông tin</h2>
                 <form @submit.prevent="updateProfile">
+                    <div class="mb-4 flex justify-center">
+                        <div class="h-32 w-32 border rounded-full overflow-hidden">
+                            <img class="w-full h-full"
+                                :src="img.preview || editProfileForm.image || '/imageicon/placeholder.png'"
+                                alt="Profile Image">
+                        </div>
+                        <div class="absolute w-32 h-32 bg-transparent hover:bg-gray-500/20 cursor-pointer rounded-full"
+                            onclick="document.querySelector('#profileImageInput').click()"></div>
+                        <input id="profileImageInput" type="file" accept="image/*" class="hidden"
+                            @change="onFileChange">
+                    </div>
                     <div class="mb-4">
                         <label class="block text-sm font-semibold text-gray-700">Họ và tên</label>
                         <input v-model="editProfileForm.name" type="text"
@@ -240,13 +247,15 @@ async function updateProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const formData = new FormData()
-        formData.append('_method', 'PUT')
-        formData.append('name', editProfileForm.value.name)
-        formData.append('phone_number', editProfileForm.value.phone_number)
-        formData.append('image', editProfileForm.value.image)
-        formData.append('birth', editProfileForm.value.birth)
-        formData.append('originImg', img.origin)
+        const formData = new FormData();
+        formData.append('_method', 'PUT');
+        formData.append('name', editProfileForm.value.name);
+        formData.append('phone_number', editProfileForm.value.phone_number);
+        if (editProfileForm.value.image && typeof editProfileForm.value.image !== 'string') {
+            formData.append('image', editProfileForm.value.image);
+        }
+        formData.append('birth', editProfileForm.value.birth);
+        formData.append('originImg', img.origin || '');
 
         const response = await api.post('/admin/users/profile-update/' + user.value.id, formData);
 
@@ -256,14 +265,15 @@ async function updateProfile() {
             name: editProfileForm.value.name,
             phone_number: editProfileForm.value.phone_number,
             birth: editProfileForm.value.birth,
-            image: payload.image,
+            image: response.data.data.image || editProfileForm.value.image,
         };
 
+        img.origin = user.value.image;
+        img.preview = user.value.image;
         message.value = 'Đổi thông tin thành công!';
         showEditProfileModal.value = false; // Close modal
     } catch (error) {
-        console.error('Error changing information:', error.response?.data || error.message);
-        // editError.value = error.response?.data?.message || 'Không thể đổi!';
+        console.error('Error updating profile:', error.response?.data || error.message);
     }
 }
 
@@ -308,12 +318,12 @@ const logout = () => {
 };
 
 const onFileChange = (e) => {
-    const file = e.target.files[0]
+    const file = e.target.files[0];
     if (file) {
-        editProfileForm.value.image = file
-        img.preview = URL.createObjectURL(file)
+        editProfileForm.value.image = file;
+        img.preview = URL.createObjectURL(file);
     }
-}
+};
 
 // Fetch profile data when component is mounted
 onMounted(fetchUserProfile);

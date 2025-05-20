@@ -165,10 +165,6 @@ onMounted(() => {
   fetchCart();
 });
 </script>
-
-
-
-
 <style scoped>
 .shopping-cart {
   background-color: #143b36;

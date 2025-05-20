@@ -2,63 +2,34 @@
   <div class="container">
 
     <!-- Phần Banner Lớn (Hero Section) -->
-    <div
-      class="hero-banner"
-      style="background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1470&q=80') center/cover no-repeat; height: 350px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 0 20px;"
-    >
+    <div class="hero-banner"
+      style="background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1470&q=80') center/cover no-repeat; height: 350px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 0 20px;">
       <div>
-        <h1
-          style="font-size: 3em; font-weight: bold; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); margin-bottom: 15px;"
-        >
+        <h1 style="font-size: 3em; font-weight: bold; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); margin-bottom: 15px;">
           Khám Phá Hương Vị Ẩm Thực Đỉnh Cao
         </h1>
-        <router-link 
-        :to="{name: 'users-booking'}">
-        <button
-          style="background-color: #ff6f61; color: white; border: none; padding: 12px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);"
-        >
-          Đặt Bàn Ngay
-        </button></router-link>
-     
+        <router-link :to="{ name: 'users-booking' }">
+          <button
+            style="background-color: #ff6f61; color: white; border: none; padding: 12px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
+            Đặt Bàn Ngay
+          </button></router-link>
+
       </div>
     </div>
 
     <!-- Phần Ưu Đãi / Khuyến Mãi -->
-    <div
-      class="promo-section"
-      style="margin: 40px 0; padding: 20px; background: #fff8f0; border-radius: 12px; box-shadow: 0 4px 10px rgba(255,111,97,0.2);"
-    >
-      <h2
-        style="text-align: center; color: #ff6f61; margin-bottom: 20px; font-weight: 700;"
-      >
+    <div class="promo-section"
+      style="margin: 40px 0; padding: 20px; background: #fff8f0; border-radius: 12px; box-shadow: 0 4px 10px rgba(255,111,97,0.2);">
+      <h2 style="text-align: center; color: #ff6f61; margin-bottom: 20px; font-weight: 700;">
         Ưu Đãi Đặc Biệt Trong Tháng
       </h2>
-      <div
-        style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;"
-      >
-        <div
-          style="background: white; padding: 20px; border-radius: 12px; width: 280px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;"
-        >
+      <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
+        <div v-for="(sale, index) in filteredSales" :key="index"
+          style="background: white; padding: 20px; border-radius: 12px; width: 280px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
           <h3 style="color: #ff6f61; margin-bottom: 10px;">
-            Giảm 20% cho đơn trên 500.000đ
+            {{ sale.nameSale }} - Giảm {{ sale.percent }}%
           </h3>
-          <p>Áp dụng cho khách hàng đặt bàn trước qua website.</p>
-        </div>
-        <div
-          style="background: white; padding: 20px; border-radius: 12px; width: 280px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;"
-        >
-          <h3 style="color: #ff6f61; margin-bottom: 10px;">
-            Combo Family - Tiết kiệm đến 30%
-          </h3>
-          <p>Thưởng thức trọn vẹn hương vị cho gia đình với ưu đãi hấp dẫn.</p>
-        </div>
-        <div
-          style="background: white; padding: 20px; border-radius: 12px; width: 280px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;"
-        >
-          <h3 style="color: #ff6f61; margin-bottom: 10px;">
-            Voucher 100.000đ cho khách mới
-          </h3>
-          <p>Đăng ký tài khoản và nhận ưu đãi lần đầu đặt hàng.</p>
+          <p>Áp dụng từ {{ formatDate(sale.startTime) }} đến {{ formatDate(sale.endTime) }}.</p>
         </div>
       </div>
     </div>
@@ -98,19 +69,9 @@
       </p>
     </div>
     <div class="container-fluid">
-      <Swiper
-        class="food-grid"
-        :modules="[Pagination, Autoplay]"
-        :slides-per-view="3"
-        :space-between="30"
-        :pagination="{ clickable: true }"
-        :loop="true"
-        :autoplay="{ delay: 2000, disableOnInteraction: false }"
-      >
-        <SwiperSlide
-          v-for="(mon, index) in danhSachMonAn"
-          :key="'mon-' + index"
-        >
+      <Swiper class="food-grid" :modules="[Pagination, Autoplay]" :slides-per-view="3" :space-between="30"
+        :pagination="{ clickable: true }" :loop="true" :autoplay="{ delay: 2000, disableOnInteraction: false }">
+        <SwiperSlide v-for="(mon, index) in danhSachMonAn" :key="'mon-' + index">
           <div class="food-card">
             <img :src="mon.hinh" />
             <div class="info-food">
@@ -132,31 +93,18 @@
     </div>
     <div class="tab-wrapper">
       <ul class="tab-links">
-        <li
-          v-for="(tab, index) in tabs"
-          :key="index"
-          :class="['tab-link', 'has-content', { current: currentTab === index }]"
-          @click="currentTab = index"
-        >
+        <li v-for="(tab, index) in tabs" :key="index"
+          :class="['tab-link', 'has-content', { current: currentTab === index }]" @click="currentTab = index">
           {{ tab.ten }}
         </li>
       </ul>
       <div class="tab-contents">
         <!-- xí tra  -->
 
-        <div
-          v-for="(tab, index) in tabs"
-          :key="'content-' + index"
-          v-show="currentTab === index"
-          class="tab-content"
-        >
+        <div v-for="(tab, index) in tabs" :key="'content-' + index" v-show="currentTab === index" class="tab-content">
           <p> {{ tab.noiDung }}</p>
           <div class="menu-grid" v-if="tab.dsMon && tab.dsMon.length">
-            <div
-              class="card-menu"
-              v-for="(mon, monIndex) in tab.dsMon"
-              :key="monIndex"
-            >
+            <div class="card-menu" v-for="(mon, monIndex) in tab.dsMon" :key="monIndex">
               <img :src="mon.hinh" alt="" />
               <div class="info-card">
                 <div class="card-name"><strong>{{ mon.ten }}</strong></div>
@@ -212,19 +160,9 @@
       </p>
     </div>
 
-    <Swiper
-      class="review-section"
-      :modules="[Autoplay]"
-      :slides-per-view="3"
-      :space-between="30"
-      :autoplay="{ delay: 0, disableOnInteraction: false , pauseOnMouseEnter: true }"
-      :loop="true"
-      :speed="3000"
-    >
-      <SwiperSlide
-        v-for="(review, index) in danhSachDanhGia"
-        :key="'review-' + index"
-      >
+    <Swiper class="review-section" :modules="[Autoplay]" :slides-per-view="3" :space-between="30"
+      :autoplay="{ delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true }" :loop="true" :speed="3000">
+      <SwiperSlide v-for="(review, index) in danhSachDanhGia" :key="'review-' + index">
         <div class="review-card">
           <div class="review-content">
             <h3>{{ review.ten }}</h3>
@@ -254,13 +192,34 @@ import { useRoute } from 'vue-router'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import '../../assets/css/MenuCard.css'
-
+import axios from 'axios'
 import { Pagination, Autoplay } from 'swiper/modules'
 
 onMounted(() => {
+  fetchSale();
   Aos.init()
 })
-const Route = useRoute();
+
+const allItems = ref([])
+
+const fetchSale = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/api/client/sales")
+    allItems.value = response.data.data
+  } catch (error) {
+    console.error("Lỗi khi lấy dữ liệu:", error)
+  }
+}
+
+const filteredSales = computed(() => {
+  const currentDate = new Date('2025-05-20T08:39:00+07:00')
+  return allItems.value.filter(sale => {
+    const start = new Date(sale.startTime)
+    const end = new Date(sale.endTime)
+    return start <= currentDate && end >= currentDate
+  }).slice(0, 3) // Giới hạn hiển thị tối đa 3 chương trình khuyến mãi
+})
+
 const Route = useRoute();
 const soSao = 4 // số sao đánh giá từ 1 đến 5
 const currentTab = ref(0)
@@ -269,9 +228,10 @@ function handleAddToCart(mon) {
   addToCart(mon);        // thêm vào giỏ
   router.push('/shoppingCart');  // điều hướng qua trang giỏ hàng
 }
-function handleAddToCart(mon) {
-  addToCart(mon);        // thêm vào giỏ
-  router.push('/shoppingCart');  // điều hướng qua trang giỏ hàng
+
+const formatDate = (dateString) => {
+  const date = new Date(dateString)
+  return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' })
 }
 
 function datMon() {
@@ -297,6 +257,7 @@ const xemThemMon = () => {
     daXemThem.value = false
   }
 }
+
 const danhSachDanhGia = [
   { ten: 'Người dùng 1', noiDung: 'Đánh giá sản phẩm tuyệt vời!', hinh: '/imageicon/user1.png' },
   { ten: 'Người dùng 2', noiDung: 'Dịch vụ rất tốt, tôi rất hài lòng.', hinh: '/imageicon/user1.png' },
@@ -305,7 +266,7 @@ const danhSachDanhGia = [
 ];
 
 const danhSachMonDayDu = ref([
-  { ten: 'Cơm Gà Hải Nam',  noiDung: 'Cơm gà thơm ngon chuẩn vị Singapore', hinh: '/imageicon/comga.png' },
+  { ten: 'Cơm Gà Hải Nam', noiDung: 'Cơm gà thơm ngon chuẩn vị Singapore', hinh: '/imageicon/comga.png' },
   { ten: 'Bún Bò Huế', noiDung: 'Bún bò đậm đà chuẩn vị Huế', hinh: '/imageicon/comga.png' },
   { ten: 'Pizza Hải Sản', noiDung: 'Pizza thơm phức với tôm, mực, phô mai', hinh: '/imageicon/bunbo.png' },
   { ten: 'Lẩu Thái', noiDung: 'Lẩu cay chua đúng chất Thái Lan', hinh: '/imageicon/lauthai.png' },
@@ -320,16 +281,12 @@ const tabs = ref([
   {
     ten: 'Món Khai Vị',
     hinh: '/imageicon/comga.png',
-   
-   
+
     noiDung: 'Nội dung Món Khai Vị',
     dsMon: [
-    { id: 1 ,ten: 'Cơm Gà Hải Nam', gia:20000 , hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { id: 2,ten: 'Bún Bò Huế',  gia:20000 ,hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      {id: 3, ten: 'Pizza Hải Sản',  gia:20000 ,hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-    { id: 1 ,ten: 'Cơm Gà Hải Nam', gia:20000 , hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { id: 2,ten: 'Bún Bò Huế',  gia:20000 ,hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      {id: 3, ten: 'Pizza Hải Sản',  gia:20000 ,hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      { id: 1, ten: 'Cơm Gà Hải Nam', gia: 20000, hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      { id: 2, ten: 'Bún Bò Huế', gia: 20000, hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      { id: 3, ten: 'Pizza Hải Sản', gia: 20000, hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     ]
   },
   {
@@ -337,12 +294,9 @@ const tabs = ref([
     hinh: '/imageicon/bunbo.png',
     noiDung: 'Nội dung Món Chính',
     dsMon: [
-      {id: 4, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { id: 5,ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { id: 6,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-      {id: 4, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { id: 5,ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { id: 6,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      { id: 4, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      { id: 5, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      { id: 6, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     ]
   },
   {
@@ -350,12 +304,12 @@ const tabs = ref([
     hinh: '/imageicon/banhngot.png',
     noiDung: 'Nội dung Món Pizza',
     dsMon: [
-    { id: 7,ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      {id: 8, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { id: 9,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-      {id: 10, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-      {id: 11, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-      { id: 12,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      { id: 7, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      { id: 8, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      { id: 9, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      { id: 10, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      { id: 11, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      { id: 12, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     ]
   },
   {
@@ -363,9 +317,9 @@ const tabs = ref([
     hinh: '/imageicon/banhngot.png',
     noiDung: 'Nội dung Món Tráng Miệng',
     dsMon: [
-    {  id: 13, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      {  id: 14, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      {  id: 15, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      { id: 13, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      { id: 14, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      { id: 15, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     ]
   },
   {
@@ -373,9 +327,9 @@ const tabs = ref([
     hinh: '/imageicon/banhngot.png',
     noiDung: 'Nội dung Món Tráng Miệng',
     dsMon: [
-    {  id: 16, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      {  id: 17, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      {   id: 18,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      { id: 16, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      { id: 17, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      { id: 18, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     ]
   },
   {
@@ -383,12 +337,12 @@ const tabs = ref([
     hinh: '/imageicon/banhngot.png',
     noiDung: 'Nội dung Món Tráng Miệng',
     dsMon: [
-    {  id: 19, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      {  id: 20, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      {   id: 21,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
+      { id: 19, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      { id: 20, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      { id: 21, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     ]
   },
-  
+
 ])
 
 
@@ -412,8 +366,4 @@ const danhSachMonAn = [
 </script>
 
 
-<style>
-
-
-
-</style>
+<style></style>

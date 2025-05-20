@@ -22,6 +22,7 @@
                   </button>
                 </div>
               </div>
+              <div class="form-group"> <label for="userEmail"></label> Xin chào ,<strong> {{ userEmail }}</strong> </div>
               <!-- Dropdown chọn món ăn -->
               <div class="form-group">
                 <label for="id_food">Món ăn</label>
@@ -37,11 +38,6 @@
                     </li>
                   </ul>
                 </div>
-              </div>
-              <!-- Customer ID -->
-              <div class="form-group">
-                <label for="id_customer">Mã khách hàng</label>
-                <input type="text" id="id_customer" v-model="formEvaluation.id_customer" placeholder="Nhập mã khách hàng của bạn" required />
               </div>
               <!-- Review Comment -->
               <div class="form-group">
@@ -82,6 +78,9 @@
                 <div class="review-photos" v-if="review.photos.length">
                   <img v-for="(photo, i) in review.photos" :key="i" :src="photo" alt="Ảnh đánh giá" class="review-photo" />
                 </div>
+                <div class="admin-reply">
+                  <span class="admin-name">Admin:</span> {{ adminReplies[index % adminReplies.length] }}
+                </div>
                 <div class="review-actions">
                   <button @click="editReview(review)">Sửa</button>
                   <button @click="deleteReview(index)">Xóa</button>
@@ -110,13 +109,14 @@
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue";
 import api from "../../services/api";
+import { useToast } from "vue-toastification";
 const formEvaluation = reactive({
   id_food: "",
   detail: "",
-  id_customer: "", 
+  id_customer: "1", // Giá trị mặc định
 });
 const userEmail = ref(null);
-
+const toast =useToast();
 const rating = ref(0);
 const photoFiles = ref([]);
 const photoPreviews = ref([]);
@@ -130,14 +130,26 @@ const foodList = [
   { id: 2, name: 'Bánh Mì', image: 'imageicon/phefood.png' },
   { id: 3, name: 'Phở', image: 'imageicon/phefood.png' },
 ];
+
+// Dữ liệu ảo cho phản hồi của admin
+const adminReplies = [
+  "Cảm ơn bạn đã đánh giá! Chúng tôi rất trân trọng ý kiến của bạn.",
+  "Rất vui được phục vụ bạn! Hy vọng bạn sẽ quay lại sớm.",
+  "Cảm ơn bạn đã chia sẻ trải nghiệm tuyệt vời này!",
+  "Chúng tôi rất biết ơn sự ủng hộ của bạn. Chúc bạn ngon miệng!",
+];
+
 // Computed
 const canSubmit = computed(() => {
-  return rating.value > 0 && formEvaluation.detail.trim().length > 0;
+  return rating.value > 0 && formEvaluation.detail.trim().length > 0 && formEvaluation.id_food;
 });
+
 const isEditing = computed(() => editingReview.value !== null);
 const selectedFood = computed(() => {
   return foodList.find((f) => f.id === formEvaluation.id_food) || null;
+  
 });
+
 // Methods
 function toggleDropdown() {
   isDropdownOpen.value = !isDropdownOpen.value;
@@ -221,10 +233,11 @@ function editReview(review) {
   editingReview.value = review;
   formEvaluation.id_food = review.id_food;
   formEvaluation.detail = review.detail;
-  formEvaluation.id_customer = review.id_customer;
+  formEvaluation.id_customer = "1"; // Giá trị mặc định khi sửa
   rating.value = review.rating;
   photoPreviews.value = review.photos || [];
   photoFiles.value = [];
+  
 }
 function deleteReview(index) {
   const review = reviews.value[index];
@@ -234,11 +247,11 @@ function deleteReview(index) {
       .then(() => {
         reviews.value.splice(index, 1);
         saveReviewsToLocalStorage();
-        alert("Đánh giá đã được xóa.");
+        toast.success("Đánh giá đã được xóa.");
       })
       .catch((error) => {
         console.error("Lỗi khi xóa đánh giá:", error);
-        alert("Không thể xóa đánh giá. Vui lòng thử lại sau.");
+        toast.error("Không thể xóa đánh giá. Vui lòng thử lại sau.");
       });
   }
 }
@@ -269,132 +282,105 @@ function loadReviewsFromLocalStorage() {
   }
 }
 onMounted(() => {
+  userEmail.value = localStorage.getItem('customer_email') || '';
   loadReviewsFromLocalStorage();
 });
 </script>
 
 <style scoped>
-@import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=Roboto:wght@400;500&display=swap");
-
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  font-family: "Roboto", sans-serif;
-  background: #f5f5f5;
-  height: 100vh;
-}
-
 .app-wrapper {
   display: flex;
   justify-content: center;
-  align-items: center;
+  background: #f5f5f5;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f8e1d9 10%, #fff3e0 100%);
 }
 
 .app-container {
   display: flex;
   width: 100%;
   max-width: 1400px;
-  height: 100vh;
   background: #fff;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
-  border-radius: 16px;
-  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .col-left {
-  width: 40%;
-  display: flex;
-  flex-direction: column;
+  width: 70%;
+  padding: 24px;
 }
 
 .col-right {
-  width: 60%;
-  background: url('/images/restaurant-bg.jpg') no-repeat center/cover;
-  padding: 1.5rem;
-}
-
-header {
-  background: #a82424;
-  color: #fff;
-  padding: 1.5rem;
-  text-align: center;
+  width: 30%;
+  padding: 24px;
+  background: #f9f9f9;
 }
 
 .restaurant-branding {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
+  text-align: center;
+  margin-bottom: 24px;
 }
 
 .restaurant-logo {
   width: 80px;
   height: 80px;
-  border-radius: 50%;
   object-fit: cover;
+  border-radius: 50%;
 }
 
-header h1 {
-  font-family: "Playfair Display", serif;
-  font-size: 2.2rem;
-  margin: 0.5rem 0;
+.restaurant-branding h1 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #d69c52;
+  margin: 12px 0;
 }
 
-header p {
-  font-size: 1rem;
-  opacity: 0.9;
+.restaurant-branding p {
+  font-size: 16px;
+  color: #666;
 }
 
-main {
-  padding: 1.5rem;
-  flex-grow: 1;
-  overflow-y: auto;
-}
-
-.form-section h2 {
-  font-family: "Playfair Display", serif;
-  font-size: 1.8rem;
+.form-section h2,
+.reviews-section h2 {
+  font-size: 24px;
+  font-weight: 600;
   color: #333;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
 }
 
 .review-form {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 16px;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
 }
 
 .form-group label {
+  font-size: 16px;
   font-weight: 500;
   color: #333;
+  margin-bottom: 8px;
+}
+
+.rating-group {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
 .stars button {
-  font-size: 1.8rem;
+  font-size: 24px;
+  color: #ccc;
   background: none;
   border: none;
-  color: #ccc;
   cursor: pointer;
-  transition: color 0.2s;
+  transition: color 0.3s ease;
 }
 
-.stars button.active,
-.stars button:hover,
-.stars button:hover~button {
-  color: #f4b400;
+.stars button.active {
+  color: #f4c10f;
 }
 
 .custom-select {
@@ -405,11 +391,18 @@ main {
 .selected-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   background: #fff;
+}
+
+.food-icon {
+  width: 24px;
+  height: 24px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .dropdown-list {
@@ -418,64 +411,53 @@ main {
   left: 0;
   right: 0;
   background: #fff;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  z-index: 10;
+  border: 1px solid #ccc;
+  border-radius: 6px;
   max-height: 200px;
   overflow-y: auto;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 10;
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
 .dropdown-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem;
-  transition: background 0.2s;
+  gap: 8px;
+  padding: 12px;
+  transition: background 0.3s ease;
 }
 
 .dropdown-item:hover {
-  background: #f8f8f8;
+  background: #f0f0f0;
 }
 
-.food-icon {
-  width: 40px;
-  height: 40px;
-  object-fit: cover;
+.form-group input,
+.form-group textarea {
+  padding: 12px;
+  border: 1px solid #ccc;
   border-radius: 6px;
+  font-size: 16px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-input,
-textarea {
-  padding: 0.8rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-input:focus,
-textarea:focus {
-  outline: none;
-  border-color: #a82424;
-  box-shadow: 0 0 4px rgba(168, 36, 36, 0.3);
-}
-
-textarea {
+.form-group textarea {
   resize: vertical;
 }
 
 .photo-previews {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 0.8rem;
+  gap: 12px;
+  margin-top: 12px;
 }
 
 .photo-preview {
   position: relative;
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
 }
 
 .photo-preview img {
@@ -487,36 +469,29 @@ textarea {
 
 .remove-photo {
   position: absolute;
-  top: 4px;
-  right: 4px;
-  background: #fff;
+  top: -8px;
+  right: -8px;
+  background: #e63946;
+  color: #fff;
   border: none;
   border-radius: 50%;
   width: 24px;
   height: 24px;
-  color: #a82424;
-  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
-  transition: background 0.2s;
-}
-
-.remove-photo:hover {
-  background: #f8f8f8;
 }
 
 .submit-btn {
-  background: #a82424;
+  background: #d69c52;
   color: #fff;
-  padding: 0.8rem;
+  padding: 12px 24px;
   border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
+  border-radius: 6px;
+  font-size: 16px;
   cursor: pointer;
-  transition: background 0.2s;
-}
-
-.submit-btn:hover:not(:disabled) {
-  background: #8b1e1e;
+  transition: background 0.3s ease;
 }
 
 .submit-btn:disabled {
@@ -524,127 +499,127 @@ textarea {
   cursor: not-allowed;
 }
 
-.reviews-section h2 {
-  font-family: "Playfair Display", serif;
-  font-size: 1.8rem;
-  color: #333;
-  margin-bottom: 1rem;
+.submit-btn:hover:not(:disabled) {
+  background: #b57c3e;
 }
 
 .reviews-list {
+  list-style: none;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 24px;
 }
 
 .review-item {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.2rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s;
-}
-
-.review-item:hover {
-  transform: translateY(-4px);
+  background: #f9f9f9;
+  padding: 16px;
+  border-radius: 6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 }
 
 .review-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.5rem;
+  margin-bottom: 12px;
 }
 
-.review-rating {
-  color: #f4b400;
+.review-rating .star {
+  font-size: 18px;
+  color: #ccc;
 }
 
-.star.filled {
-  color: #f4b400;
+.review-rating .star.filled {
+  color: #f4c10f;
 }
 
 .review-food {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .review-comment {
+  font-size: 16px;
   color: #333;
-  font-size: 0.95rem;
-  margin-bottom: 0.5rem;
+  margin-bottom: 12px;
 }
 
 .review-photos {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 12px;
+  margin-bottom: 12px;
 }
 
 .review-photo {
-  width: 80px;
-  height: 80px;
+  width: 100px;
+  height: 100px;
   object-fit: cover;
   border-radius: 6px;
 }
 
+.admin-reply {
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  color: #143b36;
+  margin-bottom: 12px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+}
+
+.admin-reply .admin-name {
+  font-weight: 600;
+  color: #d69c52;
+  margin-right: 4px;
+}
+
 .review-actions {
   display: flex;
-  gap: 0.5rem;
+  gap: 12px;
 }
 
 .review-actions button {
-  padding: 0.5rem 1rem;
+  background: #d69c52;
+  color: #fff;
+  padding: 8px 16px;
   border: none;
   border-radius: 6px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: background 0.2s;
-}
-
-.review-actions button:first-child {
-  background: #a82424;
-  color: #fff;
-}
-
-.review-actions button:last-child {
-  background: #555;
-  color: #fff;
+  transition: background 0.3s ease;
 }
 
 .review-actions button:hover {
-  opacity: 0.9;
+  background: #b57c3e;
+}
+
+.review-actions button:last-child {
+  background: #e63946;
+}
+
+.review-actions button:last-child:hover {
+  background: #c62828;
 }
 
 .no-reviews {
   text-align: center;
-  color: #666;
-  padding: 1rem;
-  font-style: italic;
-}
-
-footer {
-  background: #a82424;
-  color: #fff;
-  padding: 1rem;
-  text-align: center;
-  font-size: 0.9rem;
-}
-
-.map {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 24px;
 }
 
 .map h3 {
-  font-family: "Playfair Display", serif;
-  font-size: 1.5rem;
+  font-size: 20px;
+  font-weight: 600;
   color: #333;
-  margin-bottom: 1rem;
+  margin-bottom: 16px;
+}
+
+footer {
+  text-align: center;
+  margin-top: 24px;
+  color: #666;
 }
 
 @media (max-width: 768px) {
@@ -658,12 +633,41 @@ footer {
   }
 
   .col-right {
-    height: 400px;
-    background: none;
+    padding: 16px;
   }
 
   .map iframe {
-    height: 300px;
+    height: 400px;
+  }
+}
+
+@media (max-width: 480px) {
+  .restaurant-branding h1 {
+    font-size: 24px;
+  }
+
+  .form-section h2,
+  .reviews-section h2 {
+    font-size: 20px;
+  }
+
+  .form-group label,
+  .form-group input,
+  .form-group textarea {
+    font-size: 14px;
+  }
+
+  .submit-btn {
+    font-size: 14px;
+    padding: 10px 20px;
+  }
+
+  .review-comment {
+    font-size: 14px;
+  }
+
+  .admin-reply {
+    font-size: 13px;
   }
 }
 </style>

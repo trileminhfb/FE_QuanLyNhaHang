@@ -19,8 +19,6 @@
                 <div class="menu-list">
                   <div class="row-menu" style="display: flex; align-items: flex-start; gap: 20px">
 
-
-
                     <div class="col-6">
                       <p @mouseover="currentImage = type.image || '/imageicon/phefood.png'" class="title-header">
                         <router-link :to="{ name: 'users-category', params: { typeId: type.id } }">
@@ -90,15 +88,16 @@
           <li>
             <div class="cart-user">
               <span style="font-size: 15px; font-weight: bold;" v-if="userEmail" class="user-email">Xin chào, {{
-                userEmail }}</span>
+                userName }}</span>
               <i v-else class="fa-solid fa-user"></i>
 
               <div class="user-info">
                 <router-link v-if="!userEmail" :to="{ name: 'users-login' }">Đăng nhập</router-link>
-                <button v-else @click="handleLogout">Đăng xuất</button>
+                <button class="user-info-logout" v-else @click="handleLogout">Đăng xuất</button>
               </div>
             </div>
           </li>
+
           <li>
             <!-- GIỎ HÀNG (đặt ref="cartIcon" để làm mục tiêu bay tới) -->
             <div class="cart-shopping" ref="cartIcon">
@@ -107,15 +106,13 @@
                 <span class="cart-count" v-if="cartCount > 0">{{ cartCount }}</span>
               </router-link>
             </div>
-
           </li>
+
           <li>
             <input type="checkbox" id="menu-toggle" hidden>
-
             <label for="menu-toggle" class="menu-toggle">
               <i class="fa-solid fa-bars"></i>
             </label>
-
             <div class="user-menu">
               <div class="menu-header">
                 <label for="menu-toggle">
@@ -186,6 +183,7 @@ const isSearch = ref(false);
 const tuKhoa = ref('')
 const monTimDuoc = ref([]);
 const userEmail = ref(null);
+const userName = ref(null);
 const types = ref([]);
 const router = useRouter();
 
@@ -247,12 +245,24 @@ const handleLogout = async () => {
         });
 
         localStorage.removeItem('users-login');
-        localStorage.removeItem('token');
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('customer_id');
         localStorage.removeItem('customer_email');
         localStorage.removeItem('customer_password');
-        localStorage.removeItem('user');
+        localStorage.removeItem('customer_phoneNumber');
+        localStorage.removeItem('customer_fullName');
+        localStorage.removeItem('customer_birth');
+        localStorage.removeItem('customer_image');
+        localStorage.removeItem('customer_point');
+        localStorage.removeItem('customer_id_rank');
+        localStorage.removeItem('customer_rank');
+        localStorage.removeItem('customer_nameRank');
+        localStorage.removeItem('customer_imageRank');
+        localStorage.removeItem('customer_isActive');
+        localStorage.removeItem('customer_updated_at');
+        localStorage.removeItem('customer_created_at');
         sessionStorage.clear();
-        router.push('/login');
+        router.push('/users-login');
       }
     } catch (error) {
       console.error('Lỗi đăng xuất:', error);
@@ -276,6 +286,7 @@ onMounted(async () => {
 });
 onMounted(() => {
   userEmail.value = localStorage.getItem('customer_email') || '';
+  userName.value = localStorage.getItem('customer_fullName') || '';
 });
 
 function logout() {
@@ -361,7 +372,7 @@ function logout() {
   padding: 20px;
   background: white;
   display: flex;
-  z-index: 1;
+  z-index: 1000;
   flex-direction: column;
   gap: 20px;
   transition: transform 0.3s;
@@ -582,5 +593,9 @@ function logout() {
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
   user-select: none;
   pointer-events: none;
+}
+
+.user-info-logout {
+  z-index: 1;
 }
 </style>

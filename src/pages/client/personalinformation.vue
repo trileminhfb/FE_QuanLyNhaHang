@@ -1,12 +1,14 @@
 <template>
-
   <div class="container-personalinformation">
     <div class="rank-box">
       <div class="member-info">
-        <img src="/imageicon/logo.png" class="avatar" />
+        <img :src="informationpersonal.image" class="avatar" />
         <div class="member-details">
-          <h3>Le Minh Tri</h3>
-          <p>69 Stars</p>
+          <h3>{{ informationpersonal.name }}</h3>
+          <p>{{ informationpersonal.point }} Stars</p>
+        </div>
+        <div class="w-24 h-24 overflow-hidden">
+          <img class="w-full h-full object-cover" :src="informationpersonal.imageRank" alt="rank">
         </div>
       </div>
 
@@ -37,24 +39,36 @@
       <div class="category-container">
         <div class="tab-wrapper">
           <ul class="tab-links">
-            <li
-              v-for="(tab, index) in tabs"
-              :key="index"
-              :class="['tab-link', { current: currentTab === index }]"
-              @click="currentTab = index"
-            >
+            <li v-for="(tab, index) in tabs" :key="index" :class="['tab-link', { current: currentTab === index }]"
+              @click="currentTab = index">
               {{ tab.ten }}
             </li>
           </ul>
 
           <div class="tab-contents">
-            <div
-              v-for="(tab, index) in tabs"
-              :key="'content-' + index"
-              v-show="currentTab === index"
-              class="tab-content"
-            >
-              <div v-if="tab.ten === 'Thông báo'">
+            <div v-for="(tab, index) in tabs" :key="'content-' + index" v-show="currentTab === index"
+              class="tab-content">
+              <div v-if="tab.ten === 'Lịch sử giao dịch'">
+                <div v-if="historyPoints.length === 0">
+                  <p>Bạn chưa có giao dịch nào.</p>
+                </div>
+                <div v-else>
+                  <ul class="transaction-list">
+                    <li v-for="history in historyPoints" :key="history.id" class="transaction-item">
+                      <img :src="history.image || '/imageicon/default-transaction.png'" class="transaction-image"
+                        alt="Transaction Image" />
+                      <div class="transaction-details">
+                        <strong>{{ history.description }}</strong>
+                        <p class="transaction-name">Người thực hiện: {{ history.name || informationpersonal.FullName
+                          || 'Khách hàng' }}</p>
+                        <p>Số điểm: {{ history.points }} | Ngày: {{ formatDate(history.created_at) }}</p>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+
+              <div v-else-if="tab.ten === 'Thông báo'">
                 <ul class="notification-list">
                   <li class="notification-item">
                     <strong>🎉 Chúc mừng!</strong> Bạn vừa đạt
@@ -79,84 +93,128 @@
               </div>
 
               <div v-else-if="tab.ten === 'Thông tin cá nhân'">
-  <div class="information-personal">
-    <div class="input-information">
-      <div class="row-information">
-        <div class="group-information">
-          Họ và tên
-          <i class="fa fa-user"></i>
-          <input type="text" v-model="informationpersonal.FullName" />
-        </div>
-        <div class="group-information">
-          Ngày sinh 
-          <input type="date" v-model="informationpersonal.birth" />
-        </div>
-      </div>
+                <div class="information-personal">
+                  <div v-if="!showChangePasswordForm" class="input-information">
+                    <div class="row-information">
+                      <div class="group-information">
+                        Họ và tên
+                        <i class="fa fa-user"></i>
+                        <input type="text" v-model="informationpersonal.name" />
+                      </div>
+                      <div class="group-information">
+                        Ngày sinh
+                        <input type="date" v-model="informationpersonal.birth" />
+                      </div>
+                    </div>
 
-      <div class="row-information">
-        <div class="group-information">
-          Số điện thoại
-          <i class="fa fa-phone"></i>
-          <input type="number" v-model="informationpersonal.phoneNumber" />
-        </div>
-        <div class="group-information">
-  Email
-  <i class="fa fa-envelope"></i>
-  <input type="email" :value="informationpersonal.mail" disabled />
-</div>
-      </div>
+                    <div class="row-information">
+                      <div class="group-information">
+                        Số điện thoại
+                        <i class="fa fa-phone"></i>
+                        <input type="number" v-model="informationpersonal.phoneNumber" />
+                      </div>
+                      <div class="group-information">
+                        Email
+                        <i class="fa fa-envelope"></i>
+                        <input type="email" :value="informationpersonal.mail" disabled />
+                      </div>
+                    </div>
 
-      <div class="row-information">
-        <div class="group-information">
-          Mật khẩu
-          <i class="fa fa-lock"></i>
-          <input type="password" v-model="informationpersonal.password" disabled />
-        </div>
-        <div class="group-information">
-          Ảnh đại diện
-          <input type="file" @change="handleImageUpload" accept="image/*" />
-          <img v-if="imagePreview" :src="imagePreview" alt="Ảnh preview" style="width: 80px; margin-top: 5px;" />
-        </div>
-      </div>
+                    <div class="row-information">
+                      <div class="group-information">
+                        Mật khẩu
+                        <i class="fa fa-lock"></i>
+                        <input type="password" v-model="informationpersonal.password" disabled />
+                      </div>
+                      <div class="group-information">
+                        Ảnh đại diện
+                        <input type="file" @change="handleImageUpload" accept="image/*" />
+                        <img v-if="imagePreview" :src="imagePreview" alt="Ảnh preview"
+                          style="width: 80px; margin-top: 5px;" />
+                      </div>
+                    </div>
 
-      <div class="row-information">
-        <div class="group-information">
-          Điểm
-          <input type="number" v-model="informationpersonal.point" disabled />
-        </div>
-        <div class="group-information">
-          Hạng
-          <input type="number" v-model="informationpersonal.id_rank" disabled />
-        </div>
-      
-      </div>
-    </div>
-  </div>
-  <!-- Thêm vào cuối phần Thông tin cá nhân -->
-<div style="margin-top: 20px; text-align: right;">
-  <button @click="updatePersonalInfo" class="btn-update">Cập nhật thông tin</button>
-</div>
+                    <div class="row-information">
+                      <div class="group-information">
+                        Điểm
+                        <input type="number" v-model="informationpersonal.point" disabled />
+                      </div>
+                      <div class="group-information">
+                        Hạng
+                        <input type="text" v-model="informationpersonal.nameRank" disabled />
+                      </div>
+                    </div>
+                  </div>
 
-</div>
-
-
+                  <div v-else class="change-password-form">
+                    <h3>Đổi mật khẩu</h3>
+                    <div class="row-information">
+                      <div class="group-information">
+                        Email
+                        <i class="fa fa-envelope"></i>
+                        <input type="email" v-model="changePasswordData.email" placeholder="Nhập email" />
+                      </div>
+                    </div>
+                    <div v-if="otpSent" class="row-information">
+                      <div class="group-information">
+                        OTP
+                        <i class="fa fa-key"></i>
+                        <input type="text" v-model="changePasswordData.otp" placeholder="Nhập mã OTP" />
+                      </div>
+                      <div class="group-information">
+                        Mật khẩu cũ
+                        <i class="fa fa-lock"></i>
+                        <input type="password" v-model="changePasswordData.oldPassword"
+                          placeholder="Nhập mật khẩu cũ" />
+                      </div>
+                    </div>
+                    <div v-if="otpSent" class="row-information">
+                      <div class="group-information">
+                        Mật khẩu mới
+                        <i class="fa fa-lock"></i>
+                        <input type="password" v-model="changePasswordData.newPassword"
+                          placeholder="Nhập mật khẩu mới" />
+                      </div>
+                      <div class="group-information">
+                        Mật khẩu mới
+                        <i class="fa fa-lock"></i>
+                        <input type="password" v-model="changePasswordData.confirmNewPassword"
+                          placeholder="Xác nhận mật khẩu mới" />
+                      </div>
+                    </div>
+                    <div class="row-information">
+                      <button v-if="!otpSent" @click="sendOTP" class="btn-update">Gửi OTP</button>
+                      <button v-else @click="changePassword" class="btn-update">Xác nhận đổi mật khẩu</button>
+                      <button @click="cancelChangePassword" class="btn-cancel" style="margin-left: 10px;">Hủy</button>
+                    </div>
+                  </div>
+                </div>
+                <div v-if="!showChangePasswordForm" style="margin-top: 20px; text-align: right;">
+                  <button @click="showChangePasswordForm = true" class="btn-update">Đổi mật khẩu</button>
+                  <button @click="updatePersonalInfo" class="btn-update" style="margin-left: 10px;">
+                    Cập nhật thông tin</button>
+                  <button @click="deletePersonalInfo" class="btn-delete" style="margin-left: 10px;">Xóa tài
+                    khoản</button>
+                </div>
+              </div>
 
               <div v-else-if="tab.ten === 'Quà tặng'">
-  <div v-if="tab.danhSachQuaTang.length === 0">
-    <p>Hiện tại bạn chưa có quà tặng nào.</p>
-  </div>
-  <div v-else>
-    <ul class="gift-list">
-      <li v-for="(gift, index) in tab.danhSachQuaTang" :key="index" class="gift-item">
-        <div class="gift-header">
-          <strong>{{ gift.ten }}</strong>
-          <span class="gift-description">{{ gift.moTa }}</span>
-        </div>
-        <button class="claim-gift-btn">Nhận quà</button>
-      </li>
-    </ul>
-  </div>
-</div>
+                <div v-if="tab.danhSachQuaTang.length === 0">
+                  <p>Hiện tại bạn chưa có quà tặng nào.</p>
+                </div>
+                <div v-else>
+                  <ul class="gift-list">
+                    <li v-for="(gift, index) in tab.danhSachQuaTang" :key="index" class="gift-item">
+                      <div class="gift-header">
+                        <strong>{{ gift.nameSale }}</strong>
+                        <span class="gift-description">Giảm {{ gift.percent }}% từ {{ gift.startTime }} đến {{
+                          gift.endTime }}</span>
+                      </div>
+                      <button class="claim-gift-btn">Nhận quà</button>
+                    </li>
+                  </ul>
+                </div>
+              </div>
               <div v-else>
                 <p>{{ tab.noiDung }}</p>
               </div>
@@ -169,12 +227,11 @@
 </template>
 
 <script setup>
-import { ref ,onMounted} from 'vue'
-import { Codemirror } from 'vue-codemirror'
-import api from '../../services/api'
+import { ref, onMounted } from 'vue';
+import api from '../../services/api';
+import { useRouter } from 'vue-router';
 
-
-import { javascript } from '@codemirror/lang-javascript'
+const router = useRouter();
 
 const informationpersonal = ref({
   FullName: '',
@@ -183,103 +240,207 @@ const informationpersonal = ref({
   birth: '',
   image: '',
   password: '',
+  imageRank: '',
+  nameRank: '',
   point: 0,
   id_rank: 1,
   isActive: false,
-})
-const currentTab = ref(0)
-const imagePreview = ref(null)
+});
 
-onMounted(() => {
-  const id = localStorage.getItem('customerId')
+const currentTab = ref(0);
+const imagePreview = ref(null);
+const historyPoints = ref([]);
+const showChangePasswordForm = ref(false);
+const otpSent = ref(false);
+const changePasswordData = ref({
+  email: '',
+  otp: '',
+  oldPassword: '',
+  newPassword: '',
+  confirmNewPassword: '', // Added for confirmation
+});
+
+const tabs = ref([
+  { ten: 'Lịch sử giao dịch', noiDung: '' },
+  { ten: 'Thông tin cá nhân', noiDung: '' },
+  { ten: 'Thông báo', noiDung: '' },
+  { ten: 'Quà tặng', noiDung: '', danhSachQuaTang: [] },
+  { ten: 'Chính sách', noiDung: 'Đây là nội dung về chính sách thành viên.' },
+]);
+
+onMounted(async () => {
+  const id = localStorage.getItem('customerId');
   if (id) {
-    api.get(`/client/customers/${id}`)
-      .then((res) => {
-        informationpersonal.value = {
-          ...res.data.customer,
-          password: localStorage.getItem('customer_password') || '', 
-        }
-      })
-      .catch((err) => {
-        console.error('Lỗi khi lấy thông tin người dùng:', err)
-      })
+    try {
+      const res = await api.get(`/client/customers/${id}`);
+      informationpersonal.value = {
+        ...res.data.customer,
+        password: localStorage.getItem('customer_password') || '',
+      };
+    } catch (err) {
+      console.error('Lỗi khi lấy thông tin người dùng:', err);
+    }
   }
 
-  // Gán lại email và password từ localStorage 
-  informationpersonal.value.mail = localStorage.getItem('customer_email') || ''
-  informationpersonal.value.password = localStorage.getItem('customer_password') || ''
-})
+  informationpersonal.value.image = localStorage.getItem('customer_image') || '';
+  informationpersonal.value.name = localStorage.getItem('customer_fullName') || '';
+  informationpersonal.value.mail = localStorage.getItem('customer_email') || '';
+  informationpersonal.value.password = localStorage.getItem('customer_password') || '';
+  informationpersonal.value.point = localStorage.getItem('customer_point') || '';
+  informationpersonal.value.imageRank = localStorage.getItem('customer_imageRank') || '';
+  informationpersonal.value.nameRank = localStorage.getItem('customer_nameRank') || '';
+  informationpersonal.value.birth = localStorage.getItem('customer_birth') || '';
+  informationpersonal.value.phoneNumber = localStorage.getItem('customer_phoneNumber') || '';
+
+  try {
+    const historyResponse = await api.get('/client/history-points');
+    historyPoints.value = (historyResponse.data || []).map(history => ({
+      ...history,
+      image: history.image || '/imageicon/default-transaction.png',
+      name: history.name || informationpersonal.value.FullName || 'Khách hàng',
+    }));
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách lịch sử điểm:', error.response || error);
+    historyPoints.value = [];
+  }
+
+  try {
+    const salesResponse = await api.get('/client/sales');
+    tabs.value.find(tab => tab.ten === 'Quà tặng').danhSachQuaTang = salesResponse.data.data || [];
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách khuyến mãi:', error.response || error);
+    tabs.value.find(tab => tab.ten === 'Quà tặng').danhSachQuaTang = [];
+  }
+});
 
 const handleImageUpload = (event) => {
-  const file = event.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
   reader.onload = (e) => {
-    imagePreview.value = e.target.result
-    informationpersonal.value.image = e.target.result
-  }
-  reader.readAsDataURL(file)
-}
-const updatePersonalInfo = () => {
-  const id = localStorage.getItem('customerId')
-  if (!id) return alert('Không tìm thấy ID người dùng')
+    imagePreview.value = e.target.result;
+    informationpersonal.value.image = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
 
-  // Tạo payload (có thể lọc thuộc tính nếu muốn gửi ít hơn)
+const sendOTP = async () => {
+  const storedEmail = localStorage.getItem('customer_email');
+  if (changePasswordData.value.email !== storedEmail) {
+    alert('Email không khớp với thông tin tài khoản.');
+    return;
+  }
+
+  try {
+    await api.post('/client/forgot-password', { email: changePasswordData.value.email });
+    otpSent.value = true;
+    alert('Mã OTP đã được gửi đến email của bạn.');
+  } catch (err) {
+    console.error('Lỗi khi gửi OTP:', err);
+    alert('Có lỗi xảy ra khi gửi OTP.');
+  }
+};
+
+const changePassword = async () => {
+  if (!changePasswordData.value.otp || !changePasswordData.value.oldPassword || !changePasswordData.value.newPassword || !changePasswordData.value.confirmNewPassword) {
+    alert('Vui lòng nhập đầy đủ thông tin.');
+    return;
+  }
+
+  if (changePasswordData.value.oldPassword !== localStorage.getItem('customer_password')) {
+    alert('Mật khẩu cũ không đúng.');
+    return;
+  }
+
+  if (changePasswordData.value.newPassword !== changePasswordData.value.confirmNewPassword) {
+    alert('Mật khẩu mới và xác nhận mật khẩu không khớp.');
+    return;
+  }
+
+  try {
+    const response = await api.post('/client/reset-password', {
+      email: changePasswordData.value.email,
+      otp: changePasswordData.value.otp,
+      old_password: changePasswordData.value.oldPassword, // Match backend expectation
+      password: changePasswordData.value.newPassword,
+      password_confirmation: changePasswordData.value.confirmNewPassword, // Match Laravel's confirmed rule
+    });
+    localStorage.setItem('customer_password', changePasswordData.value.newPassword);
+    informationpersonal.value.password = changePasswordData.value.newPassword;
+    alert('Đổi mật khẩu thành công.');
+    cancelChangePassword();
+  } catch (err) {
+    console.error('Lỗi khi đổi mật khẩu:', err);
+    alert('Có lỗi xảy ra khi đổi mật khẩu. Vui lòng kiểm tra mã OTP.');
+  }
+};
+
+const cancelChangePassword = () => {
+  showChangePasswordForm.value = false;
+  otpSent.value = false;
+  changePasswordData.value = {
+    email: '',
+    otp: '',
+    oldPassword: '',
+    newPassword: '',
+    confirmNewPassword: '',
+  };
+};
+
+const updatePersonalInfo = async () => {
+  const id = localStorage.getItem('customerId');
+  if (!id) return alert('Không tìm thấy ID người dùng');
+
   const payload = {
     FullName: informationpersonal.value.FullName,
     phoneNumber: informationpersonal.value.phoneNumber,
-    mail: informationpersonal.value.mail,
     birth: informationpersonal.value.birth,
-    image: informationpersonal.value.image,
-    password: informationpersonal.value.password,
+    image_base64: informationpersonal.value.image,
+  };
+
+  try {
+    const response = await api.put(`/client/customers/update/${id}`, payload);
+    alert('Cập nhật thông tin thành công');
+    informationpersonal.value = {
+      ...response.data.customer,
+      password: localStorage.getItem('customer_password') || '',
+    };
+  } catch (err) {
+    console.error('Lỗi khi cập nhật thông tin:', err);
+    alert('Có lỗi xảy ra khi cập nhật');
   }
+};
 
-  api.put(`/client/customers/update/${id}`, payload)
-    .then(() => {
-      alert('Cập nhật thông tin thành công')
-    })
-    .catch((err) => {
-      console.error('Lỗi khi cập nhật thông tin:', err)
-      alert('Có lỗi xảy ra khi cập nhật')
-    })
-}
+const deletePersonalInfo = async () => {
+  if (!confirm('Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác.')) return;
 
+  const id = localStorage.getItem('customerId');
+  if (!id) return alert('Không tìm thấy ID người dùng');
 
-const tabs = ref([
-  {
-    ten: 'Lịch sử giao dịch',
-    noiDung: 'Bạn chưa có giao dịch nào.',
-  },
-  {
-    ten: 'Thông tin cá nhân',
-    noiDung: '',
-  },
-  {
-    ten: 'Thông báo',
-    noiDung: '',
-  },
-  {
-    ten: 'Quà tặng',
-    noiDung: '',
-    danhSachQuaTang: [
-      {
-        ten: 'Phiếu giảm giá 20%',
-        moTa: 'Giảm ngay 20% cho đơn hàng từ 500.000đ',
-      },
-      {
-        ten: 'Thẻ thành viên VIP',
-        moTa: 'Thẻ VIP cho ưu đãi đặc biệt',
-      },
-    ]
-  },
-  {
-    ten: 'Chính sách ',
-    noiDung: 'Đây là nội dung về chính sách thành viên.',
-  },
-])
+  try {
+    await api.delete(`/client/customers/${id}`);
+    alert('Xóa tài khoản thành công');
+    localStorage.removeItem('customerId');
+    localStorage.removeItem('customer_email');
+    localStorage.removeItem('customer_password');
+    router.push('/login');
+  } catch (err) {
+    console.error('Lỗi khi xóa tài khoản:', err);
+    alert('Có lỗi xảy ra khi xóa tài khoản');
+  }
+};
 
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  return date.toLocaleDateString('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  });
+};
 </script>
-  <style scoped>
+
+<style scoped>
 .gift-list {
   list-style: none;
   padding: 0;
@@ -316,92 +477,89 @@ const tabs = ref([
 .claim-gift-btn:hover {
   background-color: #45a049;
 }
-  
 
+.input-information,
+.change-password-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 10px;
+}
 
+.row-information {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
 
-
-  .input-information{
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    padding: 10px;
-  }
-  .row-information{
-    display: flex;
-    gap: 20px;
-    align-items: center;
-    
-  }
-  .group-information input{
-    border: 1px solid #ccc;           
-  background-color: white;      
+.group-information input {
+  border: 1px solid #ccc;
+  background-color: white;
   padding: 8px 12px;
   border-radius: 4px;
   font-size: 14px;
   width: 400px;
-  padding-left: 35px; /*  chừa chỗ cho icon */
-  }
-  .group-information{
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
-  .group-information i{
-    position: absolute;
+  padding-left: 35px;
+}
+
+.group-information {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.group-information i {
+  position: absolute;
   top: 50%;
   left: 10px;
   transform: translateY(20%);
   color: #888;
+}
 
-  }
-  .container-personalinformation {
-    display: flex;
-    gap: 20px;
-    padding: 20px;
-    font-family: sans-serif;
-    background-color: #f5f5f5; 
-    height: 100%;
-  }
-  
-  /* Left */
-  .rank-box {
-    width: 35%;
-    background: white;
-    padding: 20px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-  }
-  
-  .member-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 10px;
-  }
-  
-  .avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    flex-shrink: 0;
-  }
-  
-  .member-details h3 {
-    font-size: 18px;
-    margin-bottom: 2px;
-  }
-  
-  .total-spending .label {
-    font-size: 14px;
-    color: gray;
-    margin-top: 15px;
-  }
- 
-  
+.container-personalinformation {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  font-family: sans-serif;
+  background-color: #f5f5f5;
+  height: 100%;
+}
 
-  .label {
+.rank-box {
+  width: 35%;
+  background: white;
+  padding: 20px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+
+.member-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.avatar {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.member-details h3 {
+  font-size: 18px;
+  margin-bottom: 2px;
+}
+
+.total-spending .label {
+  font-size: 14px;
+  color: gray;
+  margin-top: 15px;
+}
+
+.label {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -410,212 +568,126 @@ const tabs = ref([
 .total {
   flex-grow: 1;
 }
+
 .amount {
   text-align: right;
 }
-  .total-spending .amount {
-    font-size: 20px;
-    color: #f37021;
-    font-weight: bold;
-    margin-bottom: 10px;
-  }
-  
-  .progress-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    position: relative;
-    height: 70px;
-    margin-top: 10px;
-    border-top: 2px solid #ccc;
+
+.total-spending .amount {
+  font-size: 20px;
+  color: #f37021;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  position: relative;
+  height: 70px;
+  margin-top: 10px;
+  border-top: 2px solid #ccc;
   border-bottom: 2px solid #ccc;
-    padding-top: 20px;
-  }
-  
-  .milestone {
-    text-align: center;
-    position: relative;
-  }
-  
-  .milestone .icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    margin: 5px auto 0;
-    background: #ccc;
-  }
-  
-  .milestone .start {
-    background: #aaa;
-  }
-  
-  .milestone .mid {
-    background: gold;
-  }
-  
-  .milestone .current {
-    background: orange;
-    border: 2px solid white;
-    box-shadow: 0 0 4px orange;
-   
-  }
-  
-  /* Right */
-  .info-box {
-    width: 65%;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-  }
-  .category-container{
-    background: white;
-    width: 100%;
-}
-.title {
-    margin-top: 30px;
-  }
-  .title p {
-    font-family: "Dancing Script", cursive;
-  }
-  
-  .tab-links {
-    display: flex;
-    list-style: none;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #ccc;
-  }
-  
-  .tab-link {
-    padding: 10px 20px;
-    cursor: pointer;
-    font-weight: bold;
-    border: none;
-    background-color: transparent;
-    transition: 0.3s;
-    color: #333;
-  }
-  
-  .tab-link.current {
-    color: #ff4500;
-    border-bottom: 3px solid #ff4500;
-  }
-  
-  .tab-content {
-    padding: 20px;
-    border: 1px solid #ddd; 
-    border-radius: 8px;
-    background: #f9f9f9;
-  }
-  .menu-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    padding: 20px 0;
-    
-
-  }
-  .menu-grid{
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .card-menu{
-    border: 1px solid white ;
-    width: 262px;
-    padding: 10px;
-    margin: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-border-radius: 20px;
-
-
-  }
-  .card-menu img{
-    width: 300px;
-    height: 200px;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-
-  }
-  .info-card{
-   text-align: center;
-  }
-  
-  .menu-card {
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    overflow: hidden;
-    background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s;
-  }
-  
-  .menu-card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .menu-card img {
-    width: 300px;
-    object-fit: cover;
-  }
-  
-  .menu-info {
-    padding: 12px;
-    text-align: center;
-    word-wrap: break-word;
-  }
-  
-  .xemthem-btn {
-    padding: 10px 20px;
-    font-weight: bold;
-    background-color: #ff4500;
-    border: none;
-    color: white;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background 0.3s;
-  }
-  
-  .xemthem-btn:hover {
-    background-color: #e03e00;
-  }
-  .review-section {
-    width: 100%;
-    padding: 20px;
-  }
-  
-  .review-card {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    height: 130px;
-  }
-  
-  .review-content {
-    flex: 0 0 60%; 
-    padding-right: 15px; 
-  }
-  .progress-bar .milestone .mid, 
-.progress-bar .milestone .current, 
-.progress-bar .milestone .start {
-  animation: khanh 1s infinite;
+  padding-top: 20px;
 }
 
-  @keyframes khanh{
-    0%{
-      box-shadow: 0 0 0 0 rgba(250, 229, 113, 0.7);
-    }
-    50%{
-      box-shadow: 0 0 0 10px rgba(250, 229, 113, 0.7);
-    }
-    100%{
-      box-shadow: 0 0 0 0 rgba(250, 229, 113, 0);
-    }
-  }
-  .btn-update {
+.milestone {
+  text-align: center;
+  position: relative;
+}
+
+.milestone .icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 5px auto 0;
+  background: #ccc;
+}
+
+.milestone .start {
+  background: #aaa;
+}
+
+.milestone .mid {
+  background: gold;
+}
+
+.milestone .current {
+  background: orange;
+  border: 2px solid white;
+  box-shadow: 0 0 4px orange;
+}
+
+.info-box {
+  width: 65%;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.category-container {
+  background: white;
+  width: 100%;
+}
+
+.tab-links {
+  display: flex;
+  list-style: none;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ccc;
+}
+
+.tab-link {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  border: none;
+  background-color: transparent;
+  transition: 0.3s;
+  color: #333;
+}
+
+.tab-link.current {
+  color: #ff4500;
+  border-bottom: 3px solid #ff4500;
+}
+
+.tab-content {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.transaction-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.transaction-item {
+  padding: 15px;
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.transaction-details strong {
+  font-size: 16px;
+  color: #143b36;
+}
+
+.transaction-details p {
+  margin: 5px 0 0;
+  font-size: 14px;
+  color: #666;
+}
+
+.btn-update {
   padding: 8px 16px;
   background-color: #00b894;
   color: white;
@@ -628,5 +700,22 @@ border-radius: 20px;
   background-color: #019875;
 }
 
-  </style>
-  
+.btn-cancel {
+  padding: 8px 16px;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-cancel:hover {
+  background-color: #cc0000;
+}
+
+.change-password-form h3 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+  color: #333;
+}
+</style>
