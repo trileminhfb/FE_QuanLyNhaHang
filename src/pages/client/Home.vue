@@ -4,7 +4,7 @@
     <div class="background">
         <div class="text" style="font-size: 3rem;">Chào Mừng Bạn Đến PHÊ FOOD</div>
         <div class="text" style="font-size: 2rem;">Cùng phê food - ăn quên lối về</div>
-        <div class="text" style="font-size: 2rem;">Giá từ <strong style="color: red;">139.000VNĐ / 4 người</strong>
+        <div class="text" style="font-size: 2rem;"> <strong style="color: red;"> </strong>
         </div>
     </div>
     <div class="menu-container">
