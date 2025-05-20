@@ -64,6 +64,7 @@
   </div>
 </template>
 
+
 <script setup>
 import { cartItems, clearCart, addToCart } from '../../stores/cartStore';
 import api from '../../services/api';
@@ -375,4 +376,65 @@ onMounted(() => {
   font-family: inherit;
 }
 
+.header-cart {
+  display: flex;
+  color: white;
+  font-weight: bold;
+  border: 1px solid white;
+}
+
+.header-cart li {
+  flex: 1;
+  list-style: none;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  padding: 15px 0;
+  border: 1px solid #ccc;
+}
+
+.item-col {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: white;
+}
+
+.item-col img {
+  width: 60px;
+  height: 60px;
+  object-fit: cover;
+  margin-left: 10px;
+}
+
+.btn-delete {
+  margin-left: 10px;
+  color: red;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.order-btn-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.btn-orderItem{
+  color: #fff;
+    background-color: #d69c52;
+    padding: 10px 15px;
+    font-size: 14px;
+    border-radius: 5px;
+    box-shadow: 0 3px 6px #a37b44;
+    height: 40px;
+    width: 200px;
+    transition: box-shadow 0.3s ease;
+    display: flex;
+justify-content: center;
+align-items: center;
+}
 </style>

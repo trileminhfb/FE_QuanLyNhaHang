@@ -261,9 +261,14 @@ onMounted(() => {
   Aos.init()
 })
 const Route = useRoute();
+const Route = useRoute();
 const soSao = 4 // số sao đánh giá từ 1 đến 5
 const currentTab = ref(0)
 const soLuonggiohang = ref(0)
+function handleAddToCart(mon) {
+  addToCart(mon);        // thêm vào giỏ
+  router.push('/shoppingCart');  // điều hướng qua trang giỏ hàng
+}
 function handleAddToCart(mon) {
   addToCart(mon);        // thêm vào giỏ
   router.push('/shoppingCart');  // điều hướng qua trang giỏ hàng
@@ -316,8 +321,12 @@ const tabs = ref([
     ten: 'Món Khai Vị',
     hinh: '/imageicon/comga.png',
    
+   
     noiDung: 'Nội dung Món Khai Vị',
     dsMon: [
+    { id: 1 ,ten: 'Cơm Gà Hải Nam', gia:20000 , hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      { id: 2,ten: 'Bún Bò Huế',  gia:20000 ,hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      {id: 3, ten: 'Pizza Hải Sản',  gia:20000 ,hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
     { id: 1 ,ten: 'Cơm Gà Hải Nam', gia:20000 , hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
       { id: 2,ten: 'Bún Bò Huế',  gia:20000 ,hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
       {id: 3, ten: 'Pizza Hải Sản',  gia:20000 ,hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
@@ -328,6 +337,9 @@ const tabs = ref([
     hinh: '/imageicon/bunbo.png',
     noiDung: 'Nội dung Món Chính',
     dsMon: [
+      {id: 4, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
+      { id: 5,ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
+      { id: 6,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
       {id: 4, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
       { id: 5,ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
       { id: 6,ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
