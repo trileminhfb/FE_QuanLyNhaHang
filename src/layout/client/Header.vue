@@ -98,7 +98,7 @@
           </li>
 
           <li>
-           
+
             <!-- GIỎ HÀNG (đặt ref="cartIcon" để làm mục tiêu bay tới) -->
             <div class="cart-shopping" ref="cartIcon">
               <router-link :to="{ name: 'users-shoppingCart' }">
@@ -153,7 +153,7 @@
                 <h2>History-Booking</h2>
               </router-link>
 
-        
+
 
               <div class="menu-item" @click="handleLogout">
                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -183,7 +183,6 @@ const userEmail = ref(null);
 const userName = ref(null);
 const types = ref([]);
 const router = useRouter();
-const userName = ref([])
 const avatar = ref(localStorage.getItem('avatar') || '/default-avatar.png');
 
 window.addEventListener('storage', () => {
