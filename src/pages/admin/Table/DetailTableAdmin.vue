@@ -31,9 +31,8 @@
                             <div class="flex flex-col w-full h-fit items-start px-5 mt-5">
                                 <p class="flex">Mã bàn:</p>
                                 <div class="flex flex-1 justify-center w-full">
-                                    <img class="border border-black"
-                                        :src="`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(tableData.number)}`"
-                                        alt="QR Code" />
+                                    <img
+                                        :src="`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrUrl)}`" />
                                 </div>
                             </div>
                             <div class="flex flex-row gap-2 p-2">
@@ -70,6 +69,11 @@ const router = useRouter()
 const route = useRoute()
 const tableData = route.query.data ? JSON.parse(route.query.data) : null
 const showConfirm = ref(false)
+
+// Tạo URL QR
+const tableId = tableData.id
+const baseUrl = window.location.origin
+const qrUrl = `${baseUrl}/scan?id=${tableId}`
 
 function goBack() {
     router.push({ name: 'admin-tables' })

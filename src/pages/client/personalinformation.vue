@@ -18,34 +18,35 @@
           <span class="amount">5.787.000 đ</span>
         </p>
 
-          <div class="progress-bar">
-            <div class="milestone">
-              <span>0 đ</span>
-              <div class="icon start"></div>
-            </div>
-            <div class="milestone">
-              <span>2.000.000 đ</span>
-              <div class="icon mid"></div>
-            </div>
-            <div class="milestone">
-              <span>4.000.000 đ</span>
-              <div class="icon current"></div>
-            </div>
+        <div class="progress-bar">
+          <div class="milestone">
+            <span>0 đ</span>
+            <div class="icon start"></div>
+          </div>
+          <div class="milestone">
+            <span>2.000.000 đ</span>
+            <div class="icon mid"></div>
+          </div>
+          <div class="milestone">
+            <span>4.000.000 đ</span>
+            <div class="icon current"></div>
           </div>
         </div>
-        <div class="support-footer">
-    <div style="margin-top: 20px;"  class="support-info">
-      <h4 >Hotline Hỗ Trợ : <strong style="color: blue;">1900 1234</strong></h4>
-      
-      <p>
-        <span class="icon email"></span>
-        <a href="mailto:support@nhahang.com">Email: <strong style="color: blue;">phefoodRestaurant@gmail.com</strong></a>
-      </p>
-    </div>
-  
-  
-  </div>
       </div>
+      <div class="support-footer">
+        <div style="margin-top: 20px;" class="support-info">
+          <h4>Hotline Hỗ Trợ : <strong style="color: blue;">1900 1234</strong></h4>
+
+          <p>
+            <span class="icon email"></span>
+            <a href="mailto:support@nhahang.com">Email: <strong
+                style="color: blue;">phefoodRestaurant@gmail.com</strong></a>
+          </p>
+        </div>
+
+
+      </div>
+    </div>
 
     <div class="info-box">
       <div class="category-container">
@@ -271,7 +272,7 @@ const changePasswordData = ref({
 });
 
 const tabs = ref([
-{ ten: 'Thông tin cá nhân', noiDung: '' },
+  { ten: 'Thông tin cá nhân', noiDung: '' },
   { ten: 'Lịch sử giao dịch', noiDung: '' },
   { ten: 'Thông báo', noiDung: '' },
   { ten: 'Quà tặng', noiDung: '', danhSachQuaTang: [] },
@@ -422,19 +423,6 @@ const updatePersonalInfo = async () => {
   } catch (err) {
     console.error('Lỗi khi cập nhật thông tin:', err.response?.data?.message || err.message);
     alert(`Có lỗi xảy ra khi cập nhật: ${err.response?.data?.message || err.message}`);
-  }
-};
-
-// Hàm xử lý upload ảnh
-const handleImageUpload = (event) => {
-  const file = event.target.files[0];
-  if (file) {
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      informationpersonal.value.image = e.target.result; // Lưu chuỗi base64
-      imagePreview.value = e.target.result; // Cập nhật preview
-    };
-    reader.readAsDataURL(file);
   }
 };
 
@@ -616,193 +604,206 @@ const formatDate = (dateString) => {
   margin-top: 10px;
   border-top: 2px solid #ccc;
   border-bottom: 2px solid #ccc;
-    padding-top: 20px;
-  }
-  
-  .milestone {
-    text-align: center;
-    position: relative;
-  }
-  
-  .milestone .icon {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    margin: 5px auto 0;
-    background: #ccc;
-  }
-  
-  .milestone .start {
-    background: #aaa;
-  }
-  
-  .milestone .mid {
-    background: gold;
-  }
-  
-  .milestone .current {
-    background: orange;
-    border: 2px solid white;
-    box-shadow: 0 0 4px orange;
-   
-  }
-  
-  /* Right */
-  .info-box {
-    width: 65%;
-    background: white;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-  }
-  .category-container{
-    background: white;
-    width: 100%;
+  padding-top: 20px;
 }
+
+.milestone {
+  text-align: center;
+  position: relative;
+}
+
+.milestone .icon {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  margin: 5px auto 0;
+  background: #ccc;
+}
+
+.milestone .start {
+  background: #aaa;
+}
+
+.milestone .mid {
+  background: gold;
+}
+
+.milestone .current {
+  background: orange;
+  border: 2px solid white;
+  box-shadow: 0 0 4px orange;
+
+}
+
+/* Right */
+.info-box {
+  width: 65%;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+}
+
+.category-container {
+  background: white;
+  width: 100%;
+}
+
 .title {
-    margin-top: 30px;
-  }
-  .title p {
-    font-family: "Dancing Script", cursive;
-  }
-  
-  .tab-links {
-    display: flex;
-    list-style: none;
-    justify-content: space-between;
-    margin-bottom: 20px;
-    border-bottom: 2px solid #ccc;
-  }
-  
-  .tab-link {
-    padding: 10px 20px;
-    cursor: pointer;
-    font-weight: bold;
-    border: none;
-    background-color: transparent;
-    transition: 0.3s;
-    color: #333;
-  }
-  
-  .tab-link.current {
-    color: #ff4500;
-    border-bottom: 3px solid #ff4500;
-  }
-  
-  .tab-content {
-    padding: 20px;
-    border: 1px solid #ddd; 
-    border-radius: 8px;
-    background: #f9f9f9;
-  }
-  .menu-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-    justify-content: center;
-    padding: 20px 0;
-    
+  margin-top: 30px;
+}
 
-  }
-  .menu-grid{
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .card-menu{
-    border: 1px solid white ;
-    width: 262px;
-    padding: 10px;
-    margin: 15px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-border-radius: 20px;
+.title p {
+  font-family: "Dancing Script", cursive;
+}
+
+.tab-links {
+  display: flex;
+  list-style: none;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  border-bottom: 2px solid #ccc;
+}
+
+.tab-link {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: bold;
+  border: none;
+  background-color: transparent;
+  transition: 0.3s;
+  color: #333;
+}
+
+.tab-link.current {
+  color: #ff4500;
+  border-bottom: 3px solid #ff4500;
+}
+
+.tab-content {
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #f9f9f9;
+}
+
+.menu-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px 0;
 
 
-  }
-  .card-menu img{
-    width: 300px;
-    height: 200px;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
 
-  }
-  .info-card{
-   text-align: center;
-  }
-  
-  .menu-card {
-    border: 1px solid #ccc;
-    border-radius: 12px;
-    overflow: hidden;
-    background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    transition: transform 0.2s;
-  }
-  
-  .menu-card:hover {
-    transform: translateY(-5px);
-  }
-  
-  .menu-card img {
-    width: 300px;
-    object-fit: cover;
-  }
-  
-  .menu-info {
-    padding: 12px;
-    text-align: center;
-    word-wrap: break-word;
-  }
-  
-  .xemthem-btn {
-    padding: 10px 20px;
-    font-weight: bold;
-    background-color: #ff4500;
-    border: none;
-    color: white;
-    cursor: pointer;
-    border-radius: 8px;
-    transition: background 0.3s;
-  }
-  
-  .xemthem-btn:hover {
-    background-color: #e03e00;
-  }
-  .review-section {
-    width: 100%;
-    padding: 20px;
-  }
-  
-  .review-card {
-    background: #f9f9f9;
-    padding: 15px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    display: flex;
-    justify-content: space-between;
-    height: 130px;
-  }
-  
-  .review-content {
-    flex: 0 0 60%; 
-    padding-right: 15px; 
-  }
-  .progress-bar .milestone .mid, 
-.progress-bar .milestone .current, 
+.menu-grid {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.card-menu {
+  border: 1px solid white;
+  width: 262px;
+  padding: 10px;
+  margin: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 20px;
+
+
+}
+
+.card-menu img {
+  width: 300px;
+  height: 200px;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+
+}
+
+.info-card {
+  text-align: center;
+}
+
+.menu-card {
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  overflow: hidden;
+  background: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+}
+
+.menu-card img {
+  width: 300px;
+  object-fit: cover;
+}
+
+.menu-info {
+  padding: 12px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+.xemthem-btn {
+  padding: 10px 20px;
+  font-weight: bold;
+  background-color: #ff4500;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.xemthem-btn:hover {
+  background-color: #e03e00;
+}
+
+.review-section {
+  width: 100%;
+  padding: 20px;
+}
+
+.review-card {
+  background: #f9f9f9;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  justify-content: space-between;
+  height: 130px;
+}
+
+.review-content {
+  flex: 0 0 60%;
+  padding-right: 15px;
+}
+
+.progress-bar .milestone .mid,
+.progress-bar .milestone .current,
 .progress-bar .milestone .start {
   animation: khanh 1s infinite;
 }
 
-  @keyframes khanh{
-    0%{
-      box-shadow: 0 0 0 0 rgba(250, 229, 113, 0.7);
-    }
-    50%{
-      box-shadow: 0 0 0 10px rgba(250, 229, 113, 0.7);
-    }
-    100%{
-      box-shadow: 0 0 0 0 rgba(250, 229, 113, 0);
-    }
+@keyframes khanh {
+  0% {
+    box-shadow: 0 0 0 0 rgba(250, 229, 113, 0.7);
   }
-  .btn-update {
+
+  50% {
+    box-shadow: 0 0 0 10px rgba(250, 229, 113, 0.7);
+  }
+
+  100% {
+    box-shadow: 0 0 0 0 rgba(250, 229, 113, 0);
+  }
+}
+
+.btn-update {
   padding: 8px 16px;
   background-color: #00b894;
   color: white;
@@ -810,7 +811,8 @@ border-radius: 20px;
   border-radius: 4px;
   cursor: pointer;
 }
-.btn-delete{
+
+.btn-delete {
   padding: 8px 16px;
   background-color: rgb(179, 10, 10);
   color: white;
@@ -822,6 +824,7 @@ border-radius: 20px;
 .btn-update:hover {
   background-color: #019875;
 }
+
 /* Thêm style cho danh sách lịch sử giao dịch */
 .transaction-list {
   list-style: none;

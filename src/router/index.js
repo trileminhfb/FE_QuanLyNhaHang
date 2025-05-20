@@ -19,6 +19,7 @@ router.beforeEach((to, from, next) => {
     "register",
     "users-register",
     "users-home",
+    "scan",
   ]; // các route không cần login
   const authRequired = !publicPages.includes(to.name);
   const isLoggedIn = !!localStorage.getItem("auth_token");
