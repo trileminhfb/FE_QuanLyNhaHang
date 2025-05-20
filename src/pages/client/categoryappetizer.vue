@@ -42,7 +42,6 @@
 
       <!-- Cột phải: Danh mục và món ăn -->
       <div class="col-right">
-      
         <div class="categories">
           <button
             v-for="(category, index) in categories"
@@ -74,7 +73,6 @@
                 </div>
 
                 <div class="btn-wrapper">
-                  <button class="btn-order">Đặt Hàng</button>
                   <button class="btn-add" @click="(e) => handleAddToCart(dish, e)">
                     Thêm vào giỏ <i class="fas fa-shopping-cart"></i>
                   </button>
@@ -166,7 +164,7 @@ const selectedCategory = computed(() => {
 
 const filteredDishes = computed(() => {
   if (!selectedCategory.value) return []
-  let dishes = [...selectedCategory.value.dsMon] // Tạo bản sao để tránh thay đổi gốc
+  let dishes = [...selectedCategory.value.dsMon] 
 
   // Lọc theo từ khóa tìm kiếm
   if (searchTerm.value.trim()) {
@@ -245,13 +243,11 @@ function animateAddToCart(imageUrl, event) {
     img.remove()
   }
 }
-
 function handleAddToCart(dish, event) {
   toast.success('đã thêm món ăn vào giỏ ')
   addToCart(dish)
   animateAddToCart(getImageUrl(dish.image), event)
 }
-
 function handleShowRating(dish) {
   selectedDish.value = dish
   showRating.value = true

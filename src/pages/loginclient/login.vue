@@ -66,6 +66,7 @@ function login() {
     password: loginPassword.value
   })
     .then((response) => {
+      console.log('ID khách hàng:', response.data.id); //
       Swal.fire({
         title: 'Đăng nhập thành công!',
         icon: 'success',

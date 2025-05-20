@@ -45,7 +45,8 @@
         </div>
         <!-- FORM ĐẶT MÓN ĂN -->
         <div class="col-left" v-if="formStage === 'order'">
-          <h3 style="color: white; font-size: 30px; padding-bottom: 20px;">🍽️ Chọn món ăn </h3>
+          <h3 style="color: white; font-size: 30px; padding-bottom: 10px;">🍽️ Chọn món ăn </h3>
+          <p style="font-size: 25px; color: white; font-weight: bold; margin-bottom: 10px;">Chào ,<strong style="color: red;">{{ userName }}</strong></p>
           <div v-for="(item, index) in foodForm" :key="index" class="form-row">
             <label>Món ăn {{ index + 1 }}:</label>
             <select v-model="item.id_foods">
@@ -100,7 +101,8 @@ const bookingSuccess = ref(false);
 const formStage = ref('choose');
 const errors = ref({});
 const router =useRouter();
-const bookingId = ref(null); 
+const bookingId = ref(null);
+const userName = ref() 
 const form = reactive({
   timeBooking: ''
 });
@@ -191,46 +193,46 @@ const createBooking = () => {
       }
     });
 };
-const submitFoodOrder = () => {
-  localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
-  const invalid = foodForm.value.some(item => !item.id_foods || item.quantity < 1);
-  if (invalid) {
-    alert('Vui lòng chọn món và số lượng hợp lệ cho tất cả các món.');
-    return;
-  }
+  const submitFoodOrder = () => {
+    localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
+    const invalid = foodForm.value.some(item => !item.id_foods || item.quantity < 1);
+    if (invalid) {
+      alert('Vui lòng chọn món và số lượng hợp lệ cho tất cả các món.');
+      return;
+    }
 
-  const payload = {
-    id_booking: bookingId.value,
-    foods: foodForm.value.map(item => ({
-      id_foods: item.id_foods,
-      quantity: item.quantity
-    }))
+    const payload = {
+      id_booking: bookingId.value,
+      foods: foodForm.value.map(item => ({
+        id_foods: item.id_foods,
+        quantity: item.quantity
+      }))
+    };
+
+    api.post('/client/booking-food', payload)
+    
+      .then(() => {
+        toast.success('Đặt món thành công!');
+        localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
+
+        // Cập nhật lịch sử đặt bàn với danh sách món đã chọn
+        const updatedBooking = {
+          id: bookingId.value,
+          foods: foodForm.value.map(item => ({
+            id_foods: item.id_foods,
+            quantity: item.quantity
+          }))
+        };
+
+        bookingStore.updateBookingFoods(updatedBooking);
+        localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
+
+        router.push({ name: 'users-home' });
+      })
+      .catch((err) => {
+        console.log('Lỗi đặt món:', err.response?.data || err.message);
+      });
   };
-
-  api.post('/client/booking-food', payload)
-  
-    .then(() => {
-      toast.success('Đặt món thành công!');
-      localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
-
-      // Cập nhật lịch sử đặt bàn với danh sách món đã chọn
-      const updatedBooking = {
-        id: bookingId.value,
-        foods: foodForm.value.map(item => ({
-          id_foods: item.id_foods,
-          quantity: item.quantity
-        }))
-      };
-
-      bookingStore.updateBookingFoods(updatedBooking);
-      localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
-
-      router.push({ name: 'users-home' });
-    })
-    .catch((err) => {
-      console.log('Lỗi đặt món:', err.response?.data || err.message);
-    });
-};
 
 const submitDeposit = () => {
   userInfo.name = localStorage.getItem('customer_name') || 'Chưa có tên';
@@ -253,10 +255,10 @@ const startOrder = () => {
   }
   formStage.value = 'order';
 };
+onMounted(() => {
+  userName.value = localStorage.getItem('FullName') || '';
+});
 </script>
-
-
-
 <style scoped>
 .error-message {
     color: red;

@@ -5,6 +5,7 @@
                 Chi tiết kiểu
             </div>
             <div class="w-[50vw] h-full flex justify-center items-start text-xl">
+            <div class="w-[50vw] h-full flex justify-center items-start text-xl">
                 <div class="w-full border h-fit flex flex-col">
                     <div class="flex-1 border flex flex-row">
                         <div class="border flex flex-[2] flex-col p-2 gap-2">
@@ -63,12 +64,18 @@
                             <div class="flex flex-row gap-2 p-2">
                                 <div class="bg-green-500 rounded-lg p-2 flex justify-center items-center flex-1 text-white hover:text-black hover:cursor-pointer hover:bg-green-300"
                                     @click="goEdit(typeData)">
+                                <div class="bg-green-500 rounded-lg p-2 flex justify-center items-center flex-1 text-white hover:text-black hover:cursor-pointer hover:bg-green-300"
+                                    @click="goEdit(typeData)">
                                     Chỉnh sửa
                                 </div>
                                 <div class="bg-red-500 rounded-lg p-2 flex justify-center items-center flex-1 text-white hover:text-black hover:cursor-pointer hover:bg-red-300"
                                     @click="goDelete">
+                                <div class="bg-red-500 rounded-lg p-2 flex justify-center items-center flex-1 text-white hover:text-black hover:cursor-pointer hover:bg-red-300"
+                                    @click="goDelete">
                                     Xoá
                                 </div>
+                                <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
+
                                 <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
 
                                 <div class=" rounded-lg border p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-gray-300"
@@ -83,6 +90,7 @@
         </div>
     </div>
 </template>
+
 
 <script setup>
 

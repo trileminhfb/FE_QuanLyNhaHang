@@ -111,7 +111,6 @@
                 <div class="card-price">{{ mon.gia }}</div>
                 <div class="card-title">{{ mon.moTa }}</div>
                 <div class="btn-wrapper">
-                  <button class="btn-oder">Đặt Hàng </button>
                   <button class="btn-add" @click="handleAddToCart(mon)">
                     Thêm vào giỏ <i class="fas fa-shopping-cart"></i>
                   </button>
@@ -281,8 +280,7 @@ const tabs = ref([
   {
     ten: 'Món Khai Vị',
     hinh: '/imageicon/comga.png',
-
-    noiDung: 'Nội dung Món Khai Vị',
+   
     dsMon: [
       { id: 1, ten: 'Cơm Gà Hải Nam', gia: 20000, hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
       { id: 2, ten: 'Bún Bò Huế', gia: 20000, hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
@@ -292,7 +290,6 @@ const tabs = ref([
   {
     ten: 'Món Chính',
     hinh: '/imageicon/bunbo.png',
-    noiDung: 'Nội dung Món Chính',
     dsMon: [
       { id: 4, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
       { id: 5, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
@@ -302,7 +299,6 @@ const tabs = ref([
   {
     ten: 'Món Pizza',
     hinh: '/imageicon/banhngot.png',
-    noiDung: 'Nội dung Món Pizza',
     dsMon: [
       { id: 7, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
       { id: 8, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
@@ -315,7 +311,6 @@ const tabs = ref([
   {
     ten: 'Món Tráng Miếng',
     hinh: '/imageicon/banhngot.png',
-    noiDung: 'Nội dung Món Tráng Miệng',
     dsMon: [
       { id: 13, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
       { id: 14, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
@@ -325,7 +320,6 @@ const tabs = ref([
   {
     ten: 'Lẩu',
     hinh: '/imageicon/banhngot.png',
-    noiDung: 'Nội dung Món Tráng Miệng',
     dsMon: [
       { id: 16, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
       { id: 17, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
@@ -335,7 +329,6 @@ const tabs = ref([
   {
     ten: 'Đồ Uống',
     hinh: '/imageicon/banhngot.png',
-    noiDung: 'Nội dung Món Tráng Miệng',
     dsMon: [
       { id: 19, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
       { id: 20, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },

@@ -53,6 +53,8 @@
                             <div class="flex flex-row gap-2 p-2">
                                 <div class="bg-green-500 rounded-lg p-2 flex text-white justify-center items-center flex-1 hover:text-black hover:cursor-pointer hover:bg-green-300"
                                     @click="goEdit(categoryData)">
+                                <div class="bg-green-500 rounded-lg p-2 flex text-white justify-center items-center flex-1 hover:text-black hover:cursor-pointer hover:bg-green-300"
+                                    @click="goEdit(categoryData)">
                                     Chỉnh sửa
                                 </div>
 

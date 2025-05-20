@@ -24,6 +24,8 @@
 
               <div class="row-col-right">
                 <div class="name-pay"><p>Thanh Toán</p></div>
+              <div class="row-col-right">
+                <div class="name-pay"><p>Thanh Toán</p></div>
 
                 <div class="radio-pay">
                   <div class="content-box_row">
@@ -79,6 +81,7 @@
         </div>
       </div> <!-- end col-right -->
     </div>
+  </div>
   </div>
 </template>
 
@@ -152,8 +155,31 @@ async function xoaHang(id) {
   }
 }
 </script>
+
+
 <style scoped>
 .container-pay {
+  width: 100%;
+  margin: 0 auto;
+}
+
+.payment {
+  display: flex;
+}
+.content-box__row__desc{
+  height: 80px;
+  background: red;
+}
+.col-left {
+  width: 70%;
+  background: #fff;
+  padding: 10px;
+}
+
+.col-right {
+  width: 30%;
+  background: #f9f9f9;
+  padding: 10px;
   width: 100%;
   margin: 0 auto;
 }
@@ -183,13 +209,23 @@ async function xoaHang(id) {
   display: flex;
   align-items: center;
   gap: 10px;
+  font-size: 30px;
+  color: blue;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .shop-title img {
   width: 120px;
+  width: 120px;
 }
 
 .shop-inform {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin: 10px 0;
   display: flex;
   align-items: center;
   gap: 20px;
@@ -200,8 +236,16 @@ async function xoaHang(id) {
 .pay-transfer {
   cursor: pointer;
   color: red;
+.pay-login,
+.pay-transfer {
+  cursor: pointer;
+  color: red;
 }
 
+.main-content .row {
+  display: flex;
+  width: 100%;
+  gap: 10px;
 .main-content .row {
   display: flex;
   width: 100%;
@@ -209,7 +253,12 @@ async function xoaHang(id) {
 }
 
 .row-col-left,
+.row-col-left,
 .row-col-right {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   width: 50%;
   display: flex;
   flex-direction: column;
@@ -217,6 +266,9 @@ async function xoaHang(id) {
 }
 
 input {
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 5px;
@@ -230,18 +282,29 @@ input {
   border-radius: 5px;
   cursor: pointer;
   gap: 10px;
+  display: flex;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  gap: 10px;
 }
 
 .input-radio {
+  width: 16px;
+  height: 16px;
   width: 16px;
   height: 16px;
 }
 
 .radio__label__primary {
   font-size: 16px;
+  font-size: 16px;
 }
 
 .radio__label__accessory {
+  margin-left: auto;
   margin-left: auto;
 }
 
@@ -304,5 +367,64 @@ input {
   margin-top: 10px;
   cursor: pointer;
   border-radius: 5px;
+  content: "";
+  background-image: url('/imageicon/payment_1.png');
+  width: 50px;
+  height: 30px;
+  display: inline-block;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.order-cart {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.order-title {
+  font-size: 24px;
+  margin-bottom: 10px;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.item-col img {
+  width: 50px;
+  height: 50px;
+  object-fit: cover;
+}
+
+.item-col {
+  flex: 1;
+}
+
+.btn-delete {
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.btn-orderItem {
+  background-color: green;
+  color: white;
+  border: none;
+  padding: 10px;
+  width: 100%;
+  margin-top: 10px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 </style>
+

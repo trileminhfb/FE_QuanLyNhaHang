@@ -12,7 +12,7 @@ export async function fetchCart() {
         id: item.id,
         id_food: item.id_food,
         quantity: item.quantity,
-        name: item.name,
+        name: item.name,  
         price: item.price,
         image: item.image,
       }));
@@ -75,7 +75,7 @@ export async function addToCart(mon) {
 
 export async function clearCart() {
   try {
-    await api.delete('/client/carts'); // Xóa toàn bộ giỏ hàng trên server
+    await api.delete('/client/carts'); 
     cartItems.value = [];
     cartCount.value = 0;
     localStorage.removeItem('shoppingCart');
