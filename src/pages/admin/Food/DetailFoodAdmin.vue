@@ -66,11 +66,8 @@
                             <div class="flex flex-row gap-2 p-2">
                                 <div class="bg-green-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:text-black hover:bg-green-300"
                                     @click="goEdit(foodData)">
-                                    @click="goEdit(foodData)">
                                     Chỉnh sửa
                                 </div>
-                                <div class="bg-red-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:text-black hover:bg-red-300"
-                                    @click="goDelete">
                                 <div class="bg-red-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:text-black hover:bg-red-300"
                                     @click="goDelete">
                                     Xoá
@@ -83,6 +80,7 @@
                             </div>
                         </div>
                     </div>
+
                     <div class="flex flex-col overflow-y-auto max-h-full">
                         <p class="uppercase font-bold">Đánh giá</p>
 

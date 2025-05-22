@@ -1,37 +1,52 @@
-import { ref ,onMounted } from "vue";
+import { ref, onMounted } from "vue";
 import api from "../services/api";
 export const cartCount = ref(0);
 export const cartItems = ref([]);
+
 export async function fetchCart() {
   try {
     const response = await api.get("/client/carts");
     const data = response.data;
 
     if (Array.isArray(data) && data.length > 0) {
-      cartItems.value = data.map(item => ({
-        id: item.id,
-        id_food: item.id_food,
-        quantity: item.quantity,
-        name: item.name,  
-        price: item.price,
-        image: item.image,
-      }));
-      cartCount.value = cartItems.value.reduce((total, item) => total + item.quantity, 0);
-      localStorage.setItem('shoppingCart', JSON.stringify(cartItems.value));
+      cartItems.value = data.map((item) => {
+        const food = item.food || {}; // Tránh lỗi nếu food null
+        return {
+          id: item.id,
+          id_food: food.id || item.id_food, // fallback nếu thiếu
+          quantity: item.quantity,
+          name: food.name || "Không rõ tên",
+          price: food.price || food.newPrice || food.cost || 0,
+          image: food.image || "https://via.placeholder.com/60",
+        };
+      });
+
+      cartCount.value = cartItems.value.reduce(
+        (total, item) => total + item.quantity,
+        0
+      );
+
+      localStorage.setItem("shoppingCart", JSON.stringify(cartItems.value));
     } else {
       console.warn("API trả về giỏ hàng trống → thử dùng localStorage");
-      const localCart = localStorage.getItem('shoppingCart');
+      const localCart = localStorage.getItem("shoppingCart");
       if (localCart) {
         cartItems.value = JSON.parse(localCart);
-        cartCount.value = cartItems.value.reduce((total, item) => total + item.quantity, 0);
+        cartCount.value = cartItems.value.reduce(
+          (total, item) => total + item.quantity,
+          0
+        );
       }
     }
   } catch (error) {
     console.error("Không thể lấy giỏ hàng từ API:", error);
-    const localCart = localStorage.getItem('shoppingCart');
+    const localCart = localStorage.getItem("shoppingCart");
     if (localCart) {
       cartItems.value = JSON.parse(localCart);
-      cartCount.value = cartItems.value.reduce((total, item) => total + item.quantity, 0);
+      cartCount.value = cartItems.value.reduce(
+        (total, item) => total + item.quantity,
+        0
+      );
     }
   }
 }
@@ -50,7 +65,9 @@ export async function addToCart(mon) {
     const response = await api.post("/client/carts/create", newItem);
 
     // Tìm xem đã có món trong giỏ chưa (theo id_food, không phải id)
-    const existingItem = cartItems.value.find(item => item.id_food === newItem.id_food);
+    const existingItem = cartItems.value.find(
+      (item) => item.id_food === newItem.id_food
+    );
 
     if (existingItem) {
       existingItem.quantity += 1;
@@ -66,8 +83,11 @@ export async function addToCart(mon) {
     }
 
     // Cập nhật số lượng tổng
-    cartCount.value = cartItems.value.reduce((total, item) => total + item.quantity, 0);
-    localStorage.setItem('shoppingCart', JSON.stringify(cartItems.value));
+    cartCount.value = cartItems.value.reduce(
+      (total, item) => total + item.quantity,
+      0
+    );
+    localStorage.setItem("shoppingCart", JSON.stringify(cartItems.value));
   } catch (error) {
     console.error("Không thể thêm vào giỏ hàng", error);
   }
@@ -75,10 +95,10 @@ export async function addToCart(mon) {
 
 export async function clearCart() {
   try {
-    await api.delete('/client/carts'); 
+    await api.delete("/client/carts");
     cartItems.value = [];
     cartCount.value = 0;
-    localStorage.removeItem('shoppingCart');
+    localStorage.removeItem("shoppingCart");
   } catch (error) {
     console.error("Lỗi khi xóa toàn bộ giỏ hàng:", error);
   }
@@ -86,4 +106,3 @@ export async function clearCart() {
 onMounted(() => {
   fetchCart();
 });
-

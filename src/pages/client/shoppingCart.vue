@@ -44,7 +44,7 @@
         <div class="suggested-items">
           <h4>Món phổ biến</h4>
           <ul>
-            <li v-for="(mon, i) in popularItems" :key="i">
+            <li v-for="(mon, i) in bestSellerItems" :key="i">
               <img :src="mon.image" alt="popular" />
               <div class="info">
                 <p>{{ mon.name }}</p>
@@ -75,7 +75,7 @@ import { fetchCart } from '../../stores/cartStore';
 const route = useRoute();
 const note = ref("");
 
-const popularItems = [
+const bestSellerItems = [
   {
     name: 'Trà sữa trân châu',
     price: 25000,
@@ -177,7 +177,8 @@ onMounted(() => {
   width: 1300px;
   display: flex;
   justify-content: space-between;
-  gap: 20px; /* tạo khoảng cách giữa 2 cột */
+  gap: 20px;
+  /* tạo khoảng cách giữa 2 cột */
 }
 
 
@@ -215,14 +216,17 @@ onMounted(() => {
 .item-col.info {
   width: 40%;
 }
+
 .header-cart li:nth-child(2),
 .item-col.price {
   width: 20%;
 }
+
 .header-cart li:nth-child(3),
 .item-col.quantity {
   width: 20%;
 }
+
 .header-cart li:nth-child(4),
 .item-col.total {
   width: 20%;
@@ -238,11 +242,13 @@ onMounted(() => {
 .item-col {
   text-align: center;
 }
+
 .item-col.info {
   display: flex;
   align-items: center;
   gap: 10px;
 }
+
 .item-col.info img {
   margin-left: 10px;
 }
@@ -288,6 +294,7 @@ onMounted(() => {
   background-color: #c58a3c;
   box-shadow: 0 5px 10px #a37b44;
 }
+
 .col-right {
   width: 35%;
   padding: 20px;
@@ -299,6 +306,7 @@ onMounted(() => {
   gap: 24px;
   box-sizing: border-box;
 }
+
 /* Tiêu đề */
 .suggested-items h4,
 .note-section h4 {
@@ -321,7 +329,7 @@ onMounted(() => {
   padding: 10px;
   border-radius: 8px;
   margin-bottom: 12px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .suggested-items img {
@@ -413,24 +421,25 @@ onMounted(() => {
   border: none;
   cursor: pointer;
 }
+
 .order-btn-wrapper {
   display: flex;
   justify-content: flex-end;
   margin-top: 20px;
 }
 
-.btn-orderItem{
+.btn-orderItem {
   color: #fff;
-    background-color: #d69c52;
-    padding: 10px 15px;
-    font-size: 14px;
-    border-radius: 5px;
-    box-shadow: 0 3px 6px #a37b44;
-    height: 40px;
-    width: 200px;
-    transition: box-shadow 0.3s ease;
-    display: flex;
-justify-content: center;
-align-items: center;
+  background-color: #d69c52;
+  padding: 10px 15px;
+  font-size: 14px;
+  border-radius: 5px;
+  box-shadow: 0 3px 6px #a37b44;
+  height: 40px;
+  width: 200px;
+  transition: box-shadow 0.3s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

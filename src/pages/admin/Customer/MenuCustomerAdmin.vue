@@ -42,7 +42,12 @@
             <td class="text-center">{{ item.point }}</td>
             <td class="text-center">
               <div class="w-full flex justify-center">
-                <p>{{ item.rank.nameRank }}</p>
+                <div class="flex flex-col">
+                  <div class="flex h-24 w-24 overflow-hidden">
+                    <img class="h-full w-full object-cover" :src="item.rank.image" alt="">
+                  </div>
+                  <p>{{ item.rank.nameRank }}</p>
+                </div>
               </div>
             </td>
             <td class="text-center">
