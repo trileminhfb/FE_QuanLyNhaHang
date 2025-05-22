@@ -69,7 +69,7 @@
                             </div>
 
                             <div class="flex flex-col gap-2 border rounded-lg p-4">
-                                <div class="font-semibold">Chi tiết hóa đơn</div>
+                                <div class="font-bold">Chi tiết hóa đơn</div>
                                 <div class="flex flex-row justify-between w-full">
                                     <p class="font-medium">Số bàn</p>
                                     <p>{{ invoiceData?.table?.number ?? 'Không xác định' }}</p>
@@ -78,6 +78,7 @@
                                     <p class="font-medium">Người tính tiền</p>
                                     <p>{{ invoiceData?.user?.name || 'Chưa xác định' }}</p>
                                 </div>
+
                                 <div class="flex flex-row justify-between w-full">
                                     <p class="font-medium">Tên chương trình giảm giá</p>
                                     <p>{{ invoiceData?.sale?.nameSale || 'Không có' }}</p>
@@ -121,6 +122,16 @@
                                     </div>
                                 </div>
                                 <div class="flex flex-row justify-between w-full">
+                                    <p class="font-medium">Giảm giá Rank ({{ getRankSale }}%)</p>
+                                    <div class="flex flex-row font-normal">
+                                        <p>{{ calculateRankDiscount(invoiceData?.invoice_foods,
+                                            getRankSale).toLocaleString() }}</p>
+                                        <p class="text-sm ms-1">VNĐ</p>
+                                    </div>
+                                </div>
+
+
+                                <div class="flex flex-row justify-between w-full">
                                     <p class="font-medium">Điểm nhận được (5%)</p>
                                     <p class="font-normal">{{ (calculateTotal(invoiceData?.invoice_foods) *
                                         0.05).toLocaleString() }}</p>
@@ -138,12 +149,12 @@
                             <div class="flex flex-row gap-2 border rounded-lg p-2">
                                 <!-- Nếu status là 1 -->
                                 <template v-if="invoiceData?.status === 1">
-                                    <div class="bg-green-500 rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-green-600"
+                                    <div class="bg-green-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-green-600"
                                         @click="() => updateInvoiceStatus(2)">
                                         Thanh toán
                                     </div>
 
-                                    <div class="bg-red-500 rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-red-600"
+                                    <div class="bg-red-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-red-600"
                                         @click="() => updateInvoiceStatus(3)">
                                         Huỷ
                                     </div>
@@ -174,6 +185,7 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
+import { ref, computed, onMounted } from 'vue' // <- thêm onMounted
 
 const router = useRouter()
 const route = useRoute()
@@ -198,6 +210,40 @@ function calculateTotal(item) {
         return total + (foodItem.quantity || 0) * (foodItem.food.cost || 0);
     }, 0);
 }
+function calculateRankDiscount(items, salePercent) {
+    const total = calculateTotal(items)
+    return total * (getRankSale.value || 0) / 100
+}
+
+const allRanks = ref([])
+
+
+const getRankSale = computed(() => {
+    if (!invoiceData?.customer?.id_rank || !allRanks.value.length) return 0
+    const rank = allRanks.value.find(r => r.id === invoiceData.customer.id_rank)
+    return rank?.saleRank || 0
+})
+
+const fetchRank = async () => {
+    try {
+        const response = await axios.get("http://127.0.0.1:8000/api/admin/ranks");
+
+        if (Array.isArray(response.data)) {
+            allRanks.value = response.data;
+        } else if (response.data && Array.isArray(response.data.data)) {
+            allRanks.value = response.data.data;
+        } else {
+            allRanks.value = [];
+        }
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu:", error);
+    }
+};
+
+
+onMounted(() => {
+    fetchRank()
+})
 
 function calculateVAT(item) {
     return calculateTotal(item) * 0.1;
@@ -207,9 +253,14 @@ function calculateDiscount(item, sale) {
     return calculateTotal(item) * (sale?.percent || 0) / 100;
 }
 
-function calculateFinalTotal(item, sale) {
-    return calculateTotal(item) + calculateVAT(item) - calculateDiscount(item, sale);
+function calculateFinalTotal(items, sale) {
+    const total = calculateTotal(items)
+    const vat = calculateVAT(items)
+    const saleDiscount = calculateDiscount(items, sale)
+    const rankDiscount = calculateRankDiscount(items)
+    return total + vat - saleDiscount - rankDiscount
 }
+
 
 function goBack() {
     router.push({ name: 'admin-invoice' });
