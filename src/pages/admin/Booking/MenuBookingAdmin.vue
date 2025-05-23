@@ -178,7 +178,6 @@ function validateTime(e) {
   selectedTime.value = val.toString();
 }
 
-
 const allItems = ref([]);
 
 const filteredItems = computed(() => {
@@ -255,9 +254,10 @@ function showWait() {
 }
 
 function calculateTotal(bookingFoods) {
-  return bookingFoods.reduce((total, foodItem) => {
-    return ((total + (foodItem.quantity * foodItem.food.cost)) * 0.3) + 50000;
-  }, 50000);
+  const totalFoodCost = bookingFoods.reduce((total, foodItem) => {
+    return total + (foodItem.quantity * foodItem.food.cost);
+  }, 0);
+  return (totalFoodCost * 0.3) + 50000;
 }
 
 const itemsPerPage = 8;

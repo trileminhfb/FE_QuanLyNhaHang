@@ -22,9 +22,9 @@
                             <strong class="text-white">Trạng Thái:</strong>
                             <span :class="{
                                 'px-2 mx-2 py-1 rounded-full text-xs font-medium': true,
-                                'bg-green-100 text-green-800': booking.status === 1,
-                                'bg-yellow-100 text-yellow-800': booking.status === 0,
-                                'bg-red-100 text-red-800': booking.status === 2,
+                                'bg-green-100 text-green-800': booking.status === 2,
+                                'bg-yellow-100 text-yellow-800': booking.status === 1,
+                                'bg-red-100 text-red-800': booking.status === 4,
                                 'bg-gray-100 text-gray-800': booking.status === 3
                             }">
                                 {{ getStatusText(booking.status) }}
@@ -34,7 +34,7 @@
 
                     <div class="food-list mt-6">
                         <h3 class="text-lg font-semibold text-white mb-4">Danh Sách Món Ăn</h3>
-                        <table v-if="booking.foods.length > 0">
+                        <table v-if="booking.booking_foods.length > 0">
                             <thead>
                                 <tr>
                                     <th>Tên Món</th>
@@ -44,37 +44,39 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="food in booking.foods" :key="food.id_foods">
+                                <tr v-for="item in booking.booking_foods" :key="item.id_foods">
                                     <td>
                                         <div class="flex flex-row gap-2 items-center">
                                             <div class="h-16 w-12 border overflow-hidden">
-                                                <img class="object-cover w-full h-full" src="/picture/food/food 1.png"
-                                                    alt="Món ăn">
+                                                <img class="object-cover w-full h-full" :src="item.food.image"
+                                                    :alt="item.food.name" />
                                             </div>
-                                            <p class="text-white">{{ food.name }}</p>
+                                            <p class="text-white">{{ item.food.name }}</p>
                                         </div>
                                     </td>
-                                    <td>{{ food.quantity }}</td>
-                                    <td>{{ formatPrice(food.quantity) }}</td>
-                                    <td>{{ formatPrice(food.quantity * food.quantity) }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td>{{ formatPrice(item.food.cost) }}</td>
+                                    <td>{{ formatPrice(item.quantity * item.food.cost) }}</td>
                                 </tr>
                             </tbody>
                         </table>
                         <p v-else>Không có món ăn nào trong đặt bàn này.</p>
                     </div>
 
-                    <h3 class="text-lg font-bold text-white mb-4">Thanh toán</h3>
-                    <div class="flex flex-row gap-2">
-                        <p class="text-md font-semibold text-white mb-4">Tiền cọc món (30%):</p>
-                        <p class="text-md text-white mb-4"> {{ (500000).toLocaleString() }} VNĐ</p>
-                    </div>
-                    <div class="flex flex-row gap-2">
-                        <p class="text-md font-semibold text-white mb-4">Tiền cọc bàn:</p>
-                        <p class="text-md text-white mb-4"> {{ (500000).toLocaleString() }} VNĐ</p>
-                    </div>
-                    <div class="flex flex-row gap-2">
-                        <p class="text-lg font-bold text-white mb-4">Tổng thanh toán:</p>
-                        <p class="text-md text-white mb-4"> {{ (500000).toLocaleString() }} VNĐ</p>
+                    <div class="payment-info mt-6">
+                        <h3 class="text-lg font-bold text-white mb-4">Thanh Toán</h3>
+                        <div class="flex flex-row gap-2">
+                            <p class="text-md font-semibold text-white mb-4">Tiền cọc món (30%):</p>
+                            <p class="text-md text-white mb-4">{{ formatPrice(foodDeposit) }}</p>
+                        </div>
+                        <div class="flex flex-row gap-2">
+                            <p class="text-md font-semibold text-white mb-4">Tiền cọc bàn:</p>
+                            <p class="text-md text-white mb-4">{{ formatPrice(tableDeposit) }}</p>
+                        </div>
+                        <div class="flex flex-row gap-2">
+                            <p class="text-lg font-bold text-white mb-4">Tổng thanh toán:</p>
+                            <p class="text-md text-white mb-4">{{ formatPrice(totalPayment) }}</p>
+                        </div>
                     </div>
 
                     <div class="actions mt-6 flex flex-row gap-2 justify-center">
@@ -95,59 +97,18 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-
-// Giả lập dữ liệu JSON với giá món ăn (thêm trường price)
-const jsonData = {
-    "data": [
-        {
-            "id": 1,
-            "timeBooking": "2025-05-23 21:31:18",
-            "status": 1,
-            "foods": [
-                {
-                    "id_foods": 1,
-                    "name": "Phở bò",
-                    "quantity": 10,
-                    "price": 50000 // Giả định giá mỗi món
-                },
-                {
-                    "id_foods": 2,
-                    "name": "Phở gà",
-                    "quantity": 10,
-                    "price": 45000
-                },
-                {
-                    "id_foods": 3,
-                    "name": "Bún bò Huế",
-                    "quantity": 10,
-                    "price": 60000
-                }
-            ]
-        },
-        {
-            "id": 11,
-            "timeBooking": "2025-05-23 21:31:18",
-            "status": 1,
-            "foods": []
-        },
-        {
-            "id": 12,
-            "timeBooking": "2025-05-23 21:31:18",
-            "status": 1,
-            "foods": []
-        }
-    ]
-};
+import axios from 'axios';
 
 const route = useRoute();
 const router = useRouter();
 const booking = ref(null);
 const isLoading = ref(true);
+const auth_token = ref(localStorage.getItem('auth_token') || '');
+
 const historyBookingData = route.query.data ? JSON.parse(route.query.data) : null;
 
-// Format ngày giờ theo định dạng VN
 const formatDate = (datetime) => {
     const date = new Date(datetime);
     return date.toLocaleString('vi-VN', {
@@ -159,60 +120,126 @@ const formatDate = (datetime) => {
     });
 };
 
-// Format giá tiền theo định dạng VN
 const formatPrice = (price) => {
     return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
 };
 
-// Chuyển đổi trạng thái thành văn bản
 const getStatusText = (status) => {
     switch (status) {
-        case 2: return 'Đã thanh toán';
-        case 1: return 'Đang chờ thanh toán';
-        case 4: return 'Bị hủy';
-        case 3: return 'Bị từ chối';
-        default: return 'Không xác định';
+        case 1:
+            return 'Đang chờ thanh toán';
+        case 2:
+            return 'Đã thanh toán';
+        case 3:
+            return 'Bị từ chối';
+        case 4:
+            return 'Bị hủy';
+        default:
+            return 'Không xác định';
     }
 };
 
+const foodTotal = computed(() => {
+    if (!booking.value || !booking.value.booking_foods) return 0;
+    return booking.value.booking_foods.reduce((total, item) => total + item.quantity * item.food.cost, 0);
+});
+
+const foodDeposit = computed(() => foodTotal.value * 0.3);
+const tableDeposit = ref(50000);
+const totalPayment = computed(() => foodDeposit.value + tableDeposit.value);
+
 const loadBookingDetail = async () => {
-    const bookingId = route.params.id; // Lấy ID từ route
+    const bookingId = route.params.id;
+    isLoading.value = true;
+
     try {
         if (historyBookingData && historyBookingData.id === parseInt(bookingId)) {
             booking.value = historyBookingData;
         } else {
-            const selectedBooking = jsonData.data.find(item => item.id === parseInt(bookingId));
-            if (selectedBooking) {
-                booking.value = selectedBooking;
-            } else {
-                booking.value = null;
+            if (!auth_token.value) {
+                alert('Vui lòng đăng nhập để xem chi tiết đặt bàn.');
+                router.push({ name: 'login' });
+                return;
             }
+            const response = await axios.get(`http://127.0.0.1:8000/api/client/bookings/${bookingId}`, {
+                headers: {
+                    Authorization: `Bearer ${auth_token.value}`,
+                },
+            });
+            booking.value = response.data.data || null;
         }
-        isLoading.value = false;
-    } catch (err) {
-        console.error('Lỗi khi lấy chi tiết đặt bàn:', err);
-        alert('Không thể tải chi tiết đặt bàn. Vui lòng thử lại sau.');
+    } catch (error) {
+        console.error('Lỗi khi lấy chi tiết đặt bàn:', error);
+        booking.value = null;
+        if (error.response?.status === 401) {
+            alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('customer_id');
+            router.push({ name: 'login' });
+        } else {
+            alert('Không thể tải chi tiết đặt bàn. Vui lòng thử lại sau.');
+        }
+    } finally {
         isLoading.value = false;
     }
 };
 
-const payOrder = () => {
+const payOrder = async () => {
     if (!confirm('Bạn có chắc muốn thanh toán đặt bàn này không?')) return;
-    alert(`Thanh toán đặt bàn ID: ${booking.value.id}`);
+    try {
+        await axios.post(
+            `http://127.0.0.1:8000/api/client/bookings/${booking.value.id}/pay`,
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${auth_token.value}`,
+                },
+            }
+        );
+        alert(`Thanh toán đặt bàn ID: ${booking.value.id} thành công!`);
+        router.push({ name: 'booking-history' });
+    } catch (error) {
+        console.error('Lỗi khi thanh toán:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('customer_id');
+            router.push({ name: 'login' });
+        } else {
+            alert('Lỗi khi thanh toán. Vui lòng thử lại sau.');
+        }
+    }
 };
 
-const cancelOrder = () => {
+const cancelOrder = async () => {
     if (!confirm('Bạn có chắc muốn hủy đặt bàn này không?')) return;
-    alert(`Đã hủy đặt bàn ID: ${booking.value.id}`);
-    router.push('/history');
+    try {
+        await axios.delete(`http://127.0.0.1:8000/api/client/bookings/${booking.value.id}`, {
+            headers: {
+                Authorization: `Bearer ${auth_token.value}`,
+            },
+        });
+        alert(`Đã hủy đặt bàn ID: ${booking.value.id} thành công!`);
+        router.push({ name: 'booking-history' });
+    } catch (error) {
+        console.error('Lỗi khi hủy đặt bàn:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('customer_id');
+            router.push({ name: 'login' });
+        } else {
+            alert('Lỗi khi hủy đặt bàn!');
+        }
+    }
 };
 
 const goBack = () => {
-    router.push({ name: 'booking-history' })
+    router.push({ name: 'booking-history' });
 };
 
-onMounted(async () => {
-    await loadBookingDetail();
+onMounted(() => {
+    loadBookingDetail();
 });
 </script>
 
@@ -259,7 +286,7 @@ onMounted(async () => {
 }
 
 .title-history {
-    font-family: "Dancing Script", cursive;
+    font-family: 'Dancing Script', cursive;
     text-align: center;
     color: white;
     margin-bottom: 20px;

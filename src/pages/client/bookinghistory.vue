@@ -46,14 +46,20 @@
                       </svg>
                       <div
                         class="absolute hidden text-black font-semibold group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                        <p class="hover:bg-gray-500 hover:text-black text-start w-full p-1 rounded text-sm cursor-pointer"
-                          @click="goDetail(item)">Chi Tiết</p>
+                        <p class="hover:bg-gray-500 hover:text-white text-start w-full p-1 rounded text-sm cursor-pointer"
+                          @click="goDetail(item)">
+                          Chi Tiết
+                        </p>
                         <p v-if="item.status === 1"
-                          class="hover:bg-gray-500 hover:text-black text-start w-full p-1 rounded text-sm cursor-pointer"
-                          @click="payOrder(item)">Thanh Toán</p>
+                          class="hover:bg-gray-500 hover:text-white text-start w-full p-1 rounded text-sm cursor-pointer"
+                          @click="payOrder(item)">
+                          Thanh Toán
+                        </p>
                         <p v-if="item.status === 1"
-                          class="hover:bg-gray-500 hover:text-black text-start w-full p-1 rounded text-sm cursor-pointer"
-                          @click="cancelOrder(item)">Hủy</p>
+                          class="hover:bg-gray-500 hover:text-white text-start w-full p-1 rounded text-sm cursor-pointer"
+                          @click="cancelOrder(item)">
+                          Hủy
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -73,13 +79,16 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRoute, useRouter } from 'vue-router';
-import api from '../../services/api';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const router = useRouter();
-const route = useRoute();
 const orders = ref([]);
 const isLoading = ref(true);
+
+// Lấy customer_id và token từ localStorage
+const customer_id = ref(localStorage.getItem('customer_id') || '');
+const auth_token = ref(localStorage.getItem('auth_token') || '');
 
 // Format ngày giờ theo định dạng VN
 const formatDate = (datetime) => {
@@ -96,59 +105,93 @@ const formatDate = (datetime) => {
 // Chuyển đổi trạng thái thành văn bản
 const getStatusText = (status) => {
   switch (status) {
-    case 1: return 'Đang chờ thanh toán';
-    case 2: return 'Đã thanh toán';
-    case 3: return 'Bị từ chối';
-    case 4: return 'Bị hủy';
-    default: return 'Không xác định';
+    case 1:
+      return 'Đang chờ thanh toán';
+    case 2:
+      return 'Đã thanh toán';
+    case 3:
+      return 'Bị từ chối';
+    case 4:
+      return 'Bị hủy';
+    default:
+      return 'Không xác định';
   }
 };
 
-const loadOrders = async () => {
+// Lấy danh sách đặt bàn
+const fetchBooking = async () => {
+  if (!customer_id.value || !auth_token.value) {
+    isLoading.value = false;
+    orders.value = [];
+    alert('Vui lòng đăng nhập để xem lịch sử đặt bàn.');
+    router.push({ name: 'login' }); // Điều hướng đến trang đăng nhập
+    return;
+  }
+
+  isLoading.value = true;
   try {
-    const res = await api.get('http://127.0.0.1:8000/api/client/bookings/history');
-    orders.value = res.data.data.map(booking => ({
-      id: booking.id,
-      timeBooking: booking.timeBooking,
-      status: booking.status,
-      foods: booking.foods
-    }));
-    isLoading.value = false;
-  } catch (err) {
-    console.error('Lỗi khi lấy lịch sử đặt bàn:', err);
-    alert('Không thể tải lịch sử đặt bàn. Vui lòng thử lại sau.');
+    const response = await axios.get(`http://127.0.0.1:8000/api/client/bookings/${customer_id.value}`, {
+      headers: {
+        Authorization: `Bearer ${auth_token.value}`,
+      },
+    });
+    orders.value = response.data.data || [];
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách đặt bàn:', error);
+    orders.value = [];
+    if (error.response?.status === 401) {
+      alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('customer_id');
+      router.push({ name: 'login' });
+    } else {
+      alert('Không thể tải danh sách đặt bàn. Vui lòng thử lại sau.');
+    }
+  } finally {
     isLoading.value = false;
   }
 };
 
-function goDetail(item) {
+const goDetail = (item) => {
   router.push({
     name: 'detail-booking-history',
     params: { id: item.id },
-    query: { data: JSON.stringify(item) }
+    query: { data: JSON.stringify(item) },
   });
-}
+};
 
+// Thanh toán đặt bàn
 const payOrder = (item) => {
   if (!confirm('Bạn có chắc muốn thanh toán đặt bàn này không?')) return;
   alert(`Thanh toán đặt bàn ID: ${item.id}`);
 };
 
-const cancelOrder = (item) => {
+// Hủy đặt bàn
+const cancelOrder = async (item) => {
   if (!confirm('Bạn có chắc muốn hủy đặt bàn này không?')) return;
-  api.delete(`http://127.0.0.1:8000/api/client/bookings/${item.id}`)
-    .then(() => {
-      alert('Đã hủy đặt bàn thành công!');
-      loadOrders();
-    })
-    .catch((error) => {
-      console.error('Lỗi khi hủy đặt bàn:', error.response?.data || error.message);
-      alert('Lỗi khi hủy đặt bàn!');
+  try {
+    await axios.delete(`http://127.0.0.1:8000/api/client/bookings/${item.id}`, {
+      headers: {
+        Authorization: `Bearer ${auth_token.value}`,
+      },
     });
+    alert('Đã hủy đặt bàn thành công!');
+    fetchBooking(); // Cập nhật danh sách
+  } catch (error) {
+    console.error('Lỗi khi hủy đặt bàn:', error.response?.data || error.message);
+    if (error.response?.status === 401) {
+      alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('customer_id');
+      router.push({ name: 'login' });
+    } else {
+      alert('Lỗi khi hủy đặt bàn!');
+    }
+  }
 };
 
-onMounted(async () => {
-  await loadOrders();
+onMounted(() => {
+  fetchBooking();
 });
 </script>
 
@@ -195,7 +238,7 @@ onMounted(async () => {
 }
 
 .title-history {
-  font-family: "Dancing Script", cursive;
+  font-family: 'Dancing Script', cursive;
   text-align: center;
   color: white;
   margin-bottom: 20px;
