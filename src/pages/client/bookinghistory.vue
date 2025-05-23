@@ -4,7 +4,7 @@
       <div class="col-left">
         <p class="title-history">
           <i class="fas fa-history"></i>
-          Lịch Sử Đặt Món
+          Lịch Sử Đặt Bàn
           <i class="fas fa-history"></i>
         </p>
 
@@ -12,26 +12,51 @@
           <table>
             <thead>
               <tr>
-                <th>Thời Gian</th>
-                <th>Món Ăn</th>
-                <th>Số Lượng</th>
+                <th>Thời Gian Đặt</th>
+                <th>Trạng Thái</th>
                 <th>Thao Tác</th>
               </tr>
             </thead>
             <tbody>
               <tr v-if="isLoading">
-                <td colspan="4">Đang tải dữ liệu...</td>
+                <td colspan="3">Đang tải dữ liệu...</td>
               </tr>
               <tr v-else-if="orders.length === 0">
-                <td colspan="4">Không có dữ liệu đặt món.</td>
+                <td colspan="3">Không có dữ liệu đặt bàn.</td>
               </tr>
-              <tr v-else v-for="item in orders" :key="item.bookingId + '-' + item.id_foods">
+              <tr v-else v-for="item in orders" :key="item.id">
                 <td>{{ formatDate(item.timeBooking) }}</td>
-                <td>{{ item.foodName }}</td>
-                <td>{{ item.quantity }}</td>
                 <td>
-                  <button class="action-btn delete-btn" @click="deleteOrder(item.bookingId, item.id_foods)">Xoá</button>
-                  <button class="action-btn update-btn" @click="increaseQuantity(item)">Tăng SL</button>
+                  <span :class="{
+                    'px-2 py-1 rounded-full text-xs font-medium': true,
+                    'bg-green-100 text-green-800': item.status === 2,
+                    'bg-yellow-100 text-yellow-800': item.status === 1,
+                    'bg-red-100 text-red-800': item.status === 4,
+                    'bg-gray-100 text-gray-800': item.status === 3
+                  }">
+                    {{ getStatusText(item.status) }}
+                  </span>
+                </td>
+                <td>
+                  <div class="flex justify-center items-center h-full">
+                    <div class="w-10 h-10 text-white hover:bg-gray-400 hover:cursor-pointer rounded-lg relative group">
+                      <svg class="w-full h-full" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-width="2"
+                          d="M6 12h.01m6 0h.01m5.99 0h.01" />
+                      </svg>
+                      <div
+                        class="absolute hidden text-black font-semibold group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
+                        <p class="hover:bg-gray-500 hover:text-black text-start w-full p-1 rounded text-sm cursor-pointer"
+                          @click="goDetail(item)">Chi Tiết</p>
+                        <p v-if="item.status === 1"
+                          class="hover:bg-gray-500 hover:text-black text-start w-full p-1 rounded text-sm cursor-pointer"
+                          @click="payOrder(item)">Thanh Toán</p>
+                        <p v-if="item.status === 1"
+                          class="hover:bg-gray-500 hover:text-black text-start w-full p-1 rounded text-sm cursor-pointer"
+                          @click="cancelOrder(item)">Hủy</p>
+                      </div>
+                    </div>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -48,11 +73,13 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import api from '../../services/api';
 
+const router = useRouter();
+const route = useRoute();
 const orders = ref([]);
 const isLoading = ref(true);
-const foodsList = ref([]);
 
 // Format ngày giờ theo định dạng VN
 const formatDate = (datetime) => {
@@ -66,99 +93,64 @@ const formatDate = (datetime) => {
   });
 };
 
-// Lấy danh sách món ăn từ API
-const fetchFoods = async () => {
-  try {
-    const res = await api.get('/client/foods');
-    foodsList.value = res.data;
-  } catch (err) {
-    console.error('Lỗi khi lấy món ăn:', err);
-    alert('Không thể tải danh sách món ăn. Vui lòng thử lại sau.');
+// Chuyển đổi trạng thái thành văn bản
+const getStatusText = (status) => {
+  switch (status) {
+    case 1: return 'Đang chờ thanh toán';
+    case 2: return 'Đã thanh toán';
+    case 3: return 'Bị từ chối';
+    case 4: return 'Bị hủy';
+    default: return 'Không xác định';
   }
 };
 
-// Gộp lịch sử đặt món từ localStorage
-const loadOrders = () => {
-  api.get('client/bookings/history')
-    .then((res) => {
-      // res.data.data là mảng booking
-      const data = res.data.data;
-      const flattenedOrders = [];
-
-      data.forEach(booking => {
-        booking.foods.forEach(food => {
-          flattenedOrders.push({
-            bookingId: booking.id,
-            timeBooking: booking.timeBooking,
-            id_foods: food.id_foods,
-            foodName: food.name,
-            quantity: food.quantity
-          });
-        });
-      });
-
-      orders.value = flattenedOrders;
-      isLoading.value = false;
-    })
-    .catch(err => {
-      console.error(err);
-      isLoading.value = false;
-    });
+const loadOrders = async () => {
+  try {
+    const res = await api.get('http://127.0.0.1:8000/api/client/bookings/history');
+    orders.value = res.data.data.map(booking => ({
+      id: booking.id,
+      timeBooking: booking.timeBooking,
+      status: booking.status,
+      foods: booking.foods
+    }));
+    isLoading.value = false;
+  } catch (err) {
+    console.error('Lỗi khi lấy lịch sử đặt bàn:', err);
+    alert('Không thể tải lịch sử đặt bàn. Vui lòng thử lại sau.');
+    isLoading.value = false;
+  }
 };
 
+function goDetail(item) {
+  router.push({
+    name: 'detail-booking-history',
+    params: { id: item.id },
+    query: { data: JSON.stringify(item) }
+  });
+}
 
-const deleteOrder = (bookingId, foodId) => {
-  console.log('bookingId:', bookingId, 'foodId:', foodId);
+const payOrder = (item) => {
+  if (!confirm('Bạn có chắc muốn thanh toán đặt bàn này không?')) return;
+  alert(`Thanh toán đặt bàn ID: ${item.id}`);
+};
 
-  if (!confirm('Bạn có chắc muốn xoá món này không?')) return;
-
-  api.delete(`/client/bookings/${bookingId}/foods/${foodId}`)
-    .then((res) => {
-      console.log('Đã xoá:', res.data);
-      alert('Đã xoá món thành công!');
+const cancelOrder = (item) => {
+  if (!confirm('Bạn có chắc muốn hủy đặt bàn này không?')) return;
+  api.delete(`http://127.0.0.1:8000/api/client/bookings/${item.id}`)
+    .then(() => {
+      alert('Đã hủy đặt bàn thành công!');
       loadOrders();
     })
     .catch((error) => {
-      console.error('Lỗi khi xoá hàng:', error.response?.data || error.message);
-      alert('Lỗi khi xoá hàng!');
+      console.error('Lỗi khi hủy đặt bàn:', error.response?.data || error.message);
+      alert('Lỗi khi hủy đặt bàn!');
     });
 };
 
-// Tăng số lượng món ăn
-const increaseQuantity = (item) => {
-  const history = JSON.parse(localStorage.getItem('bookingHistory')) || [];
-
-  const updatedHistory = history.map(booking => {
-    if (booking.id === item.bookingId) {
-      return {
-        ...booking,
-        foods: booking.foods.map(f => {
-          if (f.id_foods === item.id_foods) {
-            return { ...f, quantity: f.quantity + 1 };
-          }
-          return f;
-        })
-      };
-    }
-    return booking;
-  });
-
-  localStorage.setItem('bookingHistory', JSON.stringify(updatedHistory));
-  loadOrders();
-  alert('Tăng số lượng thành công!');
-};
-
-// Khởi tạo dữ liệu khi vào trang
 onMounted(async () => {
-  await fetchFoods();
-  loadOrders();
-  isLoading.value = false;
+  await loadOrders();
 });
 </script>
-
-
-
-
 
 <style scoped>
 .container {
@@ -229,117 +221,5 @@ td {
 
 th {
   font-weight: bold;
-}
-
-.action-btn {
-  padding: 8px 12px;
-  margin-right: 10px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-}
-
-.edit-btn {
-  background: #28a745;
-  color: white;
-}
-
-.edit-btn:hover {
-  background: #218838;
-}
-
-.delete-btn {
-  background: #dc3545;
-  color: white;
-}
-
-.update-btn {
-  background: green;
-  color: white;
-}
-
-.delete-btn:hover {
-  background: #c82333;
-}
-
-.edit-form {
-  margin-top: 20px;
-}
-
-.edit-title {
-  font-family: "Dancing Script", cursive;
-  color: white;
-  text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 20px;
-}
-
-.input-text {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.form-row {
-  display: flex;
-  gap: 20px;
-  justify-content: space-between;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-label {
-  color: white;
-  margin-bottom: 6px;
-  font-size: 20px;
-  font-weight: 500;
-  text-align: left;
-}
-
-input {
-  background: #fff;
-  border: 2px solid #ccc;
-  border-radius: 8px;
-  padding: 10px 16px;
-  font-size: 16px;
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.edit-actions {
-  display: flex;
-  gap: 20px;
-  justify-content: center;
-  margin-top: 20px;
-}
-
-.oder-btn {
-  background: white;
-  width: 150px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 10px;
-  border-radius: 10px;
-  font-size: 18px;
-  cursor: pointer;
-}
-
-.oder-btn:hover {
-  background: yellow;
-}
-
-.cancel-btn {
-  background: #dc3545;
-  color: white;
-}
-
-.cancel-btn:hover {
-  background: #c82333;
 }
 </style>
