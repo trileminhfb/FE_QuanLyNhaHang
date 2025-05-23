@@ -78,7 +78,6 @@
                                     <p class="font-medium">Người tính tiền</p>
                                     <p>{{ invoiceData?.user?.name || 'Chưa xác định' }}</p>
                                 </div>
-
                                 <div class="flex flex-row justify-between w-full">
                                     <p class="font-medium">Tên chương trình giảm giá</p>
                                     <p>{{ invoiceData?.sale?.nameSale || 'Không có' }}</p>
@@ -86,12 +85,12 @@
                                 <div class="flex flex-row justify-between w-full">
                                     <p class="font-medium">Trạng thái</p>
                                     <div class="text-white">
-                                        <p v-if="invoiceData?.status === 1" class="bg-yellow-500 p-2 rounded">
-                                            Đang sử dụng</p>
-                                        <p v-else-if="invoiceData?.status === 2" class="bg-green-500 p-2 rounded">
-                                            Hoàn thành </p>
-                                        <p v-else-if="invoiceData?.status === 3" class="bg-red-500 p-2 rounded">
-                                            Bị huỷ </p>
+                                        <p v-if="invoiceData?.status === 1" class="bg-yellow-500 p-2 rounded">Đang sử
+                                            dụng</p>
+                                        <p v-else-if="invoiceData?.status === 2" class="bg-green-500 p-2 rounded">Hoàn
+                                            thành</p>
+                                        <p v-else-if="invoiceData?.status === 3" class="bg-red-500 p-2 rounded">Bị huỷ
+                                        </p>
                                     </div>
                                 </div>
                                 <div class="flex flex-row justify-between w-full">
@@ -129,12 +128,10 @@
                                         <p class="text-sm ms-1">VNĐ</p>
                                     </div>
                                 </div>
-
-
                                 <div class="flex flex-row justify-between w-full">
                                     <p class="font-medium">Điểm nhận được (5%)</p>
-                                    <p class="font-normal">{{ (calculateTotal(invoiceData?.invoice_foods) *
-                                        0.05).toLocaleString() }}</p>
+                                    <p class="font-normal">{{
+                                        calculateRewardPoints(invoiceData?.invoice_foods).toLocaleString() }}</p>
                                 </div>
                             </div>
                             <div class="flex flex-row gap-2 justify-between border rounded-lg p-4">
@@ -150,21 +147,18 @@
                                 <!-- Nếu status là 1 -->
                                 <template v-if="invoiceData?.status === 1">
                                     <div class="bg-green-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-green-600"
-                                        @click="() => updateInvoiceStatus(2)">
+                                        @click="updateInvoiceStatus(2)">
                                         Thanh toán
                                     </div>
-
                                     <div class="bg-red-500 text-white rounded-lg p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-red-600"
-                                        @click="() => updateInvoiceStatus(3)">
+                                        @click="updateInvoiceStatus(3)">
                                         Huỷ
                                     </div>
-
                                     <div class="rounded-lg border p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-gray-300"
                                         @click="goBack">
                                         Trở về
                                     </div>
                                 </template>
-
                                 <!-- Nếu status là 2 hoặc 3 -->
                                 <template v-else-if="invoiceData?.status === 2 || invoiceData?.status === 3">
                                     <div class="rounded-lg border p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-gray-300"
@@ -173,7 +167,6 @@
                                     </div>
                                 </template>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -185,114 +178,123 @@
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
-import { ref, computed, onMounted } from 'vue' // <- thêm onMounted
+import { ref, computed, onMounted } from 'vue'
 
 const router = useRouter()
 const route = useRoute()
 
-const invoiceData = route.query.data ? JSON.parse(route.query.data) : null;
+const invoiceData = ref(route.query.data ? JSON.parse(route.query.data) : null)
 
 function formatToLocalDatetime(isoString) {
-    if (!isoString) return 'N/A';
-    const date = new Date(isoString);
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const day = String(date.getDate()).padStart(2, "0");
-    const hours = String(date.getHours()).padStart(2, "0");
-    const minutes = String(date.getMinutes()).padStart(2, "0");
-    const seconds = String(date.getSeconds()).padStart(2, "0");
-    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+    if (!isoString) return 'N/A'
+    const date = new Date(isoString)
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    const hours = String(date.getHours()).padStart(2, '0')
+    const minutes = String(date.getMinutes()).padStart(2, '0')
+    const seconds = String(date.getSeconds()).padStart(2, '0')
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`
 }
 
-function calculateTotal(item) {
-    if (!item || !item.length) return 0;
-    return item.reduce((total, foodItem) => {
-        return total + (foodItem.quantity || 0) * (foodItem.food.cost || 0);
-    }, 0);
+function calculateTotal(items) {
+    if (!items || !items.length) return 0
+    return items.reduce((total, foodItem) => total + (foodItem.quantity || 0) * (foodItem.food.cost || 0), 0)
 }
+
+function calculateRewardPoints(items) {
+    const points = (calculateTotal(items) * 0.05) / 1000
+    return Math.round(points)
+}
+
+function calculateVAT(items) {
+    return calculateTotal(items) * 0.1
+}
+
+function calculateDiscount(items, sale) {
+    return calculateTotal(items) * (sale?.percent || 0) / 100
+}
+
 function calculateRankDiscount(items, salePercent) {
-    const total = calculateTotal(items)
-    return total * (getRankSale.value || 0) / 100
-}
-
-const allRanks = ref([])
-
-
-const getRankSale = computed(() => {
-    if (!invoiceData?.customer?.id_rank || !allRanks.value.length) return 0
-    const rank = allRanks.value.find(r => r.id === invoiceData.customer.id_rank)
-    return rank?.saleRank || 0
-})
-
-const fetchRank = async () => {
-    try {
-        const response = await axios.get("http://127.0.0.1:8000/api/admin/ranks");
-
-        if (Array.isArray(response.data)) {
-            allRanks.value = response.data;
-        } else if (response.data && Array.isArray(response.data.data)) {
-            allRanks.value = response.data.data;
-        } else {
-            allRanks.value = [];
-        }
-    } catch (error) {
-        console.error("Lỗi khi lấy dữ liệu:", error);
-    }
-};
-
-
-onMounted(() => {
-    fetchRank()
-})
-
-function calculateVAT(item) {
-    return calculateTotal(item) * 0.1;
-}
-
-function calculateDiscount(item, sale) {
-    return calculateTotal(item) * (sale?.percent || 0) / 100;
+    return calculateTotal(items) * (salePercent || 0) / 100
 }
 
 function calculateFinalTotal(items, sale) {
     const total = calculateTotal(items)
     const vat = calculateVAT(items)
     const saleDiscount = calculateDiscount(items, sale)
-    const rankDiscount = calculateRankDiscount(items)
+    const rankDiscount = calculateRankDiscount(items, getRankSale.value)
     return total + vat - saleDiscount - rankDiscount
 }
 
+const allRanks = ref([])
+const getRankSale = computed(() => {
+    if (!invoiceData.value?.customer?.id_rank || !allRanks.value.length) return 0
+    const rank = allRanks.value.find(r => r.id === invoiceData.value.customer.id_rank)
+    return rank?.saleRank || 0
+})
 
-function goBack() {
-    router.push({ name: 'admin-invoice' });
-}
-
-async function updateInvoiceStatus(newStatus) {
-    if (!invoiceData?.id) return;
-
-    const payload = {
-        id_table: invoiceData?.table?.id || null,
-        id_user: invoiceData?.user?.id || null,
-        total: calculateFinalTotal(invoiceData?.invoice_foods, invoiceData?.sale),
-        timeEnd: new Date().toISOString().slice(0, 19).replace('T', ' '),
-        id_customer: invoiceData?.customer?.id || null,
-        status: newStatus,
-        foods: invoiceData?.invoice_foods?.map(item => ({
-            id: item.food.id,
-            quantity: item.quantity
-        })) || []
-    };
-
-    console.log("🔥 Payload gửi lên:", JSON.stringify(payload, null, 2));
-
+const fetchRank = async () => {
     try {
-        await axios.put(`http://127.0.0.1:8000/api/admin/invoices/${invoiceData.id}`, payload);
-        invoiceData.status = newStatus;
-        alert('Thành công!');
-        router.push({ name: 'admin-invoice' });
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/ranks')
+        allRanks.value = Array.isArray(response.data) ? response.data : response.data?.data || []
     } catch (error) {
-        console.error('❌ Lỗi khi cập nhật hóa đơn:', error);
-        alert('Cập nhật trạng thái thất bại!');
+        console.error('Lỗi khi lấy dữ liệu rank:', error)
+        alert('Không thể tải dữ liệu rank!')
     }
 }
 
+onMounted(() => {
+    fetchRank()
+})
+
+function goBack() {
+    router.push({ name: 'admin-invoice' })
+}
+
+async function updateInvoiceStatus(newStatus) {
+    if (!invoiceData.value?.id) {
+        alert('Hóa đơn không hợp lệ!')
+        return
+    }
+
+    // Lấy user từ localStorage
+    const currentUser = JSON.parse(localStorage.getItem('user'))
+    if (!currentUser?.id) {
+        alert('Không tìm thấy thông tin người dùng. Vui lòng đăng nhập lại!')
+        return
+    }
+
+    const payload = {
+        id_table: invoiceData.value?.table?.id || null,
+        id_user: currentUser.id,
+        total: calculateFinalTotal(invoiceData.value?.invoice_foods, invoiceData.value?.sale),
+        timeEnd: new Date().toISOString().slice(0, 19).replace('T', ' '),
+        id_customer: invoiceData.value?.customer?.id || null,
+        status: newStatus,
+        foods: invoiceData.value?.invoice_foods?.map(item => ({
+            id: item.food.id,
+            quantity: item.quantity
+        })) || []
+    }
+
+    try {
+        const response = await axios.put(`http://127.0.0.1:8000/api/admin/invoices/${invoiceData.value.id}`, payload)
+
+        if (newStatus === 2 && invoiceData.value?.customer?.id) {
+            await axios.put(`http://127.0.0.1:8000/api/admin/customers/${invoiceData.value.customer.id}/add-point`, {
+                point: calculateRewardPoints(invoiceData.value.invoice_foods)
+            })
+        }
+
+        invoiceData.value.status = newStatus
+        invoiceData.value.user = { id: currentUser.id, name: currentUser.name || 'Unknown User' }
+
+        alert(newStatus === 2 ? 'Thanh toán thành công!' : 'Hủy hóa đơn thành công!')
+        router.push({ name: 'admin-invoice' })
+    } catch (error) {
+        console.error('Lỗi khi cập nhật hóa đơn:', error.response?.data || error.message)
+        alert(`Cập nhật trạng thái thất bại: ${error.response?.data?.message || 'Lỗi không xác định'}`)
+    }
+}
 </script>

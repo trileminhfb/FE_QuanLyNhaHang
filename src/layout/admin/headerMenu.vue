@@ -56,6 +56,7 @@ const router = useRouter()
 
 const user = ref(
     JSON.parse(localStorage.getItem('user')) || {
+        id: null,
         name: 'Unknown User',
         email: 'unknown@example.com',
         phone_number: 'N/A',

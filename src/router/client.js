@@ -60,8 +60,13 @@ const users = [
       },
       {
         path: "/booking-history",
-        name: "History",
+        name: "booking-history",
         component: () => import("../pages/client/bookinghistory.vue"),
+      },
+      {
+        path: "/detail-booking-history/:id?",
+        name: "detail-booking-history",
+        component: () => import("../pages/client/detailbooking.vue"),
       },
       {
         path: "/rank",

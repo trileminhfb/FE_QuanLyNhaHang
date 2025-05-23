@@ -148,13 +148,10 @@
                 </div>
               </router-link>
 
-              <router-link :to="{ name: 'History' }" class="menu-item">
+              <router-link :to="{ name: 'booking-history' }" class="menu-item">
                 <i class="fas fa-history"></i>
                 <h2>History-Booking</h2>
               </router-link>
-
-
-
               <div class="menu-item" @click="handleLogout">
                 <i class="fa-solid fa-right-from-bracket"></i>
                 <h2>Log Out</h2>
