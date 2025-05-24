@@ -14,22 +14,25 @@
               <li>Thành tiền</li>
             </ul>
             <ul>
-              <li class="order-item" v-for="(item, index) in cartItems" :key="item.id || index">
-                <div class="item-col info">
-                  <img :src="item.image" alt="Hình ảnh món" />
-                  <span>{{ item.name || 'Không có tên' }}</span>
-                </div>
-                <div class="item-col price">
-                  {{ (item.price || 0).toLocaleString() }}₫
-                </div>
-                <div class="item-col quantity">
-                  {{ item.quantity || 0 }}
-                </div>
-                <div class="item-col total">
-                  {{ ((item.price || 0) * (item.quantity || 0)).toLocaleString() }}₫
-                  <button class="btn-delete" @click="xoaHang(item.id)">Xóa</button>
-                </div>
-              </li>
+              <div class="w-full max-h-96 overflow-hidden overflow-y-auto">
+                <li class="order-item" v-for="(item, index) in cartItems" :key="item.id || index">
+                  <div class="item-col info">
+                    <img :src="item.image" alt="Hình ảnh món" />
+                    <span>{{ item.name || 'Không có tên' }}</span>
+                  </div>
+                  <div class="item-col price">
+                    {{ (item.price || 0).toLocaleString() }}₫
+                  </div>
+                  <div class="item-col quantity">
+                    {{ item.quantity || 0 }}
+                  </div>
+                  <div class="item-col total">
+                    {{ ((item.price || 0) * (item.quantity || 0)).toLocaleString() }}₫
+                    <button class="btn-delete" @click="xoaHang(item.id)">Xóa</button>
+                  </div>
+                </li>
+              </div>
+
             </ul>
             <div class="order-btn-wrapper">
               <p>Tổng tiền: <strong>{{ tongTien.toLocaleString() }}₫</strong></p>
@@ -44,20 +47,18 @@
         <div class="suggested-items">
           <h4>Món phổ biến</h4>
           <ul>
-            <li v-for="(mon, i) in bestSellerItems" :key="i">
-              <img :src="mon.image" alt="popular" />
-              <div class="info">
-                <p>{{ mon.name }}</p>
-                <span>{{ mon.price.toLocaleString() }}₫</span>
-                <button @click="themMon(mon)">Thêm</button>
-              </div>
-            </li>
-          </ul>
-        </div>
+            <div class="w-full max-h-[500px] overflow-hidden overflow-y-auto">
+              <li v-for="(mon, i) in bestSellerItems" :key="i">
+                <img :src="mon.image" alt="popular" />
+                <div class="info">
+                  <p>{{ mon.name }}</p>
+                  <span>{{ mon.price.toLocaleString() }}₫</span>
+                  <button @click="themMon(mon)">Thêm</button>
+                </div>
+              </li>
+            </div>
 
-        <div class="note-section">
-          <h4>Ghi chú đơn hàng</h4>
-          <textarea v-model="note" placeholder="Ví dụ: Ít cay, không đá..."></textarea>
+          </ul>
         </div>
       </div>
     </div>
@@ -71,59 +72,64 @@ import api from '../../services/api';
 import { computed, ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { fetchCart } from '../../stores/cartStore';
+import axios from 'axios';
 
 const route = useRoute();
 const note = ref("");
+const bestSellerItems = ref([]); // Use ref to store API data
 
-const bestSellerItems = [
-  {
-    name: 'Trà sữa trân châu',
-    price: 25000,
-    image: 'https://via.placeholder.com/60'
-  },
-  {
-    name: 'Mì cay Hàn Quốc',
-    price: 45000,
-    image: 'https://via.placeholder.com/60'
-  },
-];
+// Fetch best seller items from API
+const fetchFoodBestSeller = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/client/foods?status=1&bestSeller=1');
+    console.log('Best seller foods response:', response.data);
+    // Map API data to match the expected structure
+    bestSellerItems.value = response.data.map(item => ({
+      id: item.id,
+      name: item.name,
+      price: item.cost, // Map 'cost' to 'price' to match template
+      image: item.image
+    }));
+  } catch (error) {
+    console.error('Lỗi khi lấy dữ liệu món ăn nổi bật:', error);
+    bestSellerItems.value = []; // Fallback to empty array on error
+  }
+};
 
-function themMon(mon) {
-  addToCart(mon);
-  // Cập nhật localStorage sau khi thêm món
+const themMon = (mon) => {
+  addToCart({ ...mon, quantity: 1 }); // Add quantity when adding to cart
   localStorage.setItem('shoppingCart', JSON.stringify(cartItems.value));
-}
+};
 
-function xoaHang(id) {
+const xoaHang = (id) => {
   api.delete(`/client/carts/${id}`)
     .then(() => {
       const index = cartItems.value.findIndex(item => item.id === id);
       if (index !== -1) {
         cartItems.value.splice(index, 1);
       }
-      // Cập nhật localStorage sau khi xóa
       localStorage.setItem('shoppingCart', JSON.stringify(cartItems.value));
     })
     .catch(error => {
       console.error("Lỗi xóa món:", error);
       alert("Không thể xóa món khỏi giỏ hàng.");
     });
-}
+};
 
 const tongTien = computed(() =>
   cartItems.value.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0)
 );
 
-async function xoaToanBo() {
+const xoaToanBo = async () => {
   try {
-    await clearCart(); // xóa server và store
-    localStorage.removeItem('shoppingCart'); // xóa localStorage
+    await clearCart();
+    localStorage.removeItem('shoppingCart');
   } catch (error) {
     console.error("Lỗi xóa toàn bộ giỏ hàng:", error);
   }
-}
+};
 
-async function datHang() {
+const datHang = async () => {
   if (cartItems.value.length === 0) {
     alert("Bạn chưa chọn món nào.");
     return;
@@ -145,26 +151,24 @@ async function datHang() {
     console.error("Lỗi đặt món:", error);
     alert("Có lỗi xảy ra khi đặt món. Vui lòng thử lại.");
   }
-}
+};
 
-onMounted(async () => {
+onMounted(() => {
+  fetchCart();
+  fetchFoodBestSeller(); // Fetch best seller items on mount
   const status = route.query.status;
-  console.log("Trạng thái thanh toán:", status); // để debug
+  console.log("Trạng thái thanh toán:", status);
 
   if (status === 'success') {
-    await xoaToanBo(); // gọi hàm xóa toàn bộ
+    xoaToanBo();
     alert('Thanh toán thành công! Giỏ hàng đã được làm mới.');
-
-    // Optionally: remove `status=success` khỏi URL để tránh xóa lại khi reload
     const url = new URL(window.location.href);
     url.searchParams.delete("status");
     window.history.replaceState({}, document.title, url.toString());
   }
 });
-onMounted(() => {
-  fetchCart();
-});
 </script>
+
 <style scoped>
 .shopping-cart {
   background-color: #143b36;
