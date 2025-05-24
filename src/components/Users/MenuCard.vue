@@ -1,183 +1,178 @@
 <template>
-  <div class="container">
-
+  <div class="container mx-auto px-4">
     <!-- Phần Banner Lớn (Hero Section) -->
-    <div class="hero-banner"
-      style="background: url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1470&q=80') center/cover no-repeat; height: 350px; display: flex; align-items: center; justify-content: center; color: white; text-align: center; padding: 0 20px;">
+    <div
+      class="relative bg-[url('https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1470&q=80')] bg-cover bg-center h-[350px] flex items-center justify-center text-white text-center">
       <div>
-        <h1 style="font-size: 3em; font-weight: bold; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); margin-bottom: 15px;">
-          Khám Phá Hương Vị Ẩm Thực Đỉnh Cao
-        </h1>
+        <h1 class="text-4xl md:text-5xl font-bold text-shadow-lg mb-4">Khám Phá Hương Vị Ẩm Thực Đỉnh Cao</h1>
         <router-link :to="{ name: 'users-booking' }">
-          <button
-            style="background-color: #ff6f61; color: white; border: none; padding: 12px 30px; font-size: 1.2em; cursor: pointer; border-radius: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);">
-            Đặt Bàn Ngay
-          </button></router-link>
-
+          <button class="bg-red-500 text-white px-6 py-3 text-lg rounded-md shadow-md hover:bg-red-600 transition">Đặt
+            Bàn Ngay</button>
+        </router-link>
       </div>
     </div>
 
     <!-- Phần Ưu Đãi / Khuyến Mãi -->
-    <div class="promo-section"
-      style="margin: 40px 0; padding: 20px; background: #fff8f0; border-radius: 12px; box-shadow: 0 4px 10px rgba(255,111,97,0.2);">
-      <h2 style="text-align: center; color: #ff6f61; margin-bottom: 20px; font-weight: 700;">
-        Ưu Đãi Đặc Biệt Trong Tháng
-      </h2>
-      <div style="display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;">
-        <div v-for="(sale, index) in filteredSales" :key="index"
-          style="background: white; padding: 20px; border-radius: 12px; width: 280px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
-          <h3 style="color: #ff6f61; margin-bottom: 10px;">
-            {{ sale.nameSale }} - Giảm {{ sale.percent }}%
-          </h3>
-          <p>Áp dụng từ {{ formatDate(sale.startTime) }} đến {{ formatDate(sale.endTime) }}.</p>
+    <div class="my-10 p-6 bg-orange-50 rounded-xl shadow-md relative">
+      <h2 class="text-center text-2xl md:text-3xl font-bold text-red-500 mb-6">Ưu Đãi Đặc Biệt Trong Tháng</h2>
+      <div class="promo-container flex overflow-x-auto scroll-smooth gap-6 pb-4 snap-x no-scrollbar justify-center"
+        ref="promoContainer">
+        <div v-for="(sale, index) in filteredSales" :key="sale.id"
+          class="promo-item bg-white p-6 rounded-xl shadow-sm min-w-[280px] text-center snap-center">
+          <h3 class="text-red-500 text-lg font-semibold mb-2">{{ sale.nameSale }} - Giảm {{ sale.percent }}%</h3>
+          <p class="text-gray-600">Áp dụng từ {{ formatDate(sale.startTime) }} đến {{ formatDate(sale.endTime) }}.</p>
+        </div>
+        <div v-if="!filteredSales.length" class="no-promo w-full text-center">
+          <p class="text-gray-600">Không có ưu đãi nào hiện tại.</p>
         </div>
       </div>
+      <!-- Navigation Buttons -->
+      <button v-if="showNavButtons"
+        class="nav-button absolute top-1/2 -translate-y-1/2 left-2 bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-md hover:bg-red-600 transition"
+        @click="scrollLeft">
+        <i class="fa fa-chevron-left"></i>
+      </button>
+      <button v-if="showNavButtons"
+        class="nav-button absolute top-1/2 -translate-y-1/2 right-2 bg-red-500 text-white rounded-full w-10 h-10 flex items-center justify-center shadow-md hover:bg-red-600 transition"
+        @click="scrollRight">
+        <i class="fa fa-chevron-right"></i>
+      </button>
     </div>
 
-    <!-- Phần nội dung bạn đã có -->
-    <div class="title">
-      <p>
-        <strong>
-          <i class="fa-solid fa-utensils"></i>Thực Đơn Của Chúng Tôi
-          <i class="fa-solid fa-utensils"></i>
-        </strong>
-      </p>
-    </div>
-    <div class="card-food">
-      <ul class="list-food">
-        <li v-for="(item, index) in danhSachDanhMuc" :key="index">
-          <router-link :to="{ name: 'users-category' }">
-            <!-- Thay đổi đường dẫn ở đây -->
-            <div class="food-item">
-              <img :src="item.hinh" :alt="item.ten" />
-              <div class="food-info">
-                <div class="name-food"><strong>{{ item.ten }}</strong></div>
-                <p class="detail">Bảng giá chi tiết cho từng món</p>
-              </div>
-            </div>
-          </router-link>
-        </li>
-      </ul>
-    </div>
-
-    <div class="title">
-      <p>
-        <strong>
-          <i class="fa-solid fa-utensils"></i> Danh Mục Nổi Bật
-          <i class="fa-solid fa-utensils"></i>
-        </strong>
+    <!-- Phần Thể loại nổi bật -->
+    <div class="title text-center my-8">
+      <p class="font-bold text-xl md:text-2xl">
+        <i class="fa-solid fa-utensils mr-2"></i> Thể loại nổi bật
+        <i class="fa-solid fa-utensils ml-2"></i>
       </p>
     </div>
     <div class="container-fluid">
-      <Swiper class="food-grid" :modules="[Pagination, Autoplay]" :slides-per-view="3" :space-between="30"
-        :pagination="{ clickable: true }" :loop="true" :autoplay="{ delay: 2000, disableOnInteraction: false }">
-        <SwiperSlide v-for="(mon, index) in danhSachMonAn" :key="'mon-' + index">
-          <div class="food-card">
-            <img :src="mon.hinh" />
+      <Swiper v-if="danhSachDanhMucNoiBat.length >= 3" class="food-grid" :modules="[Pagination, Autoplay]"
+        :slides-per-view="3" :space-between="30" :pagination="{ clickable: true }" :loop="true"
+        :autoplay="{ delay: 2000, disableOnInteraction: false }">
+        <SwiperSlide v-for="(category, index) in danhSachDanhMucNoiBat" :key="'category-' + index">
+          <div class="food-card bg-white rounded-lg shadow-md p-4 text-center">
             <div class="info-food">
-              <div class="food-name"><strong>{{ mon.ten }}</strong></div>
-              <div class="food-title">{{ mon.noidung }}</div>
+              <div class="food-name font-bold text-lg">{{ category.name }}</div>
             </div>
           </div>
         </SwiperSlide>
       </Swiper>
+      <div v-else class="text-center py-16">
+        <p class="text-gray-600">Không có thể loại nổi bật nào hiện tại.</p>
+      </div>
     </div>
-    <!-- // Phần Thực đơn -->
-    <div class="title">
-      <p>
-        <strong>
-          <i class="fa-solid fa-utensils"></i> Danh Sách Menu Nổi Bật Trong Tuần
-          <i class="fa-solid fa-utensils"></i>
-        </strong>
+
+    <!-- Phần Danh Sách Menu Nổi Bật -->
+    <div class="title text-center my-8">
+      <p class="font-bold text-xl md:text-2xl">
+        <i class="fa-solid fa-utensils mr-2"></i> Danh Sách Menu Nổi Bật
+        <i class="fa-solid fa-utensils ml-2"></i>
       </p>
     </div>
     <div class="tab-wrapper">
-      <ul class="tab-links">
+      <ul class="tab-links flex overflow-x-auto flex-nowrap gap-4 mb-6 px-4 snap-x">
         <li v-for="(tab, index) in tabs" :key="index"
-          :class="['tab-link', 'has-content', { current: currentTab === index }]" @click="currentTab = index">
+          :class="['tab-link cursor-pointer px-4 py-2 rounded-md min-w-fit', { 'bg-gradient-to-r from-red-500 to-red-700 text-white': currentTab === index, 'bg-gray-200 text-gray-800 hover:bg-gray-300': currentTab !== index }]"
+          @click="currentTab = index">
           {{ tab.ten }}
         </li>
       </ul>
       <div class="tab-contents">
-        <!-- xí tra  -->
-
         <div v-for="(tab, index) in tabs" :key="'content-' + index" v-show="currentTab === index" class="tab-content">
-          <p> {{ tab.noiDung }}</p>
-          <div class="menu-grid" v-if="tab.dsMon && tab.dsMon.length">
-            <div class="card-menu" v-for="(mon, monIndex) in tab.dsMon" :key="monIndex">
-              <img :src="mon.hinh" alt="" />
-              <div class="info-card">
-                <div class="card-name"><strong>{{ mon.ten }}</strong></div>
-                <div class="card-price">{{ mon.gia }}</div>
-                <div class="card-title">{{ mon.moTa }}</div>
-                <div class="btn-wrapper">
-                  <button class="btn-add" @click="handleAddToCart(mon)">
-                    Thêm vào giỏ <i class="fas fa-shopping-cart"></i>
-                  </button>
-                  <div class="gio-hang-icon">
-                    <span class="so-luong" v-if="soLuong > 0">{{ soLuong }}</span>
+          <p class="text-gray-600 mb-4">{{ tab.noiDung }}</p>
+          <div class="menu-grid-wrapper max-h-[900px] mx-auto overflow-y-auto snap-x">
+            <div class="menu-grid grid grid-cols-3 gap-6" v-if="tab.dsMon && tab.dsMon.length">
+              <div class="card-menu bg-white rounded-lg shadow-md overflow-hidden" v-for="(mon, monIndex) in tab.dsMon"
+                :key="monIndex">
+                <img :src="mon.hinh" alt="" class="w-full h-40 object-cover" />
+                <div class="info-card p-4">
+                  <div class="card-name font-bold text-lg">{{ mon.ten }}</div>
+                  <div class="card-price text-red-500 font-semibold">{{ mon.cost.toLocaleString() }} đ</div>
+                  <div class="card-title text-gray-600 text-sm">{{ mon.moTa }}</div>
+                  <div class="btn-wrapper flex items-center justify-center mt-4">
+                    <button class="btn-add bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition"
+                      @click="handleAddToCart(mon)">
+                      Thêm vào giỏ <i class="fas fa-shopping-cart ml-2"></i>
+                    </button>
+                    <div class="gio-hang-icon relative">
+                      <span
+                        class="so-luong absolute -top-2 -right-2 bg-red-500 text-white rounded-full px-2 py-1 text-xs"
+                        v-if="soLuong > 0">{{ soLuong }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
+            <div v-else class="text-center py-8">
+              <p class="text-gray-600">Không có món ăn nào trong danh mục này.</p>
+            </div>
           </div>
         </div>
       </div>
     </div>
-    <div class="title">
-      <p>
-        <strong>
-          <i class="fa-solid fa-utensils"></i> Tin Tức
-          <i class="fa-solid fa-utensils"></i>
-        </strong>
+
+    <!-- Phần Món ăn nổi bật -->
+    <div class="title text-center my-8">
+      <p class="font-bold text-xl md:text-2xl">
+        <i class="fa-solid fa-utensils mr-2"></i> Món ăn nổi bật
+        <i class="fa-solid fa-utensils ml-2"></i>
       </p>
     </div>
-    <!-- Phần tin tức  -->
-    <div class="menu-list">
-      <div v-for="(mon, index) in danhSachMonHienTai" :key="index" class="menu-card">
-        <router-link :to="{ name: 'users-news' }">
-          <img :src="mon.hinh" alt="" />
-          <div class="menu-info">
-            <h3>{{ mon.ten }}</h3>
-            <p>{{ mon.noiDung }}</p>
+    <div v-if="bestSellerFoods.length === 0" class="text-center py-16">
+      <p class="text-gray-600">Không có món ăn nổi bật nào hiện tại.</p>
+    </div>
+    <div v-else class="menu-list flex gap-2 pb-4 snap-x">
+      <div v-for="(item, index) in bestSellerFoods.slice(0, soMonHienTai)" :key="index"
+        class="menu-card w-56 bg-white rounded-lg shadow-md p-2 snap-center">
+        <router-link to="" class="menu-card-link flex flex-col h-full">
+          <div class="overflow-hidden rounded-lg">
+            <!-- Sửa width và height của hình ảnh -->
+            <img :src="item.image || 'https://via.placeholder.com/150'" :alt="item.name" class=" h-32 object-cover" />
           </div>
+          <h1 class="menu-title font-bold text-lg text-center">{{ item.name }}</h1>
+          <p class="menu-detail text-gray-600 text-sm text-center px-2">{{ item.detail }}</p>
+          <p class="menu-price font-semibold text-center text-red-500">{{ item.cost.toLocaleString() }} đ</p>
         </router-link>
       </div>
     </div>
-    <div style="text-align: center;">
-      <button @click="xemThemMon" class="xemthem-btn">
+    <div class="view-more text-center mt-6">
+      <button v-if="bestSellerFoods.length > 3" @click="xemThemMon"
+        class="xemthem-btn bg-red-500 text-white px-6 py-2 rounded-md hover:bg-red-600 transition">
         {{ daXemThem ? 'Ẩn bớt' : 'Xem thêm' }}
       </button>
     </div>
 
-    <div class="title">
-      <p>
-        <strong>
-          <i class="fa-solid fa-star"></i> Top Bảng Xếp Hạng Đánh Giá Trong Tuần
-          <i class="fa-solid fa-star"></i>
-        </strong>
+    <!-- Phần Top Bảng Xếp Hạng Đánh Giá Trong Tuần -->
+    <div class="title text-center my-8">
+      <p class="font-bold text-xl md:text-2xl">
+        <i class="fa-solid fa-star mr-2"></i> Top Bảng Xếp Hạng Đánh Giá Trong Tuần
+        <i class="fa-solid fa-star ml-2"></i>
       </p>
     </div>
-
-    <Swiper class="review-section" :modules="[Autoplay]" :slides-per-view="3" :space-between="30"
-      :autoplay="{ delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true }" :loop="true" :speed="3000">
+    <Swiper v-if="danhSachDanhGia.length >= 3" class="review-section" :modules="[Autoplay]" :slides-per-view="3"
+      :space-between="30" :autoplay="{ delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true }" :loop="true"
+      :speed="3000">
       <SwiperSlide v-for="(review, index) in danhSachDanhGia" :key="'review-' + index">
-        <div class="review-card">
+        <div class="review-card bg-white rounded-lg shadow-md p-4 flex flex-col">
           <div class="review-content">
-            <h3>{{ review.ten }}</h3>
-            <div class="sao-danh-gia">
+            <h3 class="text-lg font-semibold">{{ review.ten }}</h3>
+            <div class="sao-danh-gia flex my-2">
               <span v-for="i in 5" :key="i">
-                <i class="fa" :class="i <= soSao ? 'fa-star' : 'fa-star-o'"></i>
+                <i class="fa text-yellow-400" :class="i <= soSao ? 'fa-star' : 'fa-star-o'"></i>
               </span>
             </div>
-            <p>{{ review.noiDung }}</p>
+            <p class="text-gray-600">{{ review.noiDung }}</p>
           </div>
-          <div class="review-image">
-            <img :src="review.hinh" alt="Ảnh người dùng" />
+          <div class="review-image mt-4">
+            <img :src="review.hinh" alt="Ảnh người dùng" class="w-full h-32 object-cover rounded-md" />
           </div>
         </div>
       </SwiperSlide>
     </Swiper>
+    <div v-else class="text-center py-16">
+      <p class="text-gray-600">Không có đánh giá nào hiện tại.</p>
+    </div>
   </div>
 </template>
 
@@ -186,46 +181,123 @@ import Aos from 'aos'
 import { onMounted, ref, computed } from 'vue'
 import { addToCart } from '../../stores/cartStore'
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import { useRoute, useRouter } from 'vue-router'
+import axios from 'axios'
+import { Pagination, Autoplay } from 'swiper/modules'
 import 'aos/dist/aos.css'
-import { useRoute } from 'vue-router'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import '../../assets/css/MenuCard.css'
-import axios from 'axios'
-import { Pagination, Autoplay } from 'swiper/modules'
 
-onMounted(() => {
-  fetchSale();
-  Aos.init()
+const allItems = ref([]) // For sales
+const categories = ref([]) // For categories
+const bestSellerFoods = ref([])
+const danhSachDanhMucNoiBat = ref([]) // For featured categories
+const danhSachDanhGia = ref([]) // For reviews
+const tabs = ref([]) // For menu tabs
+const promoContainer = ref(null) // Reference to the promo container
+const router = useRouter()
+const route = useRoute()
+const soSao = ref(4)
+const currentTab = ref(0)
+const soLuonggiohang = ref(0)
+const soMonHienTai = ref(3)
+const daXemThem = ref(false)
+const soLuong = ref(0) // Cart quantity
+
+onMounted(async () => {
+  try {
+    await Promise.all([
+      fetchSale(),
+      fetchFoodBestSeller(),
+      fetchCategory(),
+    ])
+    Aos.init()
+  } catch (error) {
+    console.error('Error during onMounted:', error)
+  }
 })
-
-const allItems = ref([])
 
 const fetchSale = async () => {
   try {
-    const response = await axios.get("http://127.0.0.1:8000/api/client/sales")
-    allItems.value = response.data.data
+    const response = await axios.get('http://127.0.0.1:8000/api/client/sales')
+    allItems.value = response.data.data || []
   } catch (error) {
-    console.error("Lỗi khi lấy dữ liệu:", error)
+    console.error('Lỗi khi lấy dữ liệu khuyến mãi:', error)
+  }
+}
+
+const fetchFoodBestSeller = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/client/foods?status=1&bestSeller=1')
+    console.log('Best seller foods response:', response.data)
+    bestSellerFoods.value = response.data || []
+    console.log('abc', bestSellerFoods.value);
+
+  } catch (error) {
+    console.error('Lỗi khi lấy dữ liệu món ăn nổi bật:', error)
+    bestSellerFoods.value = []
+  }
+}
+
+const fetchCategory = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/client/categories')
+    categories.value = response.data || []
+    danhSachDanhMucNoiBat.value = response.data || []
+    // Initialize tabs with category data and their foods
+    tabs.value = categories.value.map(category => ({
+      id: category.id,
+      ten: category.name,
+      dsMon: (category.category_foods || [])
+        .filter(categoryFood => categoryFood.food && categoryFood.food.status === 1)
+        .map(categoryFood => ({
+          id: categoryFood.food.id,
+          ten: categoryFood.food.name,
+          hinh: categoryFood.food.image || 'https://via.placeholder.com/150',
+          cost: categoryFood.food.cost || 0,
+          moTa: categoryFood.food.detail || 'Món ăn ngon, hấp dẫn.'
+        }))
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy dữ liệu thể loại:', error)
+    categories.value = []
+    danhSachDanhMucNoiBat.value = []
+    tabs.value = []
   }
 }
 
 const filteredSales = computed(() => {
-  const currentDate = new Date('2025-05-20T08:39:00+07:00')
-  return allItems.value.filter(sale => {
-    const start = new Date(sale.startTime)
-    const end = new Date(sale.endTime)
-    return start <= currentDate && end >= currentDate
-  }).slice(0, 3) // Giới hạn hiển thị tối đa 3 chương trình khuyến mãi
+  const currentDate = new Date()
+  return allItems.value
+    .filter(sale => {
+      const start = new Date(sale.startTime)
+      const end = new Date(sale.endTime)
+      return start <= currentDate && end >= currentDate
+    })
+    .slice(0, 6)
 })
 
-const Route = useRoute();
-const soSao = 4 // số sao đánh giá từ 1 đến 5
-const currentTab = ref(0)
-const soLuonggiohang = ref(0)
+const showNavButtons = computed(() => {
+  return filteredSales.value.length > 3
+})
+
+const scrollLeft = () => {
+  if (promoContainer.value) {
+    promoContainer.value.scrollLeft -= 310
+  }
+}
+
+const scrollRight = () => {
+  if (promoContainer.value) {
+    promoContainer.value.scrollLeft += 310
+  }
+}
+
 function handleAddToCart(mon) {
-  addToCart(mon);        // thêm vào giỏ
-  router.push('/shoppingCart');  // điều hướng qua trang giỏ hàng
+  addToCart(mon)
+  soLuonggiohang.value++
+  router.push('/shoppingCart')
 }
 
 const formatDate = (dateString) => {
@@ -237,126 +309,65 @@ function datMon() {
   soLuonggiohang.value++
 }
 
-// Số lượng món hiển thị ban đầu
-const soMonHienTai = ref(3)
-
-// Trạng thái đã xem thêm hay chưa
-const daXemThem = ref(false)
-
-// Danh sách món hiện tại tuỳ theo số lượng hiển thị
-
-
-// Hàm xử lý khi nhấn "Xem thêm" hoặc "Ẩn bớt"
 const xemThemMon = () => {
   if (!daXemThem.value) {
-    soMonHienTai.value = danhSachMonDayDu.value.length
+    soMonHienTai.value = bestSellerFoods.value.length
     daXemThem.value = true
   } else {
     soMonHienTai.value = 3
     daXemThem.value = false
   }
 }
-
-const danhSachDanhGia = [
-  { ten: 'Người dùng 1', noiDung: 'Đánh giá sản phẩm tuyệt vời!', hinh: '/imageicon/user1.png' },
-  { ten: 'Người dùng 2', noiDung: 'Dịch vụ rất tốt, tôi rất hài lòng.', hinh: '/imageicon/user1.png' },
-  { ten: 'Người dùng 3', noiDung: 'Sản phẩm rất chất lượng, sẽ quay lại!', hinh: '/imageicon/user1.png' },
-  { ten: 'Người dùng 4', noiDung: 'Dịch vụ tốt, nhưng cần cải thiện giao hàng.', hinh: '/imageicon/user1.png' },
-];
-
-const danhSachMonDayDu = ref([
-  { ten: 'Cơm Gà Hải Nam', noiDung: 'Cơm gà thơm ngon chuẩn vị Singapore', hinh: '/imageicon/comga.png' },
-  { ten: 'Bún Bò Huế', noiDung: 'Bún bò đậm đà chuẩn vị Huế', hinh: '/imageicon/comga.png' },
-  { ten: 'Pizza Hải Sản', noiDung: 'Pizza thơm phức với tôm, mực, phô mai', hinh: '/imageicon/bunbo.png' },
-  { ten: 'Lẩu Thái', noiDung: 'Lẩu cay chua đúng chất Thái Lan', hinh: '/imageicon/lauthai.png' },
-  { ten: 'Mì Ý Bò Bằm', noiDung: 'Mì Ý với sốt bò bằm truyền thống', hinh: '/imageicon/lauthai.png' },
-  { ten: 'Súp Cua', noiDung: 'Súp cua bổ dưỡng, phù hợp cho trẻ nhỏ', hinh: '/imageicon/lauthai.png' },
-])
-const danhSachMonHienTai = computed(() => {
-  return danhSachMonDayDu.value.slice(0, soMonHienTai.value)
-})
-
-const tabs = ref([
-  {
-    ten: 'Món Khai Vị',
-    hinh: '/imageicon/comga.png',
-   
-    dsMon: [
-      { id: 1, ten: 'Cơm Gà Hải Nam', gia: 20000, hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { id: 2, ten: 'Bún Bò Huế', gia: 20000, hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { id: 3, ten: 'Pizza Hải Sản', gia: 20000, hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-    ]
-  },
-  {
-    ten: 'Món Chính',
-    hinh: '/imageicon/bunbo.png',
-    dsMon: [
-      { id: 4, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { id: 5, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { id: 6, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-    ]
-  },
-  {
-    ten: 'Món Pizza',
-    hinh: '/imageicon/banhngot.png',
-    dsMon: [
-      { id: 7, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { id: 8, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { id: 9, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-      { id: 10, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-      { id: 11, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-      { id: 12, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-    ]
-  },
-  {
-    ten: 'Món Tráng Miếng',
-    hinh: '/imageicon/banhngot.png',
-    dsMon: [
-      { id: 13, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { id: 14, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { id: 15, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-    ]
-  },
-  {
-    ten: 'Lẩu',
-    hinh: '/imageicon/banhngot.png',
-    dsMon: [
-      { id: 16, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { id: 17, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { id: 18, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-    ]
-  },
-  {
-    ten: 'Đồ Uống',
-    hinh: '/imageicon/banhngot.png',
-    dsMon: [
-      { id: 19, ten: 'Cơm Gà Hải Nam', hinh: '/imageicon/comga.png', moTa: 'Thơm ngon chuẩn vị Singapore' },
-      { id: 20, ten: 'Bún Bò Huế', hinh: '/imageicon/bunbo.png', moTa: 'Đậm đà chuẩn vị Huế' },
-      { id: 21, ten: 'Pizza Hải Sản', hinh: '/imageicon/pizza.png', moTa: 'Hải sản tươi, phô mai béo' },
-    ]
-  },
-
-])
-
-
-
-const danhSachDanhMuc = [
-  { ten: 'Món Khai Vị', hinh: '/imageicon/laukimchi.png' },
-  { ten: 'Món Chính', hinh: '/imageicon/lauthai.png' },
-  { ten: 'Món Tráng Miệng', hinh: '/imageicon/lautuxuyen.png' },
-  { ten: 'Các Đồ Uống', hinh: '/imageicon/lautuxuyen.png' },
-  { ten: 'Các Món Pizza', hinh: '/imageicon/lautuxuyen.png' },
-  { ten: 'Các Món Lẩu', hinh: '/imageicon/lautuxuyen.png' }
-]
-
-const danhSachMonAn = [
-  { ten: 'Món gà', noidung: 'Các món gà được chế biến độc đáo', hinh: '/imageicon/bunbo.png' },
-  { ten: 'Món bò', noidung: 'Các món bò  với hương vị đậm đà', hinh: '/imageicon/comga.png' },
-  { ten: 'Món heo', noidung: 'Thịt heo nướng, kho, chiên siêu ngon', hinh: '/imageicon/pizza.png' },
-  { ten: 'Món cá', noidung: 'Hải sản tươi sống chế biến ngay tại bếp', hinh: '/imageicon/bunbo.png' },
-  { ten: 'Các món khác', noidung: 'Món chay, món đặc biệt theo mùa', hinh: '/imageicon/bunbo.png' },
-]
 </script>
 
+<style>
+/* Custom class to hide scrollbar across browsers for promo section */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 
-<style></style>
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+}
+
+/* Style the scrollbar for tab-links */
+.tab-links::-webkit-scrollbar {
+  height: 8px;
+}
+
+.tab-links::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.tab-links::-webkit-scrollbar-thumb {
+  background: #ff6f61;
+  border-radius: 4px;
+}
+
+.tab-links::-webkit-scrollbar-thumb:hover {
+  background: #e65b50;
+}
+
+/* Style the scrollbar for menu-grid-wrapper */
+.menu-grid-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+
+.menu-grid-wrapper::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.menu-grid-wrapper::-webkit-scrollbar-thumb {
+  background: #ff6f61;
+  border-radius: 4px;
+}
+
+.menu-grid-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #e65b50;
+}
+</style>
