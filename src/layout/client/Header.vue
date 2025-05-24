@@ -12,8 +12,9 @@
           <router-link class="router-introduce" :to="{ name: 'users-introduce' }">INTRODUCE</router-link>
         </li>
         <li class="servicefood">
-          <a href="#">SERVICE FOOD</a>
-          <ul class="name-menu" v-if="types.length > 0">
+          <router-link :to="{name :'users-category'}" 
+          >MENU</router-link>
+          <!-- <ul class="name-menu" v-if="types.length > 0">
             <li v-for="type in types" :key="type.id">
               <div class="menu-row">
                 <div class="menu-list">
@@ -52,7 +53,7 @@
                 </div>
               </div>
             </li>
-          </ul>
+          </ul> -->
         </li>
 
         <li class="servicefood">

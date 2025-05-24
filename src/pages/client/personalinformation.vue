@@ -2,13 +2,13 @@
   <div class="container-personalinformation">
     <div class="rank-box">
       <div class="member-info">
-        <img :src="informationpersonal.image" class="avatar" />
+        <img :src="informationpersonal.image" class="avatar" alt="Avatar" />
         <div class="member-details">
           <h3>{{ informationpersonal.name }}</h3>
           <p>{{ informationpersonal.point }} Stars</p>
         </div>
-        <div class="w-24 h-24 overflow-hidden">
-          <img class="w-full h-full object-cover" :src="informationpersonal.imageRank" alt="rank">
+        <div class="rank-image-container">
+          <img class="rank-image" :src="informationpersonal.imageRank" alt="Rank">
         </div>
       </div>
 
@@ -34,17 +34,14 @@
         </div>
       </div>
       <div class="support-footer">
-        <div style="margin-top: 20px;" class="support-info">
-          <h4>Hotline Hỗ Trợ : <strong style="color: blue;">1900 1234</strong></h4>
-
+        <div class="support-info">
+          <h4>Hotline Hỗ Trợ: <strong style="color: blue;">1900 1234</strong></h4>
           <p>
             <span class="icon email"></span>
             <a href="mailto:support@nhahang.com">Email: <strong
                 style="color: blue;">phefoodRestaurant@gmail.com</strong></a>
           </p>
         </div>
-
-
       </div>
     </div>
 
@@ -268,7 +265,7 @@ const changePasswordData = ref({
   otp: '',
   oldPassword: '',
   newPassword: '',
-  confirmNewPassword: '', // Added for confirmation
+  confirmNewPassword: '',
 });
 
 const tabs = ref([
@@ -280,7 +277,7 @@ const tabs = ref([
 ]);
 
 onMounted(async () => {
-  const id = localStorage.getItem('customerId');
+  const id = localStorage.getItem('customer_id');
   if (id) {
     try {
       const res = await api.get(`/client/customers/${id}`);
@@ -372,9 +369,9 @@ const changePassword = async () => {
     const response = await api.post('/client/reset-password', {
       email: changePasswordData.value.email,
       otp: changePasswordData.value.otp,
-      old_password: changePasswordData.value.oldPassword, // Match backend expectation
+      old_password: changePasswordData.value.oldPassword,
       password: changePasswordData.value.newPassword,
-      password_confirmation: changePasswordData.value.confirmNewPassword, // Match Laravel's confirmed rule
+      password_confirmation: changePasswordData.value.confirmNewPassword,
     });
     localStorage.setItem('customer_password', changePasswordData.value.newPassword);
     informationpersonal.value.password = changePasswordData.value.newPassword;
@@ -399,27 +396,26 @@ const cancelChangePassword = () => {
 };
 
 const updatePersonalInfo = async () => {
-  const id = localStorage.getItem('customerId');
+  const id = localStorage.getItem('customer_id');
   if (!id) return alert('Không tìm thấy ID người dùng');
 
   const payload = {
-    FullName: informationpersonal.value.FullName,
+    FullName: informationpersonal.value.name,
     phoneNumber: informationpersonal.value.phoneNumber,
     birth: informationpersonal.value.birth,
-    image_base64: informationpersonal.value.image, // Đảm bảo đây là chuỗi base64 hợp lệ
+    image_base64: informationpersonal.value.image,
   };
+  
 
   try {
-    const response = await api.put(`/client/customers/update/${id}`, payload, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await api.put(`/client/customers/${id}`, payload);
     alert('Cập nhật thông tin thành công');
     informationpersonal.value = {
       ...response.data.customer,
+      name: response.data.customer.FullName,
       password: localStorage.getItem('customer_password') || '',
     };
+    localStorage.setItem('customer_fullName', response.data.customer.FullName)
   } catch (err) {
     console.error('Lỗi khi cập nhật thông tin:', err.response?.data?.message || err.message);
     alert(`Có lỗi xảy ra khi cập nhật: ${err.response?.data?.message || err.message}`);
@@ -429,16 +425,14 @@ const updatePersonalInfo = async () => {
 const deletePersonalInfo = async () => {
   if (!confirm('Bạn có chắc chắn muốn xóa tài khoản? Hành động này không thể hoàn tác.')) return;
 
-  const id = localStorage.getItem('customerId');
+  const id = localStorage.getItem('customer_id');
   if (!id) return alert('Không tìm thấy ID người dùng');
 
   try {
     await api.delete(`/client/customers/${id}`);
     alert('Xóa tài khoản thành công');
-    localStorage.removeItem('customerId');
-    localStorage.removeItem('customer_email');
-    localStorage.removeItem('customer_password');
-    router.push('/login');
+    localStorage.clear();
+    router.push({ name: 'users-home' }); 
   } catch (err) {
     console.error('Lỗi khi xóa tài khoản:', err);
     alert('Có lỗi xảy ra khi xóa tài khoản');
@@ -456,6 +450,7 @@ const formatDate = (dateString) => {
 </script>
 
 <style scoped>
+/* Base styles */
 .gift-list {
   list-style: none;
   padding: 0;
@@ -463,24 +458,24 @@ const formatDate = (dateString) => {
 
 .gift-item {
   background-color: #f9f9f9;
-  padding: 15px;
-  margin: 10px 0;
+  padding: 10px;
+  margin: 8px 0;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .gift-item .gift-header {
-  font-size: 1.2em;
-  margin-bottom: 10px;
+  font-size: 1.1em;
+  margin-bottom: 8px;
 }
 
 .gift-item .gift-description {
-  font-size: 1em;
+  font-size: 0.9em;
   color: #666;
 }
 
 .claim-gift-btn {
-  padding: 8px 16px;
+  padding: 6px 12px;
   background-color: #4caf50;
   color: white;
   border: none;
@@ -497,30 +492,33 @@ const formatDate = (dateString) => {
 .change-password-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
-  padding: 10px;
+  gap: 15px;
+  padding: 8px;
 }
 
 .row-information {
   display: flex;
-  gap: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
   align-items: center;
-}
-
-.group-information input {
-  border: 1px solid #ccc;
-  background-color: white;
-  padding: 8px 12px;
-  border-radius: 4px;
-  font-size: 14px;
-  width: 400px;
-  padding-left: 35px;
 }
 
 .group-information {
   display: flex;
   flex-direction: column;
   position: relative;
+  flex: 1 1 100%;
+  min-width: 200px;
+}
+
+.group-information input {
+  border: 1px solid #ccc;
+  background-color: white;
+  padding: 8px 12px 8px 35px;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .group-information i {
@@ -533,17 +531,18 @@ const formatDate = (dateString) => {
 
 .container-personalinformation {
   display: flex;
-  gap: 20px;
-  padding: 20px;
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px;
   font-family: sans-serif;
   background-color: #f5f5f5;
-  height: 100%;
+  min-height: 100vh;
 }
 
 .rank-box {
-  width: 35%;
+  width: 100%;
   background: white;
-  padding: 20px;
+  padding: 15px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
   border-radius: 10px;
 }
@@ -553,46 +552,52 @@ const formatDate = (dateString) => {
   align-items: center;
   gap: 10px;
   margin-bottom: 10px;
+  flex-wrap: wrap;
 }
 
 .avatar {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
 }
 
+.rank-image-container {
+  width: 60px;
+  height: 60px;
+  overflow: hidden;
+}
+
+.rank-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .member-details h3 {
-  font-size: 18px;
+  font-size: 16px;
   margin-bottom: 2px;
 }
 
 .total-spending .label {
-  font-size: 14px;
+  font-size: 13px;
   color: gray;
-  margin-top: 15px;
+  margin-top: 12px;
 }
 
 .label {
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
-
-.total {
-  flex-grow: 1;
+  flex-wrap: wrap;
 }
 
 .amount {
-  text-align: right;
-}
-
-.total-spending .amount {
-  font-size: 20px;
+  font-size: 18px;
   color: #f37021;
   font-weight: bold;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .progress-bar {
@@ -600,21 +605,22 @@ const formatDate = (dateString) => {
   justify-content: space-between;
   align-items: flex-end;
   position: relative;
-  height: 70px;
-  margin-top: 10px;
+  height: 60px;
+  margin-top: 8px;
   border-top: 2px solid #ccc;
   border-bottom: 2px solid #ccc;
-  padding-top: 20px;
+  padding-top: 15px;
 }
 
 .milestone {
   text-align: center;
   position: relative;
+  flex: 1;
 }
 
 .milestone .icon {
-  width: 20px;
-  height: 20px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   margin: 5px auto 0;
   background: #ccc;
@@ -632,47 +638,39 @@ const formatDate = (dateString) => {
   background: orange;
   border: 2px solid white;
   box-shadow: 0 0 4px orange;
-
 }
 
-/* Right */
 .info-box {
-  width: 65%;
+  width: 100%;
   background: white;
-  padding: 20px;
+  padding: 15px;
   border-radius: 10px;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
 }
 
 .category-container {
-  background: white;
   width: 100%;
-}
-
-.title {
-  margin-top: 30px;
-}
-
-.title p {
-  font-family: "Dancing Script", cursive;
 }
 
 .tab-links {
   display: flex;
   list-style: none;
-  justify-content: space-between;
-  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 15px;
   border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
 }
 
 .tab-link {
-  padding: 10px 20px;
+  padding: 8px 15px;
   cursor: pointer;
   font-weight: bold;
   border: none;
   background-color: transparent;
   transition: 0.3s;
   color: #333;
+  font-size: 14px;
 }
 
 .tab-link.current {
@@ -681,108 +679,303 @@ const formatDate = (dateString) => {
 }
 
 .tab-content {
-  padding: 20px;
+  padding: 15px;
   border: 1px solid #ddd;
   border-radius: 8px;
   background: #f9f9f9;
 }
 
-.menu-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: center;
-  padding: 20px 0;
-
-
+.transaction-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.menu-grid {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.card-menu {
-  border: 1px solid white;
-  width: 262px;
+.transaction-item {
   padding: 10px;
-  margin: 15px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
-  border-radius: 20px;
-
-
+  border-bottom: 1px solid #e0e0e0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
-.card-menu img {
-  width: 300px;
-  height: 200px;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-
-}
-
-.info-card {
-  text-align: center;
-}
-
-.menu-card {
-  border: 1px solid #ccc;
-  border-radius: 12px;
-  overflow: hidden;
-  background: white;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  transition: transform 0.2s;
-}
-
-.menu-card:hover {
-  transform: translateY(-5px);
-}
-
-.menu-card img {
-  width: 300px;
+.transaction-image {
+  width: 40px;
+  height: 40px;
   object-fit: cover;
 }
 
-.menu-info {
-  padding: 12px;
-  text-align: center;
-  word-wrap: break-word;
+.transaction-details strong {
+  font-size: 14px;
+  color: #143b36;
 }
 
-.xemthem-btn {
-  padding: 10px 20px;
-  font-weight: bold;
-  background-color: #ff4500;
-  border: none;
+.transaction-details p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
+.notification-list {
+  list-style: none;
+  padding: 0;
+}
+
+.notification-item {
+  padding: 10px;
+  border-bottom: 1px solid #e0e0e0;
+  font-size: 14px;
+}
+
+.btn-update {
+  padding: 6px 12px;
+  background-color: #00b894;
   color: white;
+  border: none;
+  border-radius: 4px;
   cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.3s;
+  font-size: 14px;
 }
 
-.xemthem-btn:hover {
-  background-color: #e03e00;
+.btn-delete {
+  padding: 6px 12px;
+  background-color: rgb(179, 10, 10);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.review-section {
-  width: 100%;
-  padding: 20px;
+.btn-cancel {
+  padding: 6px 12px;
+  background-color: #ff4444;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
-.review-card {
-  background: #f9f9f9;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: space-between;
-  height: 130px;
+.btn-update:hover {
+  background-color: #019875;
 }
 
-.review-content {
-  flex: 0 0 60%;
-  padding-right: 15px;
+.btn-cancel:hover {
+  background-color: #cc0000;
 }
 
+.change-password-form h3 {
+  font-size: 1.3em;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.support-footer {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.support-info h4 {
+  font-size: 14px;
+}
+
+.support-info p {
+  font-size: 13px;
+  margin: 5px 0;
+}
+
+/* Responsive adjustments */
+@media (min-width: 768px) {
+  .container-personalinformation {
+    flex-direction: row;
+    padding: 20px;
+  }
+
+  .rank-box {
+    width: 35%;
+    padding: 20px;
+  }
+
+  .info-box {
+    width: 65%;
+    padding: 20px;
+  }
+
+  .member-info {
+    flex-wrap: nowrap;
+  }
+
+  .avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .rank-image-container {
+    width: 80px;
+    height: 80px;
+  }
+
+  .member-details h3 {
+    font-size: 18px;
+  }
+
+  .total-spending .label {
+    font-size: 14px;
+  }
+
+  .amount {
+    font-size: 20px;
+  }
+
+  .progress-bar {
+    height: 70px;
+    margin-top: 10px;
+    padding-top: 20px;
+  }
+
+  .milestone .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .group-information input {
+    font-size: 14px;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .row-information {
+    flex-wrap: nowrap;
+  }
+
+  .tab-link {
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+
+  .transaction-details strong {
+    font-size: 16px;
+  }
+
+  .transaction-details p {
+    font-size: 14px;
+  }
+
+  .notification-item {
+    font-size: 15px;
+  }
+
+  .btn-update,
+  .btn-delete,
+  .btn-cancel {
+    padding: 8px 16px;
+  }
+
+  .change-password-form h3 {
+    font-size: 1.5em;
+  }
+
+  .support-info h4 {
+    font-size: 16px;
+  }
+
+  .support-info p {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 767px) {
+  .group-information input {
+    font-size: 13px;
+    padding: 6px 10px 6px 30px;
+  }
+
+  .group-information i {
+    top: 45%;
+    left: 8px;
+  }
+
+  .tab-links {
+    gap: 5px;
+  }
+
+  .tab-link {
+    font-size: 13px;
+    padding: 6px 10px;
+  }
+
+  .tab-content {
+    padding: 10px;
+  }
+
+  .transaction-image {
+    width: 30px;
+    height: 30px;
+  }
+
+  .progress-bar {
+    height: 50px;
+  }
+
+  .milestone .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .milestone span {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .rank-image-container {
+    width: 50px;
+    height: 50px;
+  }
+
+  .member-details h3 {
+    font-size: 14px;
+  }
+
+  .total-spending .label {
+    font-size: 12px;
+  }
+
+  .amount {
+    font-size: 16px;
+  }
+
+  .tab-link {
+    font-size: 12px;
+    padding: 5px 8px;
+  }
+
+  .btn-update,
+  .btn-delete,
+  .btn-cancel {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .change-password-form h3 {
+    font-size: 1.2em;
+  }
+
+  .support-info h4 {
+    font-size: 13px;
+  }
+
+  .support-info p {
+    font-size: 12px;
+  }
+}
+
+/* Animation for progress bar milestones */
 .progress-bar .milestone .mid,
 .progress-bar .milestone .current,
 .progress-bar .milestone .start {
@@ -795,91 +988,11 @@ const formatDate = (dateString) => {
   }
 
   50% {
-    box-shadow: 0 0 0 10px rgba(250, 229, 113, 0.7);
+    box-shadow: 0 0 0 8px rgba(250, 229, 113, 0.7);
   }
 
   100% {
     box-shadow: 0 0 0 0 rgba(250, 229, 113, 0);
   }
-}
-
-.btn-update {
-  padding: 8px 16px;
-  background-color: #00b894;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-delete {
-  padding: 8px 16px;
-  background-color: rgb(179, 10, 10);
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-update:hover {
-  background-color: #019875;
-}
-
-/* Thêm style cho danh sách lịch sử giao dịch */
-.transaction-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.transaction-item {
-  padding: 15px;
-  border-bottom: 1px solid #e0e0e0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.transaction-details strong {
-  font-size: 16px;
-  color: #143b36;
-}
-
-.transaction-details p {
-  margin: 5px 0 0;
-  font-size: 14px;
-  color: #666;
-}
-
-.btn-update {
-  padding: 8px 16px;
-  background-color: #00b894;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-update:hover {
-  background-color: #019875;
-}
-
-.btn-cancel {
-  padding: 8px 16px;
-  background-color: #ff4444;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-}
-
-.btn-cancel:hover {
-  background-color: #cc0000;
-}
-
-.change-password-form h3 {
-  font-size: 1.5em;
-  margin-bottom: 20px;
-  color: #333;
 }
 </style>

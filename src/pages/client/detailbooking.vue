@@ -60,7 +60,7 @@
                                 </tr>
                             </tbody>
                         </table>
-                        <p v-else>Không có món ăn nào trong đặt bàn này.</p>
+                        <p  v-else>Không có món ăn nào trong đặt bàn này.</p>
                     </div>
 
                     <div class="payment-info mt-6">
