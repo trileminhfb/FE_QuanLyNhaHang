@@ -164,20 +164,24 @@ const createBooking = () => {
   const payload = {
     timeBooking: formatDateTime(form.timeBooking)
   };
+
   api.post('/client/bookings/create', payload)
     .then((res) => {
       if (res.status === 201) {
         toast.success('Bạn đã đặt bàn thành công', {
-  toastClassName: 'vue-toastification__toast'
-});
+          toastClassName: 'vue-toastification__toast'
+        });
 
         bookingSuccess.value = true;
         formStage.value = 'choose';
         bookingStore.addBooking(res.data.booking);
-        localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
-
-
+        
+        // Lưu booking_id vào localStorage
         bookingId.value = res.data.booking.id;
+        localStorage.setItem('booking_id', res.data.booking.id); // Thêm dòng này
+
+        // Lưu bookingHistory
+        localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
 
         getFoods();
       }
