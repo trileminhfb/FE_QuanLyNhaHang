@@ -31,19 +31,21 @@
                                                         <div
                                                             class="overflow-hidden flex flex-row justify-center items-center">
                                                             <img class="hover:cursor-pointer object-cover h-16 w-10"
-                                                                :src="foodItem.food.image || '/imageicon/food-placeholder.png'"
-                                                                :alt="foodItem.food.name" />
+                                                                :src="foodItem.food?.image || '/imageicon/food-placeholder.png'"
+                                                                :alt="foodItem.food?.name" />
                                                             <div class="ps-5 flex flex-col gap-5">
-                                                                <p class="hover:cursor-pointer">{{ foodItem.food.name ||
+                                                                <p class="hover:cursor-pointer">{{ foodItem.food?.name
+                                                                    ||
                                                                     'N/A' }}</p>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </td>
-                                                <td class="text-center">{{ foodItem.quantity || 0 }}</td>
-                                                <td class="text-center">{{ (foodItem.food.cost || 0).toLocaleString() }}
+                                                <td class="text-center">{{ foodItem?.quantity || 0 }}</td>
+                                                <td class="text-center">{{ (foodItem?.food?.cost || 0).toLocaleString()
+                                                }}
                                                 </td>
-                                                <td class="text-center">{{ (foodItem.quantity * foodItem.food.cost ||
+                                                <td class="text-center">{{ (foodItem?.quantity * foodItem?.food?.cost ||
                                                     0).toLocaleString() }}</td>
                                             </tr>
                                             <tr v-if="!invoiceData?.invoice_foods?.length" class="border-2">
@@ -199,7 +201,7 @@ function formatToLocalDatetime(isoString) {
 
 function calculateTotal(items) {
     if (!items || !items.length) return 0
-    return items.reduce((total, foodItem) => total + (foodItem.quantity || 0) * (foodItem.food.cost || 0), 0)
+    return items.reduce((total, foodItem) => total + (foodItem?.quantity || 0) * (foodItem.food?.cost || 0), 0)
 }
 
 function calculateRewardPoints(items) {
