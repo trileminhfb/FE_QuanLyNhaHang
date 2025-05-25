@@ -4,7 +4,8 @@
             <img src="/imageicon/logo.png" alt="Logo" />
         </div>
         <div class="h-full flex flex-row justify-end items-center flex-1">
-            <div class="flex h-full bg-gray-200 justify-center items-center relative rounded-2xl me-20 p-5 hover:cursor-pointer hover:bg-gray-500"
+            <div v-if="user.role === 'admin' || user.role === 'manager'"
+                class="flex h-full bg-gray-200 justify-center items-center relative rounded-2xl me-20 p-5 hover:cursor-pointer hover:bg-gray-500"
                 @click="goBooking">
                 <div class="flex flex-row justify-center items-center text-2xl">
                     <svg class="w-10 h-10 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -19,7 +20,8 @@
                     <p>{{ totalBooking }}</p>
                 </div>
             </div>
-            <div class="flex h-full bg-gray-200 justify-center items-center relative rounded-2xl me-20 p-5 hover:cursor-pointer hover:bg-gray-500"
+            <div v-if="user.role === 'admin' || user.role === 'manager'"
+                class="flex h-full bg-gray-200 justify-center items-center relative rounded-2xl me-20 p-5 hover:cursor-pointer hover:bg-gray-500"
                 @click="goInvoice">
                 <div class="flex flex-row justify-center items-center text-2xl">
                     <svg class="w-10 h-10 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -35,9 +37,12 @@
                 </div>
             </div>
 
-            <div class="flex flex-row hover:cursor-pointer hover:bg-gray-500 justify-center items-center font-bold text-2xl p-2 rounded-lg"
+            <div class="flex flex-row hover:cursor-pointer hover:bg-gray-500 justify-center items-center font-bold text-2xl p-2 rounded-lg gap-2"
                 @click="goProfile">
-                <p>{{ user.name }}</p>
+                <div class="flex flex-col">
+                    <p>{{ user.name }}</p>
+                    <p class="text-base font-normal text-end">{{ user.role }}</p>
+                </div>
                 <div class="w-12 h-12 rounded-full border border-black overflow-hidden">
                     <img class="w-full h-full  object-cover" :src="user.image" alt="img">
                 </div>
@@ -65,6 +70,30 @@ const user = ref(
         image: null,
     }
 )
+
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
 
 const allItemsInvoice = ref([])
 const allItemsBooking = ref([])
@@ -103,6 +132,7 @@ async function fetchBooking() {
 onMounted(() => {
     fetchInvoice()
     fetchBooking()
+    fetchUserProfile()
 })
 
 function goHome() {

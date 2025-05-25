@@ -1,5 +1,6 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-44 ms-[300px] flex flex-col p-2">
+    <div v-if="user.role === 'admin' || user.role === 'manager'"
+        class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-44 ms-[300px] flex flex-col p-2">
         <div class="h-full w-full flex flex-col font-semibold">
             <div class="w-[30vw] h-full flex justify-center items-start text-xl">
                 <div class="w-full border h-fit flex flex-col">
@@ -21,20 +22,20 @@
                             <!-- Số lượng nhập -->
                             <div class="flex flex-row w-full items-center px-5 gap-4">
                                 <p class="flex-1">Số lượng nhập:</p>
-                                <input v-model="form.quantity" type="number" min="0"
+                                <input v-model="form?.quantity" type="number" min="0"
                                     class="border rounded px-4 py-2 w-[200px]" />
                             </div>
 
                             <div class="flex flex-row w-full items-center px-5 gap-4">
                                 <p class="flex-1">Giá tiền:</p>
-                                <input v-model="form.price" type="number" min="0"
+                                <input v-model="form?.price" type="number" min="0"
                                     class="border rounded px-4 py-2 w-[200px]" />
                             </div>
 
                             <!-- Ngày nhập -->
                             <div class="flex flex-row w-full items-center px-5 gap-4">
                                 <p class="flex-1">Ngày nhập:</p>
-                                <input v-model="form.stock_in_date" type="date"
+                                <input v-model="form?.stock_in_date" type="date"
                                     class="border rounded px-4 py-2 w-[200px]" />
                             </div>
 
@@ -56,13 +57,14 @@
             </div>
         </div>
     </div>
+    <AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted, computed, watch, reactive } from "vue";
 import axios from 'axios'
-import { onMounted } from 'vue'
+import AccessDenied from '../../../../components/Admin/AccessDenied.vue'
 const allItems = ref([])
 
 const router = useRouter()
@@ -79,6 +81,46 @@ const form = ref({
     stock_in_date: ''
 })
 
+const user = ref({
+    role: 'N/A',
+});
+
+const showToast = ref(false);
+
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
+
+onMounted(async () => {
+    await fetchIngredient();
+    fetchUserProfile();
+});
+
+watch(() => user.value.role, (newRole) => {
+    if (newRole !== 'admin' && newRole !== 'manager') {
+        showToast.value = true;
+    }
+});
 
 const isSaving = ref(false)
 
@@ -106,16 +148,12 @@ async function goSave() {
     console.log('Dữ liệu gửi:', form.value)
 }
 
-
-onMounted(async () => {
+const fetchIngredient = async () => {
     try {
-        const res = await axios.get('http://127.0.0.1:8000/api/admin/ingredients')
-        if (res.data.status === 1) {
-            allItems.value = res.data.data
-        }
+        const response = await axios.get("http://127.0.0.1:8000/api/admin/ingredients");
+        allItems.value = response.data.data;
     } catch (error) {
-        console.error('Lỗi khi tải danh sách:', error)
+        console.error("Lỗi khi lấy dữ liệu:", error);
     }
-})
-
+}
 </script>

@@ -1,5 +1,6 @@
 <template>
-	<div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-10 mt-20 ms-[300px] flex flex-col p-2">
+	<div v-if="user.role === 'admin' || user.role === 'manager'"
+		class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-10 mt-20 ms-[300px] flex flex-col p-2">
 		<div class="h-full w-full flex flex-col font-semibold">
 			<div class="uppercase font-bold text-2xl">Chỉnh sửa món ăn</div>
 
@@ -97,6 +98,7 @@
 			</div>
 		</div>
 	</div>
+	<AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
@@ -107,10 +109,10 @@ import api from "../../../services/api";
 
 import SwitchButton from "../../../components/Admin/SwitchButton.vue";
 import ConfirmDelete from "../../../components/Admin/ConfirmDelete.vue";
+import AccessDenied from "../../../components/Admin/AccessDenied.vue";
 
 const router = useRouter();
 const route = useRoute();
-
 const showConfirm = ref(false);
 const allItemsCategories = ref([]);
 const allItemsTypes = ref([]);
@@ -118,6 +120,35 @@ const img = reactive({
 	origin: null,
 	preview: null
 });
+
+const user = ref({
+	role: 'N/A',
+});
+const showToast = ref(false);
+
+async function fetchUserProfile() {
+	try {
+		const token = localStorage.getItem('auth_token');
+		if (!token) {
+			throw new Error('No authentication token found.');
+		}
+
+		const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+
+		user.value.role = response.data.data.role; // Only store the role
+	} catch (error) {
+		console.error('Error fetching profile:', error.response?.data || error.message);
+		if (error.response?.status === 401) {
+			localStorage.removeItem('auth_token');
+			localStorage.removeItem('user');
+			router.push({ name: 'admin-login' });
+		}
+	}
+}
 
 const foodData = reactive({
 	id: null,
@@ -194,6 +225,14 @@ onMounted(async () => {
 	await fetchFoods();
 	fetchType();
 	fetchCategory();
+	fetchUserProfile();
+});
+
+watch(() => user.value.role, (newRole) => {
+	if (newRole !== 'admin' && newRole !== 'manager') {
+		showToast.value = true;
+
+	}
 });
 
 function toggleCategory(categoryId) {

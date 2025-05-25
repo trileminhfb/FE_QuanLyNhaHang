@@ -1,5 +1,6 @@
 <template>
-    <div class="w-[calc(70vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-44 ms-[300px] flex flex-col p-2 text-lg ">
+    <div v-if="user.role === 'admin' || user.role === 'manager'"
+        class="w-[calc(70vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-44 ms-[300px] flex flex-col p-2 text-lg ">
         <div class="w-full h-[50vh] border-t border-black">
             <div class="w-full flex justify-end gap-2 p-2">
                 <Search v-model="searchQuery" />
@@ -37,22 +38,22 @@
                                 <div class="h-full flex flex-row justify-start items-center">
                                     <div class="overflow-hidden flex flex-row justify-center items-center">
                                         <img class="hover:cursor-pointer object-cover h-32 w-24 rounded-lg shadow-md border"
-                                            :src="`${item.ingredient.image}`" alt="Ảnh nhân viên" />
+                                            :src="item?.ingredient?.image" alt="Ảnh thành phần" />
                                         <div class="ps-5 flex flex-col gap-5">
-                                            <p class="hover:cursor-pointer">{{ item.ingredient.name_ingredient }}</p>
+                                            <p class="hover:cursor-pointer">{{ item?.ingredient?.name_ingredient }}</p>
                                         </div>
                                     </div>
                                 </div>
                             </td>
                             <td class="text-center">
                                 <div class="flex flex-row gap-2 justify-center">
-                                    <p>{{ item.quantity.toLocaleString() }}</p>
-                                    <p>{{ item.ingredient.unit }}</p>
+                                    <p>{{ item?.quantity.toLocaleString() }}</p>
+                                    <p>{{ item?.ingredient?.unit }}</p>
                                 </div>
                             </td>
                             <td class="text-center">
                                 <div class="flex flex-row gap-2 justify-center">
-                                    <p>{{ item.stock_in_date }}</p>
+                                    <p>{{ item?.stock_in_date }}</p>
                                 </div>
                             </td>
                             <td class="text-center">
@@ -83,17 +84,18 @@
             </div>
         </div>
     </div>
+    <AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { ref, onMounted, computed, watch, reactive } from "vue"; import { useRouter } from "vue-router";
 import SortButton from "../../../../components/Admin/SortButton.vue";
 import ConfirmDelete from "../../../../components/Admin/ConfirmDelete.vue";
 import Search from "../../../../components/Admin/Search.vue";
 import Pagination from "../../../../components/Admin/Pagination.vue";
 import axios from "axios";
 import AddButton from "../../../../components/Admin/AddButton.vue";
+import AccessDenied from "../../../../components/Admin/AccessDenied.vue";
 
 const showConfirm = ref(false);
 const itemToDelete = ref(null)
@@ -111,6 +113,47 @@ const paginatedItems = computed(() => {
     const end = start + itemsPerPage
     return filteredItems.value.slice(start, end)
 })
+
+const user = ref({
+    role: 'N/A',
+});
+
+const showToast = ref(false);
+
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
+
+onMounted(async () => {
+    await fetchWarehouse();
+    fetchUserProfile();
+});
+
+watch(() => user.value.role, (newRole) => {
+    if (newRole !== 'admin' && newRole !== 'manager') {
+        showToast.value = true;
+    }
+});
 
 const filteredItems = computed(() => {
     let result = [...allItems.value];
@@ -150,8 +193,6 @@ async function fetchWarehouse() {
         console.error("Lỗi khi lấy dữ liệu:", error);
     }
 }
-
-onMounted(fetchWarehouse);
 
 function changePage(page) {
     if (page >= 1 && page <= totalPages.value) {
