@@ -100,6 +100,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import axios from 'axios';
+import api from '../../services/api';
 
 const route = useRoute();
 const router = useRouter();
@@ -187,8 +188,7 @@ const loadBookingDetail = async () => {
 const payOrder = async () => {
     if (!confirm('Bạn có chắc muốn thanh toán đặt bàn này không?')) return;
     try {
-        await axios.post(
-            `http://127.0.0.1:8000/api/client/bookings/${booking.value.id}/pay`,
+        await api.post(`/client/bookings/${booking.value.id}/pay`,
             {},
             {
                 headers: {

@@ -15,7 +15,7 @@
             <div class="w-16 h-16 rounded-full bg-white overflow-hidden flex justify-center items-center">
               <img class="w-12 h-12" src="/imageicon/customer icon.png" alt="user image">
             </div>
-            <p class="text-white font-semibold text-xl">Lê Minh Trí</p>
+            <p class="text-white font-semibold text-xl">Quản trị viên</p>
           </div>
           <!-- ICON đóng chat -->
           <div class="flex flex-1 justify-center items-center">

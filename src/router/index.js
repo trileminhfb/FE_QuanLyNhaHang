@@ -20,6 +20,8 @@ router.beforeEach((to, from, next) => {
     "users-register",
     "users-home",
     "scan",
+    "users-category",
+    "users-shoppingCart"
   ]; // các route không cần login
   const authRequired = !publicPages.includes(to.name);
   const isLoggedIn = !!localStorage.getItem("auth_token");

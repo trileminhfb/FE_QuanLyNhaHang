@@ -1,3 +1,4 @@
+```vue
 <template>
   <div class="shopping-cart">
     <div class="container-shoppingCart">
@@ -33,6 +34,18 @@
                 </div>
               </li>
             </ul>
+            <div class="sale-section">
+              <h4>Mã giảm giá</h4>
+              <div v-if="filteredSales.length === 0">Không có mã giảm giá nào còn hiệu lực.</div>
+              <div v-else class="sale-dropdown">
+                <select v-model="selectedSaleId" @change="selectSale" class="sale-select">
+                  <option value="" selected>Chọn mã giảm giá</option>
+                  <option v-for="sale in filteredSales" :key="sale.id" :value="sale.id">
+                    {{ sale.nameSale }} (Giảm {{ sale.percent }}%, {{ formatDate(sale.startTime) }} - {{ formatDate(sale.endTime) }})
+                  </option>
+                </select>
+              </div>
+            </div>
             <div class="order-btn-wrapper">
               <p style="color: white;"> Tổng tiền: <strong>{{ tongTien.toLocaleString() }}₫</strong></p>
               <button class="btn-orderItem" @click="datHang">Đặt Món</button>
@@ -56,8 +69,11 @@
                 </div>
               </li>
             </div>
-
           </ul>
+        </div>
+        <div class="note-section">
+          <h4>Ghi chú</h4>
+          <textarea v-model="note" placeholder="Nhập ghi chú (nếu có)"></textarea>
         </div>
       </div>
     </div>
@@ -71,33 +87,65 @@ import { computed, ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { fetchCart } from '../../stores/cartStore';
 import axios from 'axios';
+import { useToast } from 'vue-toastification';
 
+const toast = useToast();
 const route = useRoute();
 const router = useRouter();
 const note = ref("");
-const bestSellerItems = ref([]); // Use ref to store API data
+const bestSellerItems = ref([]);
+const sales = ref([]);
+const selectedSale = ref(null);
+const selectedSaleId = ref(""); // Lưu ID của mã giảm giá được chọn trong dropdown
 
-// Fetch best seller items from API
+// Lọc mã giảm giá còn hiệu lực
+const filteredSales = computed(() => {
+  const currentDate = new Date();
+  return sales.value.filter(sale => {
+    const start = new Date(sale.startTime);
+    const end = new Date(sale.endTime);
+    return start <= currentDate && end >= currentDate;
+  });
+});
+
 const fetchFoodBestSeller = async () => {
   try {
     const response = await axios.get('http://127.0.0.1:8000/api/client/foods?status=1&bestSeller=1');
-    console.log('Best seller foods response:', response.data);
-    // Map API data to match the expected structure
     bestSellerItems.value = response.data.map(item => ({
       id: item.id,
       name: item.name,
-      price: item.cost, // Map 'cost' to 'price' to match template
+      price: item.cost,
       image: item.image
     }));
   } catch (error) {
     console.error('Lỗi khi lấy dữ liệu món ăn nổi bật:', error);
-    bestSellerItems.value = []; // Fallback to empty array on error
+    bestSellerItems.value = [];
   }
 };
 
+const fetchSales = async () => {
+  try {
+    const response = await api.get('client/sales');
+    sales.value = response.data.data || [];
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách mã giảm giá:', error);
+    sales.value = [];
+  }
+};
+
+const formatDate = (dateString) => {
+  return new Date(dateString).toLocaleDateString('vi-VN');
+};
+
+const selectSale = () => {
+  const sale = filteredSales.value.find(s => s.id === selectedSaleId.value);
+  selectedSale.value = sale || null;
+};
+
 const themMon = (mon) => {
-  addToCart({ ...mon, quantity: 1 }); // Add quantity when adding to cart
+  addToCart({ ...mon, quantity: 1 });
   localStorage.setItem('shoppingCart', JSON.stringify(cartItems.value));
+  toast.success('Đã thêm món vào giỏ hàng!');
 };
 
 const xoaHang = (id) => {
@@ -108,21 +156,25 @@ const xoaHang = (id) => {
         cartItems.value.splice(index, 1);
       }
       localStorage.setItem('shoppingCart', JSON.stringify(cartItems.value));
+      toast.success('Đã xóa món khỏi giỏ hàng!');
     })
     .catch(error => {
       console.error("Lỗi xóa món:", error);
-      alert("Không thể xóa món khỏi giỏ hàng.");
+      toast.error("Không thể xóa món khỏi giỏ hàng.");
     });
-}
+};
 
 function increaseQuantity(item) {
   if (!item.quantity) item.quantity = 1;
   item.quantity += 1;
   localStorage.setItem('shoppingCart', JSON.stringify(cartItems.value));
   api.put(`/client/carts/${item.id}`, { quantity: item.quantity })
+    .then(() => {
+      toast.success('Cập nhật số lượng thành công!');
+    })
     .catch(error => {
       console.error("Lỗi cập nhật số lượng:", error);
-      alert("Không thể cập nhật số lượng.");
+      toast.error("Không thể cập nhật số lượng.");
       item.quantity -= 1;
       localStorage.setItem('shoppingCart', JSON.stringify(cartItems.value));
     });
@@ -133,9 +185,12 @@ function decreaseQuantity(item) {
   item.quantity -= 1;
   localStorage.setItem('shoppingCart', JSON.stringify(cartItems.value));
   api.put(`/client/carts/${item.id}`, { quantity: item.quantity })
+    .then(() => {
+      toast.success('Cập nhật số lượng thành công!');
+    })
     .catch(error => {
       console.error("Lỗi cập nhật số lượng:", error);
-      alert("Không thể cập nhật số lượng.");
+      toast.error("Không thể cập nhật số lượng.");
       item.quantity += 1;
       localStorage.setItem('shoppingCart', JSON.stringify(cartItems.value));
     });
@@ -150,75 +205,103 @@ const xoaToanBo = async () => {
     await clearCart();
     localStorage.removeItem('shoppingCart');
     cartItems.value = [];
+    toast.success('Đã xóa toàn bộ giỏ hàng!');
   } catch (error) {
     console.error("Lỗi xóa toàn bộ giỏ hàng:", error);
-    alert("Không thể xóa giỏ hàng.");
+    toast.error("Không thể xóa giỏ hàng.");
   }
 };
 
 const datHang = async () => {
   if (cartItems.value.length === 0) {
-    alert("Bạn chưa chọn món nào.");
+    toast.error("Bạn chưa chọn món nào.");
     return;
   }
+
+  const tableId = Number(localStorage.getItem("table_id"));
+  const customerId = localStorage.getItem("customer_id"); // Lấy customer_id từ localStorage
+  if (!tableId || isNaN(tableId)) {
+    toast.error("Không tìm thấy thông tin bàn.");
+    return;
+  }
+
+  const tongTien = cartItems.value.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0);
+  if (tongTien <= 0) {
+    toast.error("Tổng tiền không hợp lệ. Vui lòng kiểm tra giỏ hàng.");
+    return;
+  }
+
   try {
-    // Tạo payload chứa chi tiết đơn hàng
     const orderDetails = cartItems.value.map(item => ({
-      id_food: item.id_food, // Đảm bảo id_food được gửi
+      id_food: item.id_food,
       quantity: item.quantity,
       price: item.price,
       name: item.name,
       image: item.image
     }));
 
-    // Lấy tableId từ localStorage
-    const tableId = Number(localStorage.getItem("table_id"));
-    if (!tableId || isNaN(tableId)) {
-      alert("Không tìm thấy thông tin bàn.");
-      return;
-    }
-
-    // Gửi yêu cầu tạo hóa đơn với chi tiết đơn hàng và ghi chú
-    const res1 = await api.post('/client/invoices', {
+    // Gửi hóa đơn lên backend
+    const res = await api.post('/client/invoices', {
       id_table: tableId,
-      total: tongTien.value,
-      items: orderDetails, // Danh sách món
-      note: note.value || '' // Ghi chú
+      id_customer: customerId ? Number(customerId) : null,
+      total: tongTien,
+      items: orderDetails,
+      note: note.value,
+      id_sale: selectedSale.value ? selectedSale.value.id : null
     });
-    const invoiceId = res1.data.data?.id;
 
+    const invoiceId = res.data.data?.id;
     if (!invoiceId) {
-      alert('Không thể tạo hóa đơn.');
+      toast.error('Không thể tạo hóa đơn.');
       return;
     }
 
-    // Gửi yêu cầu thanh toán
-    const res2 = await api.get(`/client/invoices/payByTransfer/${invoiceId}`);
-    const paymentUrl = res2.data.payment_url;
+    // Xóa giỏ hàng backend theo bàn
+    await api.delete(`/client/carts/by-table/${tableId}`);
 
-    window.location.href = paymentUrl; // Chuyển hướng đến trang thanh toán
+    // Xóa giỏ hàng phía frontend
+    cartItems.value = [];
+    localStorage.removeItem('shoppingCart');
+
+    // Kiểm tra xem có customer_id hay không
+    if (!customerId) {
+      // Khách vãng lai: Hiển thị thông báo thành công
+      toast.success('Bạn đã đặt món thành công!');
+    } else {
+      // Người dùng đăng nhập: Điều hướng sang trang thanh toán
+      router.push({
+        path: '/payment',
+        query: {
+          invoiceId: invoiceId,
+          total: tongTien,
+          items: JSON.stringify(orderDetails),
+          tableId: tableId,
+          note: note.value,
+          sale: selectedSale.value ? JSON.stringify(selectedSale.value) : null,
+          customerId: customerId || null
+        }
+      });
+    }
   } catch (error) {
-    console.error("Lỗi đặt món:", error);
-    alert("Có lỗi xảy ra khi đặt món. Vui lòng thử lại.");
+    console.error("Lỗi khi đặt hàng:", error);
+    toast.error("Có lỗi xảy ra khi đặt hàng. Vui lòng thử lại.");
   }
 };
 
 onMounted(() => {
   fetchCart();
-  fetchFoodBestSeller(); // Fetch best seller items on mount
+  fetchFoodBestSeller();
+  fetchSales();
   const status = route.query.status;
-  console.log("Trạng thái thanh toán:", status);
   if (status === 'success') {
-    await xoaToanBo();
-    alert('Thanh toán thành công! Giỏ hàng đã được làm mới.');
-    router.push('/'); // Chuyển hướng về trang chính
+    toast.success('Thanh toán thành công! Giỏ hàng đã được làm mới.');
+    router.push('/');
   } else if (status === 'error') {
-    alert('Thanh toán thất bại. Vui lòng thử lại.');
+    toast.error('Thanh toán thất bại. Vui lòng thử lại.');
   }
   fetchCart();
 });
 </script>
-
 
 <style scoped>
 .shopping-cart {
@@ -328,6 +411,54 @@ onMounted(() => {
 
 .btn-delete:hover {
   color: darkred;
+}
+
+.sale-section {
+  margin-top: 20px;
+}
+
+.sale-dropdown {
+  margin-top: 10px;
+}
+
+.sale-select {
+  width: 100%;
+  max-width: 400px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid #ffffff;
+  background-color: rgba(255, 255, 255, 0.15);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 20px;
+}
+
+.sale-select:hover {
+  background-color: rgba(255, 255, 255, 0.25);
+  border-color: #d69c52;
+}
+
+.sale-select:focus {
+  outline: none;
+  border-color: #d69c52;
+  background-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 8px rgba(214, 156, 82, 0.3);
+}
+
+.sale-select option {
+  background-color: #143b36;
+  color: #ffffff;
+  font-size: 14px;
+  padding: 10px;
 }
 
 .order-btn-wrapper {
@@ -440,3 +571,4 @@ onMounted(() => {
   font-family: inherit;
 }
 </style>
+```

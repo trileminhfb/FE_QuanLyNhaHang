@@ -73,6 +73,17 @@ const users = [
         name: "users-rank",
         component: () => import("../pages/client/rank.vue"),
       },
+      {
+        path: "/payment",
+        name: "users-payment",
+        component: () => import("../pages/client/Payment.vue"),
+      },
+      {
+        path: "/history-payment",
+        name: "users-historypayment",
+        component: () => import("../pages/client/historyPayment.vue"),
+      },
+     
       //   {
       //     path: '/register',
       //     name: 'users-register',

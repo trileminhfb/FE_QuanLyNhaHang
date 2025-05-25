@@ -12,50 +12,8 @@
           <router-link class="router-introduce" :to="{ name: 'users-introduce' }">INTRODUCE</router-link>
         </li>
         <li class="servicefood">
-          <router-link :to="{name :'users-category'}" 
-          >MENU</router-link>
-          <!-- <ul class="name-menu" v-if="types.length > 0">
-            <li v-for="type in types" :key="type.id">
-              <div class="menu-row">
-                <div class="menu-list">
-                  <div class="row-menu" style="display: flex; align-items: flex-start; gap: 20px">
-
-                    <div class="col-6">
-                      <p @mouseover="currentImage = type.image || '/imageicon/phefood.png'" class="title-header">
-                        <router-link :to="{ name: 'users-category', params: { typeId: type.id } }">
-                          {{ type.name }}
-                        </router-link>
-                      </p>
-
-                      <ul class="title-menu">
-                        <li>Cơm gà</li>
-                        <li>Bún</li>
-                        <li>Lẩu</li>
-                      </ul>
-
-                      <ul class="List" v-if="type.categories && type.categories.length > 0">
-                        <li v-for="category in type.categories" :key="category.id">
-                          <router-link :to="{ name: 'users-category', params: { categoryId: category.id } }">
-                            <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ category.name }}
-                          </router-link>
-                        </li>
-                      </ul>
-
-                      <ul class="List">
-                        <li v-for="item in type.items" :key="item.id">
-                          <a href="#">
-                            <i class="fa-solid fa-circle-dollar-to-slot"></i>{{ item.name }}
-                          </a>
-                        </li>
-                      </ul>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </li>
-          </ul> -->
+          <router-link :to="{name :'users-category'}">MENU</router-link>
         </li>
-
         <li class="servicefood">
           <router-link :to="{ name: 'users-news' }">NEWS</router-link>
         </li>
@@ -74,33 +32,33 @@
                   <i class="fas fa-solid fa-magnifying-glass"></i>
                 </div>
               </div>
-
-              <!-- Hiển thị kết quả tìm kiếm -->
               <ul v-if="tuKhoa && monTimDuoc.length" class="result-box">
                 <li v-for="mon in monTimDuoc" :key="mon.id">
                   {{ mon.ten }}
                 </li>
               </ul>
-
               <p v-else-if="tuKhoa">Không tìm thấy món nào.</p>
+            </div>
+          </li>
+          <!-- Thêm biểu tượng thanh toán -->
+          <li>
+            <div class="payment-icon">
+              <router-link :to="{ name: 'users-payment' }">
+                <i class="fa-solid fa-credit-card"></i>
+              </router-link>
             </div>
           </li>
           <li>
             <div class="cart-user">
-              <span style="font-size: 15px; font-weight: bold;" v-if="userEmail" class="user-email">Xin chào, {{
-                userName }}</span>
+              <span style="font-size: 15px; font-weight: bold;" v-if="userEmail" class="user-email">Xin chào, {{ userName }}</span>
               <i v-else class="fa-solid fa-user"></i>
-
               <div class="user-info">
                 <router-link v-if="!userEmail" :to="{ name: 'users-login' }">Đăng nhập</router-link>
                 <button class="user-info-logout" v-else @click="handleLogout">Đăng xuất</button>
               </div>
             </div>
           </li>
-
           <li>
-
-            <!-- GIỎ HÀNG (đặt ref="cartIcon" để làm mục tiêu bay tới) -->
             <div class="cart-shopping" ref="cartIcon">
               <router-link :to="{ name: 'users-shoppingCart' }">
                 <i class="fa-solid fa-cart-shopping"></i>
@@ -108,7 +66,6 @@
               </router-link>
             </div>
           </li>
-
           <li>
             <input type="checkbox" id="menu-toggle" hidden>
             <label for="menu-toggle" class="menu-toggle">
@@ -121,34 +78,26 @@
                 </label>
                 <h2>Menu</h2>
               </div>
-
               <router-link :to="{ name: 'users-home' }">
                 <div class="menu-item">
                   <i class="fa-solid fa-house"></i>
                   <h2>Home</h2>
                 </div>
               </router-link>
-
               <div class="menu-item">
                 <i class="fa-solid fa-user"></i>
-                <router-link :to="{ name: 'users-personalinformation' }">
-                  Account
-                </router-link>
+                <router-link :to="{ name: 'users-personalinformation' }">Account</router-link>
               </div>
               <div class="menu-item">
                 <i class="fa-solid fa-ranking-star"></i>
-                <router-link :to="{ name: 'users-rank' }">
-                  rank
-                </router-link>
+                <router-link :to="{ name: 'users-rank' }">Rank</router-link>
               </div>
-
               <router-link :to="{ name: 'users-evaluation' }">
                 <div class="menu-item">
                   <i class="fas fa-pen"></i>
                   <h2>Rates</h2>
                 </div>
               </router-link>
-
               <router-link :to="{ name: 'booking-history' }" class="menu-item">
                 <i class="fas fa-history"></i>
                 <h2>History-Booking</h2>

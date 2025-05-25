@@ -35,7 +35,7 @@
           <!-- Hiển thị tin nhắn -->
           <div v-else
             :class="msg.sender === 'user' ? 'bg-blue-200 text-black inline-block p-2 rounded-xl' : 'bg-gray-200 text-black inline-block p-2 rounded-xl'">
-            {{ msg.text }}
+            <div v-html="formatMessage(msg.text)"></div>
           </div>
         </div>
       </div>
@@ -43,7 +43,9 @@
       <!-- Nhập tin nhắn -->
       <div class="h-auto w-full border-t rounded-b-xl flex flex-row justify-start items-center p-2 bg-white">
         <textarea v-model="message" ref="textareaRef" rows="1" placeholder="Nhập tin nhắn..."
-          class="resize-none overflow-hidden w-full ps-2 focus:outline-none" @input="autoResize" @keydown.enter="sendMessage"></textarea>
+          class="resize-none overflow-hidden w-full ps-2 focus:outline-none"
+          @input="autoResize" @keydown.enter="sendMessage">
+        </textarea>
         <div @click="sendMessage"
           class="h-[50px] w-[50px] flex justify-center items-center hover:cursor-pointer">
           <svg class="w-6 h-6 text-gray-800" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
@@ -70,6 +72,7 @@ const userInfo = JSON.parse(localStorage.getItem('userInfo')) || {}
 const id_customer = userInfo.id || 1
 const id_user = 1
 
+// Tự động co giãn textarea
 const autoResize = () => {
   const textarea = textareaRef.value
   if (textarea) {
@@ -78,19 +81,19 @@ const autoResize = () => {
   }
 }
 
+// Gửi tin nhắn
 const sendMessage = async (event) => {
   if (event && event.type === 'keydown' && !event.shiftKey) {
-    event.preventDefault() // Ngăn Enter tạo dòng mới
+    event.preventDefault()
   }
 
   if (!message.value.trim()) return
 
   const userMessage = message.value
   messages.value.push({ sender: 'user', text: userMessage })
-  message.value = '' // Xóa text nhập khi gửi
+  message.value = ''
   autoResize()
 
-  // Thêm dấu hiệu đang gõ
   messages.value.push({ sender: 'bot', text: '...', typing: true })
 
   try {
@@ -100,7 +103,6 @@ const sendMessage = async (event) => {
       message: userMessage
     })
 
-    // Xóa typing và thêm phản hồi
     messages.value = messages.value.filter(msg => !msg.typing)
     messages.value.push({ sender: 'bot', text: res.data.reply })
   } catch (err) {
@@ -112,17 +114,17 @@ const sendMessage = async (event) => {
   autoResize()
 }
 
-// Hàm gửi tin nhắn chào
+// Gửi lời chào khi mở lần đầu
 const sendGreeting = () => {
-  if (messages.value.length === 0) { // Chỉ gửi nếu chưa có tin nhắn
+  if (messages.value.length === 0) {
     messages.value.push({
       sender: 'bot',
-      text: 'Xin chào! Tôi là AI hỗ trợ, bạn cần giúp gì hôm nay?'
+      text: `Xin chào! Tôi là AI hỗ trợ, bạn cần giúp gì hôm nay?`
     })
   }
 }
 
-// Theo dõi isOpen để gửi tin nhắn chào
+// Theo dõi khi mở khung chat
 watch(isOpen, (newValue) => {
   if (newValue) {
     sendGreeting()
@@ -132,32 +134,52 @@ watch(isOpen, (newValue) => {
 onMounted(() => {
   autoResize()
 })
+
+// Hàm định dạng tin nhắn có hỗ trợ **bold** và *phóng to*
+function formatMessage(text) {
+  if (!text) return ''
+
+  // Chia dòng
+  const lines = text.split('\n')
+  const htmlLines = lines.map(line => {
+    let html = line
+
+    // Đổi **text** -> <strong>text</strong>
+    html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+
+    // Nếu dòng bắt đầu bằng '*', thì bao dòng trong thẻ lớn hơn
+    if (html.trim().startsWith('*')) {
+      return `<div style="font-size: 1.1rem; font-weight: 500;">${html}</div>`
+    }
+
+    return `<div>${html}</div>`
+  })
+
+  return htmlLines.join('')
+}
 </script>
 
+<style scoped>
+.typing-indicator span {
+  display: inline-block;
+  animation: blink 1.5s infinite;
+  font-weight: bold;
+  margin: 0 2px;
+  font-size: 1.3rem;
+}
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
 
-  
-  <style scoped>
-  .typing-indicator span {
-    display: inline-block;
-    animation: blink 1.5s infinite;
-    font-weight: bold;
-    margin: 0 2px;
-    font-size: 1.3rem;
+@keyframes blink {
+  0%, 80%, 100% {
+    opacity: 0;
   }
-  .typing-indicator span:nth-child(2) {
-    animation-delay: 0.2s;
+  40% {
+    opacity: 1;
   }
-  .typing-indicator span:nth-child(3) {
-    animation-delay: 0.4s;
-  }
-  
-  @keyframes blink {
-    0%, 80%, 100% {
-      opacity: 0;
-    }
-    40% {
-      opacity: 1;
-    }
-  }
-  </style>
-  
+}
+</style>
