@@ -325,6 +325,5 @@ const onFileChange = (e) => {
     }
 };
 
-// Fetch profile data when component is mounted
 onMounted(fetchUserProfile);
 </script>
