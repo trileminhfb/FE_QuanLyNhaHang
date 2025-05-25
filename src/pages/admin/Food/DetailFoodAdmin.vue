@@ -1,5 +1,6 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
+    <div v-if="user.role === 'admin' || user.role === 'manager'"
+        class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
         <div class="h-full w-full flex flex-col font-semibold">
             <div class=" uppercase font-bold text-2xl">
                 Chi tiết món ăn
@@ -133,13 +134,16 @@
             </div>
         </div>
     </div>
+    <AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch, reactive } from "vue";
 import { useRoute, useRouter } from 'vue-router'
 import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue'
 import axios from 'axios'
+import AccessDenied from '../../../components/Admin/AccessDenied.vue'
+import api from "../../../services/api";
 
 const router = useRouter()
 const route = useRoute()
@@ -161,6 +165,39 @@ const user = ref({
     image: null,
     birth: null,
 })
+
+const showToast = ref(false);
+
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
+
+onMounted(async () => {
+    await fetchFoods();
+    fetchType();
+    fetchCategory();
+    fetchUserProfile();
+});
 
 const isUserLoading = ref(false)
 const userErrorMessage = ref('')
@@ -192,7 +229,6 @@ async function fetchManagerProfile() {
         isUserLoading.value = false
     }
 }
-
 
 const calculateAverageRating = () => {
     if (reviews.value.length === 0) return 0;
@@ -268,12 +304,10 @@ function cancelDelete() {
     showConfirm.value = false
 }
 
-// Toggle reply input visibility
 function toggleReplyInput(index) {
     reviews.value[index].showReplyInput = !reviews.value[index].showReplyInput
 }
 
-// Simulate submitting a reply (for demo purposes)
 async function submitReply(index) {
     const review = reviews.value[index];
 
@@ -306,5 +340,12 @@ async function submitReply(index) {
         }
     }
 }
+
+watch(() => user.value.role, (newRole) => {
+    if (newRole !== 'admin' && newRole !== 'manager') {
+        showToast.value = true;
+
+    }
+});
 
 </script>

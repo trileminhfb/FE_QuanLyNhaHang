@@ -1,5 +1,6 @@
 <template>
-  <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
+  <div v-if="user.role === 'admin' || user.role === 'manager'"
+    class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
     <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
       <Search v-model="searchQuery" />
       <AddButton @add="goAdd" />
@@ -57,10 +58,11 @@
       <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
     </div>
   </div>
+  <AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, onMounted, computed, watch, reactive } from "vue";
 import { useRouter } from 'vue-router'
 import axios from 'axios'
 import Search from '../../../components/Admin/Search.vue'
@@ -69,6 +71,7 @@ import SortButton from '../../../components/Admin/SortButton.vue'
 import Pagination from '../../../components/Admin/Pagination.vue'
 import SwitchButton from '../../../components/Admin/SwitchButton.vue'
 import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue'
+import AccessDenied from '../../../components/Admin/AccessDenied.vue'
 
 const router = useRouter()
 const searchQuery = ref('')
@@ -108,7 +111,6 @@ const filteredItems = computed(() => {
   return result
 })
 
-
 async function toggleStatus(item) {
   const newStatus = item.status === 1 ? 0 : 1
   try {
@@ -124,15 +126,55 @@ async function toggleStatus(item) {
 }
 
 
-onMounted(async () => {
+const user = ref({
+  role: 'N/A',
+});
+const showToast = ref(false);
+
+async function fetchUserProfile() {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/admin/types')
-    allItems.value = response.data.data // Extract data from API response
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      throw new Error('No authentication token found.');
+    }
+
+    const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    user.value.role = response.data.data.role; // Only store the role
   } catch (error) {
-    console.error('Lỗi khi tải dữ liệu types:', error)
-    alert('Không thể tải danh sách kiểu món ăn.')
+    console.error('Error fetching profile:', error.response?.data || error.message);
+    if (error.response?.status === 401) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      router.push({ name: 'admin-login' });
+    }
   }
-})
+}
+
+onMounted(async () => {
+  await fetchType();
+  fetchUserProfile();
+});
+
+watch(() => user.value.role, (newRole) => {
+  if (newRole !== 'admin' && newRole !== 'manager') {
+    showToast.value = true;
+
+  }
+});
+
+const fetchType = async () => {
+  try {
+    const response = await axios.get("http://127.0.0.1:8000/api/admin/types");
+    allItems.value = response.data.data;
+  } catch (error) {
+    console.error("Lỗi khi lấy dữ liệu:", error);
+  }
+}
 
 function sortBy(key, direction) {
   sortKey.value = key

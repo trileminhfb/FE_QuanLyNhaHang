@@ -1,10 +1,11 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-4">
-        <div class="h-full w-full flex flex-col font-semibold gap-4 overflow-y-auto">
+    <div v-if="user.role === 'admin' || user.role === 'manager'"
+        class="w-[calc(60vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-4">
+        <div class="h-full w-full flex flex-col font-semibold gap-4">
             <!-- Tiêu đề -->
             <div class="uppercase font-bold text-3xl text-gray-800">Thêm kiểu</div>
 
-            <div class="max-w-5xl h-fit bg-white rounded-lg shadow-md p-6 border space-y-2">
+            <div class="h-fit bg-white rounded-lg shadow-md p-6 border space-y-2">
                 <div class="flex items-center gap-4">
                     <p class="w-32">Tên kiểu:</p>
                     <input type="text" id="name-category" v-model="form.name"
@@ -26,13 +27,15 @@
             </div>
         </div>
     </div>
+    <AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted, computed, watch, reactive } from "vue";
 import axios from 'axios'
 import SwitchButton from '../../../components/Admin/SwitchButton.vue'
+import AccessDenied from '../../../components/Admin/AccessDenied.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -56,5 +59,44 @@ async function goSave() {
         alert('Không thể thêm kiểu.')
     }
 }
+
+const user = ref({
+    role: 'N/A',
+});
+const showToast = ref(false);
+
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
+
+onMounted(async () => {
+    fetchUserProfile();
+});
+
+watch(() => user.value.role, (newRole) => {
+    if (newRole !== 'admin' && newRole !== 'manager') {
+        showToast.value = true;
+    }
+});
 
 </script>

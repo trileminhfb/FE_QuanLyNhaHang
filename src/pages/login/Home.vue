@@ -4,11 +4,7 @@
             <div
                 class="w-[50vw] h-full bg-blue-500 rounded-e-[500px] rounded-s-[100px] flex flex-col justify-center items-center gap-4 text-white">
                 <h1 class="text-3xl font-bold">Hello, Welcome!</h1>
-                <p class="text-sm">Don't have an account?</p>
-                <button class="rounded-xl bg-blue-500 h-12 w-32 border-2 border-white font-bold" type="button"
-                    @click="goRegister">
-                    Register
-                </button>
+
             </div>
             <div
                 class="w-[50vw] h-full bg-white rounded-e-[50px] flex flex-col gap-4 justify-center items-center text-black">
@@ -88,29 +84,40 @@ async function login() {
             password: password.value,
         });
 
-        console.log("Dữ liệu trả về từ backend:", response.data);
+        const data = response.data;
 
-        const token = response.data?.key;
-        const user = { id: response.data?.id, name: response.data?.name, image: response.data?.image };
+        const token = data?.key;
+        const user = {
+            id: data?.id,
+            name: data?.name,
+            image: data?.image,
+            status_user: data?.status_user,
+        };
 
         if (!token || !user) {
-            throw new Error("Thiếu token hoặc user trong phản hồi.");
+            throw new Error("Thiếu token hoặc thông tin người dùng.");
         }
 
-        localStorage.setItem('auth_token', token);
-        localStorage.setItem('user', JSON.stringify(user));
-
-        console.log('Đăng nhập thành công:', user);
-        router.push({ name: 'home' }); // Updated to correct route name
+        switch (user.status_user) {
+            case 'active':
+                localStorage.setItem('auth_token', token);
+                localStorage.setItem('user', JSON.stringify(user));
+                router.push({ name: 'home' });
+                break;
+            case 'inactive':
+                errorMessage.value = 'Người dùng này đã nghỉ việc!';
+                break;
+            case 'banned':
+                errorMessage.value = 'Tài khoản này đã bị cấm!';
+                break;
+            default:
+                errorMessage.value = 'Trạng thái tài khoản không hợp lệ!';
+        }
 
     } catch (error) {
         console.error('Lỗi đăng nhập:', error.response?.data || error.message);
         errorMessage.value = error.response?.data?.message || 'Sai Email hoặc mật khẩu!';
     }
-}
-
-function goRegister() {
-    router.push({ name: 'users-register' });
 }
 
 function goForgotPassword() {

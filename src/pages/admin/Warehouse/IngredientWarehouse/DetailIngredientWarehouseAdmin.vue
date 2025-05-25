@@ -1,5 +1,6 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-44 ms-[300px] flex flex-col p-2">
+    <div v-if="user.role === 'admin' || user.role === 'manager'"
+        class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-44 ms-[300px] flex flex-col p-2">
         <div class="h-full w-full flex flex-col font-semibold">
             <div class="w-[30vw] h-full flex justify-center items-start text-xl">
                 <div class="w-full border h-fit flex flex-col">
@@ -8,7 +9,8 @@
                             <div class="flex flex-row px-5 gap-2">
                                 <p class="w-full">Hình ảnh:</p>
                                 <div class="w-32 h-32 flex justify-center items-center overflow-hidden border">
-                                    <img class=" w-full h-full object-cover" src="" alt="hình ảnh">
+                                    <img class=" w-full h-full object-cover" :src='ingredientWarehouseData.image'
+                                        alt="hình ảnh">
                                 </div>
                             </div>
                             <div class="flex flex-row w-full items-center px-5">
@@ -42,13 +44,16 @@
             </div>
         </div>
     </div>
+    <AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
 
 import { useRoute, useRouter } from 'vue-router'
-import { ref } from 'vue'
+import { ref, onMounted, computed, watch, reactive } from "vue";
 import ConfirmDelete from '../../../../components/Admin/ConfirmDelete.vue';
+import AccessDenied from '../../../../components/Admin/AccessDenied.vue';
+import axios from 'axios';
 
 const router = useRouter()
 const route = useRoute()
@@ -59,30 +64,71 @@ function goBack() {
     router.push({ name: 'ingredient-warehouse-admin' })
 }
 
-// function goDelete() {
-//     showConfirm.value = true
-// }
+const user = ref({
+    role: 'N/A',
+});
 
-// function confirmDelete() {
-//     showConfirm.value = false
+const showToast = ref(false);
 
-//     console.log('Đã xác nhận xoá kiểu món ăn')
-//     router.push({ name: 'menu-warehouse-admin' })
-// }
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
 
-// function cancelDelete() {
-//     showConfirm.value = false
-// }
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
 
-// function goEdit(item) {
-//     router.push({
-//         name: 'admin-edit-types',
-//         params: {
-//             id: item.id,
-//         },
-//         query: {
-//             data: JSON.stringify(item)
-//         }
-//     });
-// }
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
+
+onMounted(async () => {
+    fetchUserProfile();
+});
+
+watch(() => user.value.role, (newRole) => {
+    if (newRole !== 'admin' && newRole !== 'manager') {
+        showToast.value = true;
+    }
+});
+
+function goDelete() {
+    showConfirm.value = true
+}
+
+async function confirmDelete() {
+    showConfirm.value = false
+    try {
+        await axios.delete(`http://127.0.0.1:8000/api/admin/ingredients/delete/${ingredientWarehouseData.id}`)
+        alert('Đã xoá thành công!')
+        router.push({ name: 'ingredient-warehouse-admin' })
+    } catch (error) {
+        console.error('Lỗi khi xoá:', error)
+        alert('Không thể xoá.')
+    }
+}
+
+function cancelDelete() {
+    showConfirm.value = false
+}
+
+function goEdit(item) {
+    router.push({
+        name: 'edit-ingredient-warehouse-admin',
+        params: { id: item.id },
+        query: { data: JSON.stringify(item) }
+    });
+}
 </script>

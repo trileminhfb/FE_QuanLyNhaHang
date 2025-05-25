@@ -1,5 +1,6 @@
 <template>
-  <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
+  <div v-if="user.role === 'admin' || user.role === 'manager'"
+    class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
     <div class="w-full h-12 flex flex-row justify-end pe-5 pb-2 gap-2">
       <Search v-model="searchQuery" />
       <AddButton @add="goAdd" />
@@ -66,10 +67,11 @@
       <Pagination :current-page="currentPage" :total-pages="totalPages" @page-changed="changePage" />
     </div>
   </div>
+  <AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from "vue-router";
 import Sort from "../../../components/Admin/SortButton.vue";
 import Search from "../../../components/Admin/Search.vue";
@@ -77,10 +79,12 @@ import AddButton from "../../../components/Admin/AddButton.vue";
 import Pagination from "../../../components/Admin/Pagination.vue";
 import SwitchButton from "../../../components/Admin/SwitchButton.vue";
 import ConfirmDelete from "../../../components/Admin/ConfirmDelete.vue";
-import axios from 'axios'
+import AccessDenied from '../../../components/Admin/AccessDenied.vue';
+import axios from 'axios';
 import BestSellerSwitch from '../../../components/Admin/BestSellerSwitch.vue';
+import api from '../../../services/api';
 
-const showConfirm = ref(false)
+const showConfirm = ref(false);
 const router = useRouter();
 const searchQuery = ref("");
 const sortKey = ref(""); // 'name' hoặc 'qty'
@@ -89,6 +93,35 @@ const itemsPerPage = 5;
 const currentPage = ref(1);
 const totalPages = computed(() => Math.ceil(filteredItems.value.length / itemsPerPage));
 const allItems = ref([]);
+const showToast = ref(false);
+
+const user = ref({
+  role: 'N/A',
+});
+
+onMounted(() => {
+  fetchUserProfile();
+  fetchFoods();
+});
+
+async function fetchUserProfile() {
+  try {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      throw new Error('No authentication token found.');
+    }
+
+    const response = await api.get('/admin/users/profile');
+    user.value.role = response.data.data.role; // Only store the role
+  } catch (error) {
+    console.error('Error fetching profile:', error.response?.data || error.message);
+    if (error.response?.status === 401) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      router.push({ name: 'admin-login' });
+    }
+  }
+}
 
 const filteredItems = computed(() => {
   let result = [...allItems.value];
@@ -112,20 +145,21 @@ const filteredItems = computed(() => {
   return result;
 });
 
-onMounted(async () => {
+const fetchFoods = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/admin/foods')
+    const response = await axios.get("http://127.0.0.1:8000/api/admin/foods");
+
     if (Array.isArray(response.data)) {
-      allItems.value = response.data
+      allItems.value = response.data;
+    } else if (response.data && Array.isArray(response.data)) {
+      allItems.value = response.data.data;
     } else {
-      console.error('Dữ liệu trả về không hợp lệ:', response.data)
+      allItems.value = [];
     }
   } catch (error) {
-    console.error('Lỗi khi tải dữ liệu thức ăn:', error)
+    console.error("Lỗi khi lấy dữ liệu:", error);
   }
-})
-
-
+};
 
 const paginatedItems = computed(() => {
   const start = (currentPage.value - 1) * itemsPerPage;
@@ -134,32 +168,40 @@ const paginatedItems = computed(() => {
 });
 
 async function toggleStatus(item) {
-  const newStatus = item.status === 1 ? 0 : 1
+  if (user.value.role !== 'admin' && user.value.role !== 'manager') {
+    alert("Bạn không có quyền thực hiện thao tác này.");
+    return;
+  }
+  const newStatus = item.status === 1 ? 0 : 1;
   try {
     await axios.put(`http://127.0.0.1:8000/api/admin/foods/${item.id}`, {
       ...item,
       originImg: item.image,
       status: newStatus
-    })
-    item.status = newStatus
+    });
+    item.status = newStatus;
   } catch (error) {
-    console.error("Không thể cập nhật trạng thái:", error)
-    alert("Cập nhật trạng thái thất bại.")
+    console.error("Không thể cập nhật trạng thái:", error);
+    alert("Cập nhật trạng thái thất bại.");
   }
 }
 
 async function toggleBestSeller(item) {
-  const newStatus = item.bestSeller === 1 ? 0 : 1
+  if (user.value.role !== 'admin' && user.value.role !== 'manager') {
+    alert("Bạn không có quyền thực hiện thao tác này.");
+    return;
+  }
+  const newStatus = item.bestSeller === 1 ? 0 : 1;
   try {
     await axios.put(`http://127.0.0.1:8000/api/admin/foods/${item.id}`, {
       ...item,
       originImg: item.image,
       bestSeller: newStatus
-    })
-    item.bestSeller = newStatus
+    });
+    item.bestSeller = newStatus;
   } catch (error) {
-    console.error("Không thể cập nhật trạng thái:", error)
-    alert("Cập nhật trạng thái thất bại.")
+    console.error("Không thể cập nhật trạng thái:", error);
+    alert("Cập nhật trạng thái thất bại.");
   }
 }
 
@@ -175,7 +217,11 @@ function sortBy(key, direction) {
 }
 
 function goAdd() {
-  router.push({ name: 'admin-add-foods' })
+  if (user.value.role !== 'admin' && user.value.role !== 'manager') {
+    alert("Bạn không có quyền thực hiện thao tác này.");
+    return;
+  }
+  router.push({ name: 'admin-add-foods' });
 }
 
 function goDetailFoods(item) {
@@ -191,6 +237,10 @@ function goDetailFoods(item) {
 }
 
 function goEdit(item) {
+  if (user.value.role !== 'admin' && user.value.role !== 'manager') {
+    alert("Bạn không có quyền thực hiện thao tác này.");
+    return;
+  }
   router.push({
     name: 'admin-edit-foods',
     params: {
@@ -200,17 +250,27 @@ function goEdit(item) {
 }
 
 function goDelete() {
-  showConfirm.value = true
+  if (user.value.role !== 'admin' && user.value.role !== 'manager') {
+    alert("Bạn không có quyền thực hiện thao tác này.");
+    return;
+  }
+  showConfirm.value = true;
 }
 
 function confirmDelete() {
-  showConfirm.value = false
-  console.log('Đã xác nhận xoá món ăn')
-  router.push({ name: 'admin-foods' })
+  showConfirm.value = false;
+  console.log('Đã xác nhận xoá món ăn');
+  router.push({ name: 'admin-foods' });
 }
 
 function cancelDelete() {
-  showConfirm.value = false
+  showConfirm.value = false;
 }
 
+watch(() => user.value.role, (newRole) => {
+  if (newRole !== 'admin' && newRole !== 'manager') {
+    showToast.value = true;
+
+  }
+});
 </script>

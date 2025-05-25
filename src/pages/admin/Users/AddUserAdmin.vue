@@ -1,5 +1,5 @@
 <template>
-    <div class="h-[calc(100vh-100px)] fixed z-0 mt-20 w-full ms-[300px] flex flex-col p-2">
+    <div v-if="user.role === 'admin'" class="h-[calc(100vh-100px)] fixed z-0 mt-20 w-full ms-[300px] flex flex-col p-2">
         <div class="h-full w-full flex flex-col font-semibold">
             <div class="uppercase font-bold text-2xl">Thêm mới người dùng</div>
 
@@ -44,16 +44,6 @@
                             </div>
 
                             <div class="flex flex-row items-center gap-2">
-                                <p class="flex flex-1">Trạng thái:</p>
-                                <select v-model="form.status" class="flex-1 border rounded px-4 py-2 w-[200px]">
-                                    <option disabled value="">--Trạng thái--</option>
-                                    <option value="active">Đang làm việc</option>
-                                    <option value="inactive">Nghỉ việc</option>
-                                    <option value="banned">Bị ban</option>
-                                </select>
-                            </div>
-
-                            <div class="flex flex-row items-center gap-2">
                                 <p class="flex flex-1">Số điện thoại:</p>
                                 <input type="text" v-model="form.phone_number"
                                     class="flex-1 border rounded px-4 py-2 text-lg"
@@ -90,12 +80,14 @@
             </div>
         </div>
     </div>
+    <AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { ref, onMounted, computed, watch, reactive } from "vue";
 import { useRouter } from 'vue-router'
 import axios from 'axios'
+import AccessDenied from '../../../components/Admin/AccessDenied.vue'
 
 const router = useRouter()
 const fileInput = ref(null)
@@ -107,12 +99,52 @@ const form = ref({
     name: '',
     password: '',
     role: '',
-    status: '',
+    status: 'active',
     phone_number: '',
     email: '',
     birth: '',
     image: '', // <-- ảnh mặc định
 })
+
+const user = ref({
+    role: 'N/A',
+});
+
+const showToast = ref(false);
+
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
+
+onMounted(async () => {
+    fetchUserProfile();
+});
+
+watch(() => user.value.role, (newRole) => {
+    if (newRole !== 'admin') {
+        showToast.value = true;
+    }
+});
 
 const onFileChange = (e) => {
     const file = e.target.files[0]
@@ -143,7 +175,6 @@ async function goSave() {
         }
     }
 }
-
 
 function goBack() {
     router.push({ name: 'admin-users' })

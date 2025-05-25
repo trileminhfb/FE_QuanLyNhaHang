@@ -1,103 +1,65 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
-        <div class="h-full w-full flex flex-col font-semibold">
-            <div class=" uppercase font-bold text-2xl">
-                Chi tiết kiểu
-            </div>
-            <div class="w-[50vw] h-full flex justify-center items-start text-xl">
-            <div class="w-[50vw] h-full flex justify-center items-start text-xl">
-                <div class="w-full border h-fit flex flex-col">
-                    <div class="flex-1 border flex flex-row">
-                        <div class="border flex flex-[2] flex-col p-2 gap-2">
-                            <div class="flex flex-row w-full items-center px-5">
-                                <p>Tên kiểu:</p>
-                                <p class="text-2xl flex-1 text-end">{{ typeData.name }} </p>
-                            </div>
-                            <div class="flex flex-row w-full items-center px-5">
-                                <p class="flex-1">Trạng thái:</p>
-                                <p v-if="typeData.status === 1" class="bg-green-500 text-white text-end px-2">
-                                    Đang mở bán
-                                </p>
-                                <p v-else class="bg-red-500 text-white px-2 text-end">
-                                    Đang đóng
-                                </p>
-                            </div>
-                            <div class="flex flex-row w-full px-5">
-                                <p>Danh sách các loại thức ăn:</p>
-                                <div class="flex-1 flex flex-wrap gap-2 justify-end px-5">
-                                    <span v-for="(cat, index) in filteredCategories" :key="index"
-                                        class="text-xl bg-gray-200 px-2 py-1 rounded">
-                                        {{ cat.name }}
-                                    </span>
-                                </div>
-                            </div>
+    <div v-if="user.role === 'admin' || user.role === 'manager'"
+        class="fixed z-0 mt-20 ms-[300px] w-[calc(60vw-300px)] h-[calc(100vh-100px)] p-4">
+        <div class="w-full h-full flex flex-col gap-4 font-semibold">
+            <h1 class="uppercase font-bold text-2xl">Chi tiết kiểu</h1>
 
-                            <!-- <div class="border p-2 h-96 flex flex-col gap-2 ">
-                                <p>Danh sách các món ăn</p>
-                                <div class="overflow-y-auto max-h-full">
-                                    <div class="flex flex-row gap-2 justify-start items-center border">
-                                        <img class="object-cover w-12 h-16" src="/picture/food/food 1.png" alt="">
-                                        <p>Hamberger thịt nướng bơ tỏi hấp xả các thứ</p>
-                                    </div>
-                                    <div class="flex flex-row gap-2 justify-start items-center border">
-                                        <img class="object-cover w-12 h-16" src="/picture/food/food 1.png" alt="">
-                                        <p>Hamberger thịt nướng bơ tỏi hấp xả các thứ</p>
-                                    </div>
-                                    <div class="flex flex-row gap-2 justify-start items-center border">
-                                        <img class="object-cover w-12 h-16" src="/picture/food/food 1.png" alt="">
-                                        <p>Hamberger thịt nướng bơ tỏi hấp xả các thứ</p>
-                                    </div>
-                                    <div class="flex flex-row gap-2 justify-start items-center border">
-                                        <img class="object-cover w-12 h-16" src="/picture/food/food 1.png" alt="">
-                                        <p>Hamberger thịt nướng bơ tỏi hấp xả các thứ</p>
-                                    </div>
-                                    <div class="flex flex-row gap-2 justify-start items-center border">
-                                        <img class="object-cover w-12 h-16" src="/picture/food/food 1.png" alt="">
-                                        <p>Hamberger thịt nướng bơ tỏi hấp xả các thứ</p>
-                                    </div>
-                                    <div class="flex flex-row gap-2 justify-start items-center border">
-                                        <img class="object-cover w-12 h-16" src="/picture/food/food 1.png" alt="">
-                                        <p>Hamberger thịt nướng bơ tỏi hấp xả các thứ</p>
-                                    </div>
-                                </div>
-                            </div> -->
-                            <div class="flex flex-row gap-2 p-2">
-                                <div class="bg-green-500 rounded-lg p-2 flex justify-center items-center flex-1 text-white hover:text-black hover:cursor-pointer hover:bg-green-300"
-                                    @click="goEdit(typeData)">
-                                <div class="bg-green-500 rounded-lg p-2 flex justify-center items-center flex-1 text-white hover:text-black hover:cursor-pointer hover:bg-green-300"
-                                    @click="goEdit(typeData)">
-                                    Chỉnh sửa
-                                </div>
-                                <div class="bg-red-500 rounded-lg p-2 flex justify-center items-center flex-1 text-white hover:text-black hover:cursor-pointer hover:bg-red-300"
-                                    @click="goDelete">
-                                <div class="bg-red-500 rounded-lg p-2 flex justify-center items-center flex-1 text-white hover:text-black hover:cursor-pointer hover:bg-red-300"
-                                    @click="goDelete">
-                                    Xoá
-                                </div>
-                                <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
+            <div class="w-full border rounded p-4 flex flex-col gap-4 bg-white shadow">
+                <div class="flex justify-between items-center">
+                    <p class="text-lg">Tên kiểu:</p>
+                    <p class="text-2xl">{{ typeData?.name }}</p>
+                </div>
 
-                                <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
+                <div class="flex justify-between items-center">
+                    <p class="text-lg">Trạng thái:</p>
+                    <span :class="typeData?.status === 1 ? 'bg-green-500' : 'bg-red-500'"
+                        class="text-white px-3 py-1 rounded">
+                        {{ typeData?.status === 1 ? 'Đang mở bán' : 'Đang đóng' }}
+                    </span>
+                </div>
 
-                                <div class=" rounded-lg border p-2 flex justify-center items-center flex-1 hover:cursor-pointer hover:bg-gray-300"
-                                    @click="goBack">
-                                    Trở lại
-                                </div>
-                            </div>
-                        </div>
+                <div>
+                    <p class="mb-2">Danh sách các loại thức ăn:</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span v-for="(cat, index) in filteredCategories" :key="index"
+                            class="bg-gray-200 px-3 py-1 rounded text-base">
+                            {{ cat?.name }}
+                        </span>
                     </div>
                 </div>
+
+                <div class="flex justify-between gap-4 mt-6">
+                    <button class="flex-1 bg-green-500 hover:bg-green-300 text-white hover:text-black py-2 rounded"
+                        @click="goEdit(typeData)">
+                        Chỉnh sửa
+                    </button>
+
+                    <button class="flex-1 bg-red-500 hover:bg-red-300 text-white hover:text-black py-2 rounded"
+                        @click="goDelete">
+                        Xoá
+                    </button>
+
+                    <button class="flex-1 border hover:bg-gray-200 py-2 rounded" @click="goBack">
+                        Trở lại
+                    </button>
+                </div>
+
+                <ConfirmDelete v-if="showConfirm" @confirm="confirmDelete" @cancel="cancelDelete" />
             </div>
         </div>
     </div>
-</template>
+    <AccessDenied v-if="showToast" />
 
+
+</template>
 
 <script setup>
 
 import { useRoute, useRouter } from 'vue-router'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch, reactive } from "vue";
 import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue';
 import axios from 'axios'
+import AccessDenied from '../../../components/Admin/AccessDenied.vue';
 const allItems = ref([])
 
 const router = useRouter()
@@ -105,15 +67,54 @@ const route = useRoute()
 const typeData = route.query.data ? JSON.parse(route.query.data) : null;
 const showConfirm = ref(false)
 
-onMounted(async () => {
+const fetchCategory = async () => {
     try {
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/categories')
-        allItems.value = response.data
+        const response = await axios.get("http://127.0.0.1:8000/api/admin/categories");
+        allItems.value = response.data;
     } catch (error) {
-        console.error('Lỗi khi tải dữ liệu:', error)
-        alert('Không thể tải danh sách.')
+        console.error("Lỗi khi lấy dữ liệu:", error);
     }
-})
+}
+
+const user = ref({
+    role: 'N/A',
+});
+const showToast = ref(false);
+
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
+
+onMounted(async () => {
+    await fetchCategory();
+    fetchUserProfile();
+});
+
+watch(() => user.value.role, (newRole) => {
+    if (newRole !== 'admin' && newRole !== 'manager') {
+        showToast.value = true;
+    }
+});
 
 const filteredCategories = computed(() =>
     allItems.value.filter(item => item.id_type === typeData?.id)

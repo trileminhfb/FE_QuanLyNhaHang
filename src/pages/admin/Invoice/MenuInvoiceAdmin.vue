@@ -1,5 +1,6 @@
     <template>
-        <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
+        <div v-if="user.role === 'admin' || user.role === 'manager'"
+            class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
             <div class="h-full w-full flex flex-col font-bold">
                 <p class="uppercase text-2xl">Tổng hoá đơn</p>
                 <div class="w-full h-full flex flex-col">
@@ -147,6 +148,7 @@
                 </div>
             </div>
         </div>
+        <AccessDenied v-if="showToast" />
     </template>
 
 <script setup>
@@ -154,16 +156,45 @@ import { useRouter } from "vue-router";
 import Search from "../../../components/Admin/Search.vue";
 import SortButton from "../../../components/Admin/SortButton.vue";
 import Pagination from "../../../components/Admin/Pagination.vue";
-import { ref, computed, onMounted } from "vue";
-import axios from "axios";
+import { ref, onMounted, computed, watch, reactive } from "vue"; import axios from "axios";
+import AccessDenied from "../../../components/Admin/AccessDenied.vue";
+import api from "../../../services/api";
 
 const router = useRouter();
 const searchQuery = ref("");
 const sortKey = ref("");
 const sortDirection = ref(""); // 'asc' | 'desc'
 const allItems = ref([]);
+const showToast = ref(false);
 
-// Fetch invoices from the API
+const user = ref({
+    role: 'N/A',
+});
+
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
+
 async function fetchInvoice() {
     try {
         const response = await axios.get("http://127.0.0.1:8000/api/admin/invoices");
@@ -195,9 +226,11 @@ function showCancel() {
     currentPage.value = 1;
 }
 
-onMounted(fetchInvoice);
+onMounted(async () => {
+    await fetchInvoice();
+    fetchUserProfile();
+});
 
-// Sorting function
 function sortBy(key, direction) {
     sortKey.value = key;
     sortDirection.value = direction;
@@ -301,4 +334,11 @@ function goDetail(item) {
         query: { data: JSON.stringify(item) }
     })
 }
+
+watch(() => user.value.role, (newRole) => {
+    if (newRole !== 'admin' && newRole !== 'manager') {
+        showToast.value = true;
+
+    }
+});
 </script>

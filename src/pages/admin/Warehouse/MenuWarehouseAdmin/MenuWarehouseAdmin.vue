@@ -1,5 +1,6 @@
   <template>
-    <div class="w-[calc(70vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-44 ms-[300px] flex flex-col p-2 text-lg ">
+    <div v-if="user.role === 'admin' || user.role === 'manager'"
+      class="w-[calc(70vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-44 ms-[300px] flex flex-col p-2 text-lg ">
       <div class="w-full h-[50vh] border-t border-black">
         <div class="w-full flex justify-end gap-2 p-2">
           <Search v-model="searchQuery" />
@@ -29,17 +30,17 @@
                   <div class="h-full flex flex-row justify-start items-center">
                     <div class="overflow-hidden flex flex-row justify-center items-center">
                       <img class="hover:cursor-pointer overflow-auto object-cover h-32 w-24 rounded-lg shadow-md border"
-                        :src="`${item.ingredient.image}`" alt="Ảnh nguyên liệu" />
+                        :src="`${item?.ingredient?.image}`" alt="Ảnh nguyên liệu" />
                       <div class="ps-5 flex flex-col gap-5">
-                        <p class="hover:cursor-pointer">{{ item.ingredient.name_ingredient }}</p>
+                        <p class="hover:cursor-pointer">{{ item?.ingredient?.name_ingredient }}</p>
                       </div>
                     </div>
                   </div>
                 </td>
                 <td class="text-center">
                   <div class="flex flex-row gap-2 justify-center">
-                    <p>{{ item.quantity.toLocaleString() }}</p>
-                    <p>{{ item.ingredient.unit }}</p>
+                    <p>{{ item?.quantity.toLocaleString() }}</p>
+                    <p>{{ item?.ingredient?.unit }}</p>
                   </div>
                 </td>
                 <td class="text-center">
@@ -52,7 +53,7 @@
                       </svg>
                       <div
                         class="absolute hidden group-hover:flex z-10 right-0 bg-gray-200 border-2 border-gray-400 w-40 flex-col gap-2 rounded-lg p-2 items-start">
-                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetailFoods(item)">
+                        <p class="hover:bg-gray-500 text-start w-full h-full" @click="goDetail(item)">
                           Chi tiết
                         </p>
                         <p class="hover:bg-gray-500 text-start w-full h-full" @click="goEdit(item)">Chỉnh sửa</p>
@@ -69,16 +70,18 @@
         </div>
       </div>
     </div>
+    <AccessDenied v-if="showToast" />
   </template>
 
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, onMounted, computed, watch, reactive } from "vue";
 import { useRouter } from "vue-router";
 import SortButton from "../../../../components/Admin/SortButton.vue";
 import ConfirmDelete from "../../../../components/Admin/ConfirmDelete.vue";
 import Search from "../../../../components/Admin/Search.vue";
 import Pagination from "../../../../components/Admin/Pagination.vue";
 import axios from "axios";
+import AccessDenied from "../../../../components/Admin/AccessDenied.vue";
 
 const showConfirm = ref(false);
 const itemToDelete = ref(null)
@@ -123,6 +126,47 @@ const filteredItems = computed(() => {
 });
 
 
+const user = ref({
+  role: 'N/A',
+});
+
+const showToast = ref(false);
+
+async function fetchUserProfile() {
+  try {
+    const token = localStorage.getItem('auth_token');
+    if (!token) {
+      throw new Error('No authentication token found.');
+    }
+
+    const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    user.value.role = response.data.data.role; // Only store the role
+  } catch (error) {
+    console.error('Error fetching profile:', error.response?.data || error.message);
+    if (error.response?.status === 401) {
+      localStorage.removeItem('auth_token');
+      localStorage.removeItem('user');
+      router.push({ name: 'admin-login' });
+    }
+  }
+}
+
+onMounted(async () => {
+  await fetchWarehouse();
+  fetchUserProfile();
+});
+
+watch(() => user.value.role, (newRole) => {
+  if (newRole !== 'admin' && newRole !== 'manager') {
+    showToast.value = true;
+  }
+});
+
 async function fetchWarehouse() {
   try {
     const response = await axios.get("http://127.0.0.1:8000/api/admin/warehouses");
@@ -136,8 +180,6 @@ async function fetchWarehouse() {
   }
 }
 
-onMounted(fetchWarehouse);
-
 function changePage(page) {
   if (page >= 1 && page <= totalPages.value) {
     currentPage.value = page;
@@ -149,7 +191,7 @@ function sortBy(key, direction) {
   sortDirection.value = direction
 }
 
-function goDetailFoods(item) {
+function goDetail(item) {
   router.push({
     name: 'detail-warehouse-admin',
     params: { id: item.id },
@@ -180,12 +222,12 @@ async function confirmDelete() {
   try {
     await axios.delete(`http://127.0.0.1:8000/api/admin/warehouses/delete/${itemToDelete.value.id}`)
     alert('Đã xoá thành công!')
-    router.push({ name: 'menu-warehouse-admin' }) // quay lại danh sách
+    allItems.value = allItems.value.filter(item => item.id !== itemToDelete.value.id)
+    itemToDelete.value = null
+    showConfirm.value = false
   } catch (error) {
     console.error('Lỗi khi xoá:', error)
     alert('Không thể xoá.')
-  } finally {
-    itemToDelete.value = null
     showConfirm.value = false
   }
 }

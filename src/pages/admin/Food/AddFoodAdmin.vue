@@ -1,5 +1,6 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-10 mt-20 ms-[300px] flex flex-col p-2">
+    <div v-if="user.role === 'admin' || user.role === 'manager'"
+        class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-10 mt-20 ms-[300px] flex flex-col p-2">
         <div class="h-full w-full flex flex-col font-semibold">
             <div class="uppercase font-bold text-2xl">Thêm món ăn mới</div>
             <div class="w-[70vw] h-full flex justify-center items-start text-xl rounded-lg">
@@ -80,13 +81,15 @@
             </div>
         </div>
     </div>
+    <AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import axios from 'axios';
 import SwitchButton from '../../../components/Admin/SwitchButton.vue';
+import AccessDenied from '../../../components/Admin/AccessDenied.vue';
 
 const router = useRouter();
 const foodData = ref({
@@ -102,15 +105,52 @@ const foodData = ref({
 const imageInput = ref(null);
 const allItemsTypes = ref([]);
 const allItemsCategories = ref([]);
-const virtualImg = ref(null)
+const virtualImg = ref(null);
+const user = ref({
+    role: 'N/A',
+});
+const showToast = ref(false);
+
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
 
 const fetchType = async () => {
-    const res = await axios.get("http://127.0.0.1:8000/api/admin/types");
-    allItemsTypes.value = res.data.data;
+    try {
+        const response = await axios.get("http://127.0.0.1:8000/api/admin/types");
+        allItemsTypes.value = response.data.data;
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu types:", error);
+    }
 };
+
 const fetchCategory = async () => {
-    const res = await axios.get("http://127.0.0.1:8000/api/admin/categories");
-    allItemsCategories.value = res.data;
+    try {
+        const response = await axios.get("http://127.0.0.1:8000/api/admin/categories");
+        allItemsCategories.value = response.data;
+    } catch (error) {
+        console.error("Lỗi khi lấy dữ liệu categories:", error);
+    }
 };
 
 const filteredCategories = computed(() => {
@@ -118,38 +158,54 @@ const filteredCategories = computed(() => {
 });
 
 function toggleField(field) {
+    if (user.value.role !== 'admin' && user.value.role !== 'manager') {
+        alert("Bạn không có quyền thực hiện thao tác này.");
+        return;
+    }
     foodData.value[field] = foodData.value[field] === 1 ? 0 : 1;
 }
 
 function toggleCategory(categoryId) {
+    if (user.value.role !== 'admin' && user.value.role !== 'manager') {
+        alert("Bạn không có quyền thực hiện thao tác này.");
+        return;
+    }
     const index = foodData.value.categories.indexOf(categoryId);
     if (index > -1) foodData.value.categories.splice(index, 1);
     else foodData.value.categories.push(categoryId);
 }
 
 function handleImage(event) {
+    if (user.value.role !== 'admin' && user.value.role !== 'manager') {
+        alert("Bạn không có quyền thực hiện thao tác này.");
+        return;
+    }
     const file = event.target.files[0];
     if (file) {
         const reader = new FileReader();
         reader.onload = () => {
             foodData.value.image = file;
-            virtualImg.value = reader.result
+            virtualImg.value = reader.result;
         };
         reader.readAsDataURL(file);
     }
 }
 
 async function goSave() {
+    if (user.value.role !== 'admin' && user.value.role !== 'manager') {
+        alert("Bạn không có quyền thực hiện thao tác này.");
+        return;
+    }
     try {
-        const formData = new FormData()
-        formData.append('name', foodData.value.name)
-        formData.append('id_type', foodData.value.type)
-        // formData.append('bestSeller', foodData.value.best_seller === 1)
-        formData.append('cost', foodData.value.cost)
-        formData.append('detail', foodData.value.detail)
-        formData.append('status', foodData.value.status)
-        formData.append('category_ids', foodData.value.categories)
-        formData.append('image', foodData.value.image)
+        const formData = new FormData();
+        formData.append('name', foodData.value.name);
+        formData.append('id_type', foodData.value.type);
+        formData.append('best_seller', foodData.value.best_seller);
+        formData.append('cost', foodData.value.cost);
+        formData.append('detail', foodData.value.detail);
+        formData.append('status', foodData.value.status);
+        formData.append('category_ids', foodData.value.categories);
+        formData.append('image', foodData.value.image);
 
         await axios.post("http://127.0.0.1:8000/api/admin/foods/create", formData);
         alert("Tạo món ăn thành công!");
@@ -164,7 +220,15 @@ function goBack() {
     router.push({ name: 'admin-foods' });
 }
 
+watch(() => user.value.role, (newRole) => {
+    if (newRole !== 'admin' && newRole !== 'manager') {
+        showToast.value = true;
+
+    }
+});
+
 onMounted(() => {
+    fetchUserProfile();
     fetchType();
     fetchCategory();
 });

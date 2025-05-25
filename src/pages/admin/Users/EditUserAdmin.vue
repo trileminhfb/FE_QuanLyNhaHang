@@ -1,5 +1,6 @@
 <template>
-    <div class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
+    <div v-if="user.role === 'admin'"
+        class="w-[calc(100vw-300px)] h-[calc(100vh-100px)] fixed z-0 mt-20 ms-[300px] flex flex-col p-2">
         <div class="h-full w-full flex flex-col font-semibold">
             <div class=" uppercase font-bold text-2xl">
                 Chỉnh sửa người dùng
@@ -39,6 +40,17 @@
                                     <option value="active">Đang làm việc</option>
                                     <option value="inactive">Nghỉ việc</option>
                                     <option value="banned">Bị ban</option>
+                                </select>
+                            </div>
+
+                            <div class="flex flex-row items-center gap-2">
+                                <p class="flex flex-1">Chức vụ:</p>
+
+                                <select v-model="form.role" class="flex-1 border rounded px-4 py-2 w-[200px]">
+                                    <option disabled value="">--Chức vụ--</option>
+                                    <option value="admin">Quản trị viên</option>
+                                    <option value="manager">Quản lý nhà hàng</option>
+                                    <option value="staff">Nhân viên</option>
                                 </select>
                             </div>
 
@@ -88,14 +100,16 @@
             </div>
         </div>
     </div>
+    <AccessDenied v-if="showToast" />
 </template>
 
 <script setup>
 import { useRoute, useRouter } from 'vue-router'
-import { reactive, ref } from 'vue'
+import { ref, onMounted, computed, watch, reactive } from "vue";
 import ConfirmDelete from '../../../components/Admin/ConfirmDelete.vue';
 import axios from 'axios'
 import api from '../../../services/api';
+import AccessDenied from '../../../components/Admin/AccessDenied.vue';
 
 const router = useRouter()
 const route = useRoute()
@@ -105,6 +119,46 @@ const showConfirm = ref(false)
 const img = reactive({
     origin: userData?.image,
     preview: userData?.image
+});
+
+const user = ref({
+    role: 'N/A',
+});
+
+const showToast = ref(false);
+
+async function fetchUserProfile() {
+    try {
+        const token = localStorage.getItem('auth_token');
+        if (!token) {
+            throw new Error('No authentication token found.');
+        }
+
+        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        user.value.role = response.data.data.role; // Only store the role
+    } catch (error) {
+        console.error('Error fetching profile:', error.response?.data || error.message);
+        if (error.response?.status === 401) {
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user');
+            router.push({ name: 'admin-login' });
+        }
+    }
+}
+
+onMounted(async () => {
+    fetchUserProfile();
+});
+
+watch(() => user.value.role, (newRole) => {
+    if (newRole !== 'admin') {
+        showToast.value = true;
+    }
 });
 
 const form = ref({
