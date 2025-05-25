@@ -44,25 +44,17 @@
           <div class="invoice-form">
             <h3 style="font-size: 24px;">Hoá đơn</h3>
             <div class="form-group">
-              <label><strong>Khách hàng:</strong></label>
-              <p>Khách vãng lai</p>
-            </div>
-            <div class="form-group">
-              <label><strong>Ảnh khách hàng:</strong></label>
-              <div class="customer-img">
-                <img src="https://via.placeholder.com/60" alt="Ảnh khách hàng" />
-              </div>
-            </div>
-            <div class="form-group">
               <label><strong>Chi tiết hóa đơn:</strong></label>
               <div class="invoice-details">
                 <p><strong>Số bàn:</strong> {{ tableId }}</p>
-                <p><strong>Tên chương trình giảm giá:</strong> {{ selectedSale ? selectedSale.nameSale : 'Không có' }}</p>
+                <p><strong>Tên chương trình giảm giá:</strong> {{ selectedSale ? selectedSale.nameSale : 'Không có' }}
+                </p>
                 <p><strong>Trạng thái:</strong> Đang sử dụng</p>
                 <p><strong>Thời gian đặt:</strong> {{ orderTime }}</p>
                 <p><strong>Tổng tiền món:</strong> {{ total.toLocaleString() }}₫</p>
                 <p><strong>VAT (10%):</strong> {{ vat.toLocaleString() }}₫</p>
-                <p><strong>Giảm giá ({{ selectedSale ? selectedSale.percent : 0 }}%):</strong> {{ discount.toLocaleString() }}₫</p>
+                <p><strong>Giảm giá ({{ selectedSale ? selectedSale.percent : 0 }}%):</strong> {{
+                  discount.toLocaleString() }}₫</p>
                 <p><strong>Giảm giá Rank (0%):</strong> 0₫</p>
                 <p><strong>Điểm nhận được (5%):</strong> {{ points.toLocaleString() }}</p>
                 <p><strong>Tổng thanh toán:</strong> {{ finalTotal.toLocaleString() }}₫</p>
