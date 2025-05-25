@@ -41,7 +41,9 @@
                 @click="goProfile">
                 <div class="flex flex-col">
                     <p>{{ user.name }}</p>
-                    <p class="text-base font-normal text-end">{{ user.role }}</p>
+                    <p v-if="user.role === 'admin'" class="text-base font-normal text-end">Quản trị viên</p>
+                    <p v-if="user.role === 'manager'" class="text-base font-normal text-end">Quản lý nhà hàng</p>
+                    <p v-if="user.role === 'staff'" class="text-base font-normal text-end">Nhân viên</p>
                 </div>
                 <div class="w-12 h-12 rounded-full border border-black overflow-hidden">
                     <img class="w-full h-full  object-cover" :src="user.image" alt="img">

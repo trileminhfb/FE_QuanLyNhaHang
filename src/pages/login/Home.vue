@@ -44,6 +44,7 @@
                     <p class="text-sm hover:text-blue-500 hover:cursor-pointer" @click="goForgotPassword">
                         Forgot Password?
                     </p>
+                    <ForgotPassword :visible="showForgotPasswordModal" @close="closeForgotPasswordModal" />
                     <button class="rounded-xl bg-blue-500 h-12 w-full text-white font-bold" type="submit">
                         Login
                     </button>
@@ -57,6 +58,7 @@
 import { ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
+import ForgotPassword from "../../components/Admin/ForgotPassword.vue";
 
 const router = useRouter();
 const showPassword = ref(false);
@@ -120,7 +122,15 @@ async function login() {
     }
 }
 
+const showForgotPasswordModal = ref(false);
+
 function goForgotPassword() {
-    router.push({ name: 'forgot-password' });
+    showForgotPasswordModal.value = true;
 }
+
+function closeForgotPasswordModal() {
+    showForgotPasswordModal.value = false;
+}
+
+
 </script>
