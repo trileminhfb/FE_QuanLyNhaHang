@@ -236,6 +236,7 @@ async function xoaHang(id) {
 .pay-transfer {
   cursor: pointer;
   color: red;
+}
 .pay-login,
 .pay-transfer {
   cursor: pointer;
@@ -246,6 +247,7 @@ async function xoaHang(id) {
   display: flex;
   width: 100%;
   gap: 10px;
+}
 .main-content .row {
   display: flex;
   width: 100%;

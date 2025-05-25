@@ -17,7 +17,7 @@
       <h2 class="text-center text-2xl md:text-3xl font-bold text-red-500 mb-6">Ưu Đãi Đặc Biệt Trong Tháng</h2>
       <div class="promo-container flex overflow-x-auto scroll-smooth gap-6 pb-4 snap-x no-scrollbar justify-center"
         ref="promoContainer">
-        <div v-for="(sale, index) in filteredSales" :key="sale.id"
+        <div v-for="(sale, index) in filteredSales" :key="sale.id || index"
           class="promo-item bg-white p-6 rounded-xl shadow-sm min-w-[280px] text-center snap-center">
           <h3 class="text-red-500 text-lg font-semibold mb-2">{{ sale.nameSale }} - Giảm {{ sale.percent }}%</h3>
           <p class="text-gray-600">Áp dụng từ {{ formatDate(sale.startTime) }} đến {{ formatDate(sale.endTime) }}.</p>
@@ -154,18 +154,18 @@
       :space-between="30" :autoplay="{ delay: 0, disableOnInteraction: false, pauseOnMouseEnter: true }" :loop="true"
       :speed="3000">
       <SwiperSlide v-for="(review, index) in danhSachDanhGia" :key="'review-' + index">
-        <div class="review-card bg-white rounded-lg shadow-md p-4 flex flex-col">
+        <div class="review-card bg-white rounded-lg shadow-md p-4 flex flex-row">
           <div class="review-content">
             <h3 class="text-lg font-semibold">{{ review.ten }}</h3>
             <div class="sao-danh-gia flex my-2">
               <span v-for="i in 5" :key="i">
-                <i class="fa text-yellow-400" :class="i <= soSao ? 'fa-star' : 'fa-star-o'"></i>
+                <i class="fa text-yellow-400" :class="i <= review.soSao ? 'fa-star' : 'fa-star-o'"></i>
               </span>
             </div>
             <p class="text-gray-600">{{ review.noiDung }}</p>
           </div>
-          <div class="review-image mt-4">
-            <img :src="review.hinh" alt="Ảnh người dùng" class="w-full h-32 object-cover rounded-md" />
+          <div class="overflow-hidden border h-full rounded-full">
+            <img :src="review.hinh" alt="Ảnh người dùng" class="w-full h-full object-cover" />
           </div>
         </div>
       </SwiperSlide>
@@ -211,6 +211,7 @@ onMounted(async () => {
       fetchSale(),
       fetchFoodBestSeller(),
       fetchCategory(),
+      fetchReviews(),
     ])
     Aos.init()
   } catch (error) {
@@ -237,6 +238,22 @@ const fetchFoodBestSeller = async () => {
   } catch (error) {
     console.error('Lỗi khi lấy dữ liệu món ăn nổi bật:', error)
     bestSellerFoods.value = []
+  }
+}
+
+const fetchReviews = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/api/client/rates')
+    danhSachDanhGia.value = response.data.data.map(review => ({
+      ten: review.customer.FullName,
+      soSao: review.star,
+      noiDung: review.detail,
+      hinh: review.customer.image || 'https://via.placeholder.com/150',
+      thoiGian: review.time
+    }))
+  } catch (error) {
+    console.error('Lỗi khi lấy dữ liệu đánh giá:', error)
+    danhSachDanhGia.value = []
   }
 }
 
