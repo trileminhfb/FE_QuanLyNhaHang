@@ -46,6 +46,9 @@ import { onMounted } from 'vue'
 
 onMounted(() => {
     AOS.init()
+    window.addEventListener('resize', () => {
+    AOS.refresh();
+  });
 })
 </script>
 <style></style>

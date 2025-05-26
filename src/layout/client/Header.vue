@@ -24,22 +24,7 @@
           <router-link to="/contact">CONTACT</router-link>
         </li>
         <div class="flex-1 justify-end flex me-10 items-center">
-          <li>
-            <div class="search-container" @click="handleClickOutside">
-              <div :class="isSearch ? 'w-[200px] search-box' : 'w-[40px] search-box'" @click="handleOpenSearch">
-                <input type="text" v-model="tuKhoa" @blur="handleBlur" placeholder="Tìm Món ..." />
-                <div>
-                  <i class="fas fa-solid fa-magnifying-glass"></i>
-                </div>
-              </div>
-              <ul v-if="tuKhoa && monTimDuoc.length" class="result-box">
-                <li v-for="mon in monTimDuoc" :key="mon.id">
-                  {{ mon.ten }}
-                </li>
-              </ul>
-              <p v-else-if="tuKhoa">Không tìm thấy món nào.</p>
-            </div>
-          </li>
+        
           <!-- Thêm biểu tượng thanh toán -->
           <li>
             <div class="payment-icon">
@@ -135,41 +120,9 @@ const avatar = ref(localStorage.getItem('avatar') || '/default-avatar.png');
 window.addEventListener('storage', () => {
   avatar.value = localStorage.getItem('avatar') || '/default-avatar.png';
 });
-// Mở ô tìm kiếm
-const handleOpenSearch = () => {
-  isSearch.value = true;
-};
 
-// Thu gọn ô tìm kiếm khi click ra ngoài
-const handleClickOutside = (event) => {
-  if (!event.target.closest('.search-box')) {
-    isSearch.value = false;
-  }
-};
 
-// Thu gọn khi mất focus
-const handleBlur = () => {
-  if (isSearch.value) {
-    isSearch.value = false;
-  }
-};
 
-// Theo dõi từ khóa và gọi API tìm kiếm
-watch(tuKhoa, (newVal) => {
-  if (!newVal.trim()) {
-    monTimDuoc.value = [];
-    return;
-  }
-
-  api.get(`/tim-mon?ten=${encodeURIComponent(newVal)}`)
-    .then((response) => {
-      monTimDuoc.value = response.data.mons;
-    })
-    .catch((error) => {
-      console.error('Lỗi tìm kiếm món:', error);
-      monTimDuoc.value = [];
-    });
-});
 
 const handleLogout = async () => {
   const result = await Swal.fire({

@@ -4,7 +4,7 @@
       <div class="row">
         <!-- Cột trái: Thông tin đơn hàng -->
         <div class="col-left">
-          <h3 style="font-size: 30px;">Thông tin đơn hàng</h3>
+          <h3>Thông tin đơn hàng</h3>
           <div class="order-details">
             <div v-if="!orderItems || orderItems.length === 0">Không có món nào.</div>
             <div v-else>
@@ -42,19 +42,22 @@
         <!-- Cột phải: Form hóa đơn -->
         <div class="col-right">
           <div class="invoice-form">
-            <h3 style="font-size: 24px;">Hoá đơn</h3>
+            <h3>Hoá đơn</h3>
+            <div class="form-group">
+              <label><strong>Khách hàng:</strong></label>
+              <p > <strong style="color: blue; font-size: 20px;">{{ customerFullName }}</strong></p>
+            </div>
+         
             <div class="form-group">
               <label><strong>Chi tiết hóa đơn:</strong></label>
               <div class="invoice-details">
                 <p><strong>Số bàn:</strong> {{ tableId }}</p>
-                <p><strong>Tên chương trình giảm giá:</strong> {{ selectedSale ? selectedSale.nameSale : 'Không có' }}
-                </p>
+                <p><strong>Tên chương trình giảm giá:</strong> {{ selectedSale ? selectedSale.nameSale : 'Không có' }}</p>
                 <p><strong>Trạng thái:</strong> Đang sử dụng</p>
                 <p><strong>Thời gian đặt:</strong> {{ orderTime }}</p>
                 <p><strong>Tổng tiền món:</strong> {{ total.toLocaleString() }}₫</p>
                 <p><strong>VAT (10%):</strong> {{ vat.toLocaleString() }}₫</p>
-                <p><strong>Giảm giá ({{ selectedSale ? selectedSale.percent : 0 }}%):</strong> {{
-                  discount.toLocaleString() }}₫</p>
+                <p><strong>Giảm giá ({{ selectedSale ? selectedSale.percent : 0 }}%):</strong> {{ discount.toLocaleString() }}₫</p>
                 <p><strong>Giảm giá Rank (0%):</strong> 0₫</p>
                 <p><strong>Điểm nhận được (5%):</strong> {{ points.toLocaleString() }}</p>
                 <p><strong>Tổng thanh toán:</strong> {{ finalTotal.toLocaleString() }}₫</p>
@@ -77,6 +80,7 @@ import { useRoute, useRouter } from 'vue-router';
 import api from '../../services/api';
 import { fetchCart, cartItems } from '../../stores/cartStore';
 
+const customerFullName = ref('');
 const route = useRoute();
 const router = useRouter();
 const orderItems = ref([]);
@@ -99,7 +103,7 @@ const calculateTotals = () => {
 };
 
 const loadCartData = async () => {
-  console.log('Query params:', route.query); // Debug query params
+  console.log('Query params:', route.query);
   const items = route.query.items;
   const totalQuery = route.query.total;
   const tableIdQuery = route.query.tableId;
@@ -113,8 +117,6 @@ const loadCartData = async () => {
       tableId.value = Number(tableIdQuery);
       note.value = noteQuery || '';
       selectedSale.value = saleQuery ? JSON.parse(saleQuery) : null;
-
-      console.log('Parsed data:', { orderItems: orderItems.value, total: total.value, selectedSale: selectedSale.value }); // Debug parsed data
 
       if (!orderItems.value.length || total.value <= 0) {
         alert('Dữ liệu đơn hàng không hợp lệ. Vui lòng kiểm tra giỏ hàng.');
@@ -146,8 +148,6 @@ const loadCartData = async () => {
         note.value = parsedCart.note || '';
         selectedSale.value = parsedCart.sale || null;
 
-        console.log('Loaded from localStorage:', parsedCart); // Debug localStorage data
-
         if (!orderItems.value.length || total.value <= 0) {
           alert('Dữ liệu đơn hàng từ bộ nhớ không hợp lệ. Vui lòng kiểm tra giỏ hàng.');
           router.push({ name: 'users-shoppingCart' });
@@ -171,10 +171,9 @@ const loadCartData = async () => {
         note.value = '';
         selectedSale.value = null;
 
-        console.log('Loaded from API:', { orderItems: orderItems.value, total: total.value }); // Debug API data
-
         if (!orderItems.value.length || total.value <= 0) {
-          alert('Hóa đơn Giỏ hàng của bạn đang trống . Vui lòng kiểm tra giỏ hàng của bạn.');
+          alert('Giỏ hàng trống hoặc dữ liệu không hợp lệ. Vui lòng kiểm tra.');
+          router.push({ name: 'users-shoppingCart' });
           return;
         }
 
@@ -201,86 +200,101 @@ const thanhToan = async () => {
     alert('Không thể thanh toán vì tổng tiền bằng 0.');
     return;
   }
+
   try {
-    // 1. Gửi yêu cầu tạo hóa đơn
-    const res1 = await api.post('/client/invoices', {
+    const customerId = localStorage.getItem('customer_id');
+    if (!customerId) {
+      alert('Không tìm thấy thông tin khách hàng. Vui lòng đăng nhập lại.');
+      return;
+    }
+
+    const userId = localStorage.getItem('userId');
+    const invoiceData = {
+      id_customer: Number(customerId),
       id_table: tableId.value,
       total: finalTotal.value,
       items: orderItems.value,
       note: note.value,
-      sale_id: selectedSale.value ? selectedSale.value.id : null
-    });
+      sale_id: selectedSale.value ? selectedSale.value.id : null,
+      user_id: userId || null
+    };
 
+    console.log('Sending invoice data:', invoiceData);
+
+    const res1 = await api.post('/client/invoices', invoiceData);
     const invoiceId = res1.data.data?.id;
+
     if (!invoiceId) {
       alert('Không thể tạo hóa đơn.');
       return;
     }
 
-    // 2. Xoá giỏ hàng theo id bàn
-    await api.delete(`/client/carts/by-table/${tableId.value}`);
-
-    // 3. Gọi API lấy URL thanh toán chuyển khoản
     const res2 = await api.get(`/client/invoices/payByTransfer/${invoiceId}`);
-    const paymentUrl = res2.data.payment_url;
-
-    // 4. Xoá localStorage cache
+    const paymentUrl = `${res2.data.payment_url}`;
     localStorage.removeItem('paymentCart');
-
-    // 5. Điều hướng người dùng tới trang thanh toán
     window.location.href = paymentUrl;
-
   } catch (error) {
     console.error("Lỗi thanh toán:", error);
     alert("Có lỗi xảy ra khi thanh toán. Vui lòng thử lại.");
   }
 };
 
-
 const goBack = () => {
   router.push({ name: 'users-shoppingCart' });
 };
 
 onMounted(() => {
+  // Giữ nguyên logic hiển thị tên khách hàng
+  customerFullName.value = localStorage.getItem('customer_fullName') ;
   loadCartData();
 });
 </script>
-
 <style scoped>
 .payment-page {
   background-color: #143b36;
-  height: 100vh;
-  padding: 20px;
+  min-height: 100vh;
+  padding: 1rem;
   color: white;
+  display: flex;
+  flex-direction: column;
 }
 
 .container-payment {
   margin: 0 auto;
-  width: 1300px;
+  width: 100%;
+  max-width: 1200px;
+  flex-grow: 1;
 }
 
 .row {
   display: flex;
-  gap: 20px;
+  flex-direction: row;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.col-left, .col-right {
+  flex: 1;
+  min-width: 0;
 }
 
 .col-left {
-  width: 65%;
+  width: 100%;
 }
 
 .order-details {
-  margin-top: 20px;
+  margin-top: 1rem;
   background-color: rgba(255, 255, 255, 0.1);
-  padding: 20px;
-  border-radius: 10px;
+  padding: 1rem;
+  border-radius: 0.5rem;
 }
 
 .header-cart {
   display: flex;
-  color: white;
   font-weight: bold;
   border-bottom: 2px solid white;
-  padding-bottom: 10px;
+  padding-bottom: 0.5rem;
+  font-size: 0.9rem;
 }
 
 .header-cart li {
@@ -298,8 +312,9 @@ onMounted(() => {
 .order-item {
   display: flex;
   align-items: center;
-  padding: 15px 0;
+  padding: 0.75rem 0;
   border-bottom: 1px solid #ccc;
+  font-size: 0.9rem;
 }
 
 .item-col {
@@ -312,7 +327,7 @@ onMounted(() => {
 .item-col.info {
   flex: 2 1 40%;
   justify-content: flex-start;
-  gap: 10px;
+  gap: 0.5rem;
 }
 
 .item-col.price,
@@ -322,81 +337,82 @@ onMounted(() => {
 }
 
 .item-col.info img {
-  width: 60px;
-  height: 60px;
+  width: 3rem;
+  height: 3rem;
   object-fit: cover;
-  margin-left: 10px;
+  border-radius: 0.25rem;
 }
 
 .order-btn-wrapper {
-  display: flex;
-  margin-top: 20px;
-  flex-direction: column;
-  align-items: flex-end;
+  margin-top: 1rem;
+  text-align: right;
+}
+
+.order-btn-wrapper p {
+  margin: 0.5rem 0;
+  font-size: 1rem;
 }
 
 .col-right {
-  width: 35%;
+  width: 100%;
 }
 
 .invoice-form {
   background-color: #ffffff;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 1rem;
+  border-radius: 0.5rem;
   color: #143b36;
 }
 
 .form-group {
-  margin-bottom: 15px;
+  margin-bottom: 1rem;
 }
 
 .form-group label {
   display: block;
   font-weight: bold;
-  margin-bottom: 5px;
+  margin-bottom: 0.3rem;
+  font-size: 0.9rem;
 }
 
 .form-group p {
   margin: 0;
-  font-size: 14px;
+  font-size: 0.85rem;
 }
 
 .customer-img img {
-  width: 60px;
-  height: 60px;
+  width: 3rem;
+  height: 3rem;
   border-radius: 50%;
   object-fit: cover;
   border: 1px solid #ccc;
 }
 
 .invoice-details p {
-  margin: 5px 0;
-  font-size: 14px;
+  margin: 0.3rem 0;
+  font-size: 0.85rem;
 }
 
 .form-actions {
   display: flex;
-  gap: 10px;
+  gap: 0.5rem;
   justify-content: flex-end;
-  margin-top: 20px;
+  margin-top: 1rem;
 }
 
 .btn-pay,
 .btn-back {
   color: #fff;
   background-color: #d69c52;
-  padding: 10px 15px;
-  font-size: 16px;
-  border-radius: 5px;
-  box-shadow: 0 3px 6px #a37b44;
-  height: 40px;
-  width: 120px;
-  transition: box-shadow 0.3s ease, background-color 0.3s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 0.3rem;
+  box-shadow: 0 0.2rem 0.4rem #a37b44;
   border: none;
   cursor: pointer;
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  flex: 1;
+  text-align: center;
 }
 
 .btn-pay:disabled {
@@ -410,11 +426,102 @@ onMounted(() => {
 
 .btn-pay:hover:not(:disabled) {
   background-color: #c58a3c;
-  box-shadow: 0 5px 10px #a37b44;
+  box-shadow: 0 0.3rem 0.6rem #a37b44;
 }
 
 .btn-back:hover {
   background-color: #5a6268;
-  box-shadow: 0 5px 10px #4a4e52;
+  box-shadow: 0 0.3rem 0.6rem #4a4e52;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .row {
+    flex-direction: column;
+  }
+
+  .col-left, .col-right {
+    width: 100%;
+  }
+
+  .header-cart {
+    display: none; /* Ẩn header trên mobile, sử dụng nhãn thay thế */
+  }
+
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .item-col {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .item-col.info {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .item-col.price::before {
+    content: "Đơn giá: ";
+    font-weight: bold;
+  }
+
+  .item-col.quantity::before {
+    content: "Số lượng: ";
+    font-weight: bold;
+  }
+
+  .item-col.total::before {
+    content: "Thành tiền: ";
+    font-weight: bold;
+  }
+
+  .item-col.info img {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .btn-pay, .btn-back {
+    width: 100%;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .payment-page {
+    padding: 0.5rem;
+  }
+
+  .container-payment {
+    padding: 0 0.5rem;
+  }
+
+  .order-details, .invoice-form {
+    padding: 0.75rem;
+  }
+
+  .item-col.info img {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  h3 {
+    font-size: 1.2rem;
+  }
+
+  .btn-pay, .btn-back {
+    font-size: 0.8rem;
+    padding: 0.4rem;
+  }
 }
 </style>

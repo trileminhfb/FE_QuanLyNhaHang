@@ -284,4 +284,3 @@ onMounted(() => {
   box-shadow: 0 5px 10px #a37b44;
 }
 </style>
-```

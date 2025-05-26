@@ -1,3 +1,4 @@
+
 <template>
     <div class="container">
         <div class="history-table">
@@ -95,11 +96,9 @@
         </div>
     </div>
 </template>
-
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import axios from 'axios';
 import api from '../../services/api';
 
 const route = useRoute();
@@ -110,6 +109,7 @@ const auth_token = ref(localStorage.getItem('auth_token') || '');
 
 const historyBookingData = route.query.data ? JSON.parse(route.query.data) : null;
 
+// Các hàm formatDate, formatPrice, getStatusText, computed properties (foodTotal, foodDeposit, totalPayment), loadBookingDetail, cancelOrder, goBack giữ nguyên
 const formatDate = (datetime) => {
     const date = new Date(datetime);
     return date.toLocaleString('vi-VN', {
@@ -162,7 +162,7 @@ const loadBookingDetail = async () => {
                 router.push({ name: 'login' });
                 return;
             }
-            const response = await axios.get(`http://127.0.0.1:8000/api/client/bookings/${bookingId}`, {
+            const response = await api.get(`/client/bookings/${bookingId}`, {
                 headers: {
                     Authorization: `Bearer ${auth_token.value}`,
                 },
@@ -186,27 +186,56 @@ const loadBookingDetail = async () => {
 };
 
 const payOrder = async () => {
-    if (!confirm('Bạn có chắc muốn thanh toán đặt bàn này không?')) return;
+    if (!confirm(`Bạn có chắc muốn thanh toán hóa đơn với số tiền ${formatPrice(totalPayment.value)} không?`)) return;
+
     try {
-        await api.post(`/client/bookings/${booking.value.id}/pay`,
-            {},
-            {
-                headers: {
-                    Authorization: `Bearer ${auth_token.value}`,
-                },
-            }
-        );
-        alert(`Thanh toán đặt bàn ID: ${booking.value.id} thành công!`);
-        router.push({ name: 'booking-history' });
+        const response = await api.get(`client/invoices/payByTransfer/${booking.value.id}`, {
+            headers: {
+                Authorization: `Bearer ${auth_token.value}`,
+            },
+        });
+
+        const paymentData = response.data;
+
+        if (paymentData.error) {
+            throw new Error(paymentData.error);
+        }
+
+        if (typeof paymentData.payment_url === 'string' && paymentData.payment_url) {
+            // Lưu thông tin đơn hàng vào localStorage
+            const orderDetails = {
+                booking_id: booking.value.id,
+                time_booking: booking.value.timeBooking,
+                status: booking.value.status,
+                foods: booking.value.booking_foods.map(item => ({
+                    id_foods: item.id_foods,
+                    food: {
+                        name: item.food.name,
+                        image: item.food.image,
+                        cost: item.food.cost,
+                    },
+                    quantity: item.quantity,
+                })),
+                food_deposit: foodDeposit.value,
+                table_deposit: tableDeposit.value,
+                total_payment: totalPayment.value,
+            };
+            localStorage.setItem('order_details', JSON.stringify(orderDetails));
+
+            // Chuyển hướng đến URL thanh toán
+            window.location.href = paymentData.payment_url;
+        } else {
+            throw new Error('Liên kết thanh toán không hợp lệ');
+        }
     } catch (error) {
-        console.error('Lỗi khi thanh toán:', error.response?.data || error.message);
+        console.error('Lỗi khi lấy URL thanh toán:', error.message || error);
         if (error.response?.status === 401) {
             alert('Phiên đăng nhập hết hạn. Vui lòng đăng nhập lại.');
             localStorage.removeItem('auth_token');
             localStorage.removeItem('customer_id');
             router.push({ name: 'login' });
         } else {
-            alert('Lỗi khi thanh toán. Vui lòng thử lại sau.');
+            alert(error.message || 'Lỗi khi lấy URL thanh toán. Vui lòng thử lại sau.');
         }
     }
 };
@@ -214,12 +243,12 @@ const payOrder = async () => {
 const cancelOrder = async () => {
     if (!confirm('Bạn có chắc muốn hủy đặt bàn này không?')) return;
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/client/bookings/${booking.value.id}`, {
+        await api.post(`/client/bookings/${booking.value.id}/cancel`, {}, {
             headers: {
                 Authorization: `Bearer ${auth_token.value}`,
             },
         });
-        alert(`Đã hủy đặt bàn ID: ${booking.value.id} thành công!`);
+        alert(`Hủy đặt bàn ID: ${booking.value.id} thành công!`);
         router.push({ name: 'booking-history' });
     } catch (error) {
         console.error('Lỗi khi hủy đặt bàn:', error.response?.data || error.message);
@@ -229,7 +258,7 @@ const cancelOrder = async () => {
             localStorage.removeItem('customer_id');
             router.push({ name: 'login' });
         } else {
-            alert('Lỗi khi hủy đặt bàn!');
+            alert('Lỗi khi hủy đặt bàn. Vui lòng thử lại sau.');
         }
     }
 };

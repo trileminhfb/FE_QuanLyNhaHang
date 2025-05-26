@@ -24,23 +24,7 @@
 
         <button type="submit" class="btn-submit">Đăng nhập</button>
 
-        <!-- Đăng nhập bằng các dịch vụ khác -->
-        <div class="alt-login">
-          <p>Đăng nhập bằng cách khác</p>
-          <div class="icon-row">
-            <button type="button" aria-label="Microsoft login" class="icon-btn microsoft" @click="loginWithMicrosoft">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft"
-                width="24" height="24" />
-            </button>
-            <button type="button" aria-label="Google login" class="icon-btn google" @click="loginWithGoogle">
-              <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google" width="24" height="24" />
-            </button>
-            <button type="button" aria-label="Facebook login" class="icon-btn facebook" @click="loginWithFacebook">
-              <img src="https://upload.wikimedia.org/wikipedia/commons/0/05/Facebook_Logo_%282019%29.png" alt="Facebook"
-                width="24" height="24" />
-            </button>
-          </div>
-        </div>
+      
       </form>
     </div>
   </div>
@@ -52,7 +36,6 @@ import { useRouter } from 'vue-router'
 import api from '../../services/api'
 import Swal from 'sweetalert2'
 const router = useRouter()
-
 const loginEmail = ref('')
 const loginPassword = ref('')
 
@@ -114,7 +97,7 @@ function forgotPassword() {
       console.log('API response:', res)
       Swal.fire('Thành công!', res.data.message, 'success')
         .then(() => {
-          router.push({ name: 'users-reset-password', query: { email: loginEmail.value } })
+          router.push({ name: 'reset-password', query: { email: loginEmail.value } })
         })
     })
     .catch((err) => {
@@ -123,17 +106,7 @@ function forgotPassword() {
     })
 }
 
-function loginWithMicrosoft() {
-  alert("Đăng nhập với Microsoft đang được triển khai.");
-}
 
-function loginWithGoogle() {
-  alert("Đăng nhập với Google đang được triển khai.");
-}
-
-function loginWithFacebook() {
-  alert("Đăng nhập với Facebook đang được triển khai.");
-}
 </script>
 
 <style scoped>
