@@ -175,8 +175,6 @@ async function toggleStatus(item) {
   const newStatus = item.status === 1 ? 0 : 1;
   try {
     await axios.put(`http://127.0.0.1:8000/api/admin/foods/${item.id}`, {
-      ...item,
-      originImg: item.image,
       status: newStatus
     });
     item.status = newStatus;
@@ -186,24 +184,24 @@ async function toggleStatus(item) {
   }
 }
 
+
 async function toggleBestSeller(item) {
   if (user.value.role !== 'admin' && user.value.role !== 'manager') {
     alert("Bạn không có quyền thực hiện thao tác này.");
     return;
   }
-  const newStatus = item.bestSeller === 1 ? 0 : 1;
+  const newBestSeller = item.bestSeller === 1 ? 0 : 1;
   try {
     await axios.put(`http://127.0.0.1:8000/api/admin/foods/${item.id}`, {
-      ...item,
-      originImg: item.image,
-      bestSeller: newStatus
+      bestSeller: newBestSeller
     });
-    item.bestSeller = newStatus;
+    item.bestSeller = newBestSeller;
   } catch (error) {
-    console.error("Không thể cập nhật trạng thái:", error);
+    console.error("Không thể cập nhật trạng thái best seller:", error);
     alert("Cập nhật trạng thái thất bại.");
   }
 }
+
 
 function changePage(page) {
   if (page >= 1 && page <= totalPages.value) {

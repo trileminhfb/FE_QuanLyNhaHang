@@ -24,13 +24,14 @@
                             <div class="flex flex-row items-center gap-2">
                                 <p class="flex flex-1">Tên người dùng:</p>
                                 <input type="text" v-model="form.name" class="flex-1 border rounded px-4 py-2 text-lg"
-                                    placeholder="Nhập tên người dùng..." />
+                                    name="name" placeholder="Nhập tên người dùng..." />
                             </div>
 
                             <div class="flex flex-row items-center gap-2">
                                 <p class="flex flex-1">Password:</p>
                                 <input type="password" v-model="form.password"
-                                    class="flex-1 border rounded px-4 py-2 text-lg" placeholder="Nhập Password..." />
+                                    class="flex-1 border rounded px-4 py-2 text-lg" placeholder="Nhập Password..."
+                                    name="password" />
                             </div>
 
                             <div class="flex flex-row items-center gap-2">
@@ -53,7 +54,7 @@
                             <div class="flex flex-row items-center gap-2">
                                 <p class="flex flex-1">Email:</p>
                                 <input type="email" v-model="form.email" class="flex-1 border rounded px-4 py-2 text-lg"
-                                    placeholder="Nhập email..." />
+                                    name="email" placeholder="Nhập email..." />
                             </div>
 
                             <div class="flex flex-row items-center gap-2">
@@ -155,15 +156,31 @@ const onFileChange = (e) => {
 }
 
 async function goSave() {
-    if (!form.value.name || !form.value.password || !form.value.email || !form.value.role) {
-        alert('Vui lòng điền đầy đủ thông tin bắt buộc!')
+    if (!form.value.name || !form.value.password || !form.value.email || !form.value.role || !form.value.image) {
+        alert('Vui lòng điền đầy đủ thông tin bắt buộc và chọn ảnh đại diện!')
         return
     }
 
-    console.log('Dữ liệu gửi đi:', form.value) // <--- log giá trị gửi
+    const formData = new FormData()
+    formData.append('name', form.value.name)
+    formData.append('password', form.value.password)
+    formData.append('role', form.value.role)
+    formData.append('status', form.value.status)
+    formData.append('phone_number', form.value.phone_number)
+    formData.append('email', form.value.email)
+    formData.append('birth', form.value.birth)
+    formData.append('image', form.value.image) // hình ảnh bây giờ là bắt buộc
 
     try {
-        const response = await axios.post('http://127.0.0.1:8000/api/admin/users/create', form.value)
+        const token = localStorage.getItem('auth_token')
+
+        const response = await axios.post('http://127.0.0.1:8000/api/admin/users/create', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`
+            }
+        })
+
         alert('Đã thêm người dùng thành công!')
         router.push({ name: 'admin-users' })
     } catch (error) {

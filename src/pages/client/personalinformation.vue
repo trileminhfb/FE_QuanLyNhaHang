@@ -58,23 +58,29 @@
           <div class="tab-contents">
             <div v-for="(tab, index) in tabs" :key="'content-' + index" v-show="currentTab === index"
               class="tab-content">
-              <div v-if="tab.ten === 'Lịch sử giao dịch'">
+              <div v-if="tab.ten === 'Lịch sử tích điểm'">
                 <div v-if="historyPoints.length === 0">
-                  <p>Bạn chưa có giao dịch nào.</p>
+                  <p>Bạn chưa có giao dịch tích điểm nào.</p>
                 </div>
                 <div v-else>
-                  <ul class="transaction-list">
-                    <li v-for="history in historyPoints" :key="history.id" class="transaction-item">
-                      <img :src="history.image || '/imageicon/default-transaction.png'" class="transaction-image"
-                        alt="Transaction Image" />
-                      <div class="transaction-details">
-                        <strong>{{ history.description }}</strong>
-                        <p class="transaction-name">Người thực hiện: {{ history.name || informationpersonal.FullName
-                          || 'Khách hàng' }}</p>
-                        <p>Số điểm: {{ history.points }} | Ngày: {{ formatDate(history.created_at) }}</p>
-                      </div>
-                    </li>
-                  </ul>
+                  <table class="points-table">
+                    <thead>
+                      <tr>
+                        <th>Số Điểm</th>
+                        <th>Ngày Nhận</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="history in historyPoints" :key="history.id" class="transaction-item">
+                        <td>{{ history.points || '0' }}</td>
+                        <td>{{ formatDate(history.created_at) || 'N/A' }}</td>
+                        <td :class="history.status === 'received' ? 'status-received' : 'status-canceled'">
+                          {{ history.status === 'received' ? 'Đã Nhận' : 'Bị Hủy' }}
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
 
@@ -186,7 +192,7 @@
                           placeholder="Nhập mật khẩu mới" />
                       </div>
                       <div class="group-information">
-                        Mật khẩu mới
+Xác nhận mật khẩu mới
                         <i class="fa fa-lock"></i>
                         <input type="password" v-model="changePasswordData.confirmNewPassword"
                           placeholder="Xác nhận mật khẩu mới" />
@@ -240,7 +246,9 @@
 import { ref, onMounted } from 'vue';
 import api from '../../services/api';
 import { useRouter } from 'vue-router';
+
 const router = useRouter();
+
 const informationpersonal = ref({
   FullName: '',
   phoneNumber: '',
@@ -270,7 +278,7 @@ const changePasswordData = ref({
 
 const tabs = ref([
   { ten: 'Thông tin cá nhân', noiDung: '' },
-  { ten: 'Lịch sử giao dịch', noiDung: '' },
+  { ten: 'Lịch sử tích điểm', noiDung: '' },
   { ten: 'Thông báo', noiDung: '' },
   { ten: 'Quà tặng', noiDung: '', danhSachQuaTang: [] },
   { ten: 'Chính sách', noiDung: 'Đây là nội dung về chính sách thành viên.' },
@@ -290,6 +298,37 @@ onMounted(async () => {
     }
   }
 
+  // Lấy danh sách hóa đơn (lịch sử tích điểm)
+  try {
+    const customerId = localStorage.getItem('customer_id');
+    if (!customerId) {
+      console.error('Không tìm thấy customer_id trong localStorage');
+      historyPoints.value = [];
+      return;
+    }
+    const historyResponse = await api.get(`/client/invoices/${customerId}`);
+    console.log('Dữ liệu hóa đơn:', historyResponse.data); // Log để kiểm tra dữ liệu
+    historyPoints.value = (historyResponse.data.data || []).map(invoice => ({
+      id: invoice.id,
+      points: invoice.reward_points || 0, // Số điểm
+      created_at: invoice.created_at, // Ngày nhận
+      status: invoice.status === 2 ? 'received' : 'canceled', // Ánh xạ trạng thái
+    }));
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách hóa đơn:', error.response || error);
+    historyPoints.value = [];
+  }
+
+  // Lấy danh sách quà tặng
+  try {
+    const salesResponse = await api.get('/client/sales');
+    tabs.value.find(tab => tab.ten === 'Quà tặng').danhSachQuaTang = salesResponse.data.data || [];
+  } catch (error) {
+    console.error('Lỗi khi lấy danh sách khuyến mãi:', error.response || error);
+    tabs.value.find(tab => tab.ten === 'Quà tặng').danhSachQuaTang = [];
+  }
+
+  // Cập nhật thông tin từ localStorage
   informationpersonal.value.image = localStorage.getItem('customer_image') || '';
   informationpersonal.value.name = localStorage.getItem('customer_fullName') || '';
   informationpersonal.value.mail = localStorage.getItem('customer_email') || '';
@@ -299,26 +338,6 @@ onMounted(async () => {
   informationpersonal.value.nameRank = localStorage.getItem('customer_nameRank') || '';
   informationpersonal.value.birth = localStorage.getItem('customer_birth') || '';
   informationpersonal.value.phoneNumber = localStorage.getItem('customer_phoneNumber') || '';
-
-  try {
-    const historyResponse = await api.get('/client/history-points');
-    historyPoints.value = (historyResponse.data || []).map(history => ({
-      ...history,
-      image: history.image || '/imageicon/default-transaction.png',
-      name: history.name || informationpersonal.value.FullName || 'Khách hàng',
-    }));
-  } catch (error) {
-    console.error('Lỗi khi lấy danh sách lịch sử điểm:', error.response || error);
-    historyPoints.value = [];
-  }
-
-  try {
-    const salesResponse = await api.get('/client/sales');
-    tabs.value.find(tab => tab.ten === 'Quà tặng').danhSachQuaTang = salesResponse.data.data || [];
-  } catch (error) {
-    console.error('Lỗi khi lấy danh sách khuyến mãi:', error.response || error);
-    tabs.value.find(tab => tab.ten === 'Quà tặng').danhSachQuaTang = [];
-  }
 });
 
 const handleImageUpload = (event) => {
@@ -405,7 +424,6 @@ const updatePersonalInfo = async () => {
     birth: informationpersonal.value.birth,
     image_base64: informationpersonal.value.image,
   };
-  
 
   try {
     const response = await api.put(`/client/customers/${id}`, payload);
@@ -415,7 +433,7 @@ const updatePersonalInfo = async () => {
       name: response.data.customer.FullName,
       password: localStorage.getItem('customer_password') || '',
     };
-    localStorage.setItem('customer_fullName', response.data.customer.FullName)
+    localStorage.setItem('customer_fullName', response.data.customer.FullName);
   } catch (err) {
     console.error('Lỗi khi cập nhật thông tin:', err.response?.data?.message || err.message);
     alert(`Có lỗi xảy ra khi cập nhật: ${err.response?.data?.message || err.message}`);
@@ -432,7 +450,7 @@ const deletePersonalInfo = async () => {
     await api.delete(`/client/customers/${id}`);
     alert('Xóa tài khoản thành công');
     localStorage.clear();
-    router.push({ name: 'users-home' }); 
+    router.push({ name: 'users-home' });
   } catch (err) {
     console.error('Lỗi khi xóa tài khoản:', err);
     alert('Có lỗi xảy ra khi xóa tài khoản');
@@ -995,4 +1013,49 @@ const formatDate = (dateString) => {
     box-shadow: 0 0 0 0 rgba(250, 229, 113, 0);
   }
 }
+
+.points-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+  font-size: 14px;
+  table-layout: fixed; /* ép các cột đều nhau */
+}
+
+.points-table th,
+.points-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: center;
+  vertical-align: middle;
+  word-wrap: break-word;
+  white-space: nowrap; /* không xuống dòng */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.points-table th {
+  background-color: #28a745;
+  color: white;
+  font-weight: bold;
+}
+
+.points-table tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.points-table tr:hover {
+  background-color: #e6f7e6;
+}
+
+.status-received {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.status-canceled {
+  color: #dc3545;
+  font-weight: bold;
+}
+
 </style>

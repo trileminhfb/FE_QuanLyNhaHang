@@ -7,7 +7,7 @@
     <!-- Hộp chat -->
     <div v-if="isOpen"
       class="fixed right-28 rounded-xl bottom-10 h-[500px] w-[400px] bg-white border flex flex-col shadow-lg">
-      
+
       <!-- Header -->
       <div class="w-full border h-20 flex flex-row bg-blue-400 rounded-t-xl">
         <div class="flex-[5] flex flex-row items-center px-2 gap-2">
@@ -23,6 +23,16 @@
               d="M6 18 17.94 6M18 18 6.06 6" />
           </svg>
         </div>
+      </div>
+
+      <!-- Nút chat nhanh -->
+      <div class="p-2 border-b flex justify-around gap-2 bg-gray-50">
+        <button @click="quickChat('Xin chào! Tôi cần hỗ trợ.')"
+          class="bg-blue-400 text-white px-3 py-1 rounded hover:bg-blue-500 transition">Xin chào!</button>
+        <button @click="quickChat('tư vấn món ăn ')"
+          class="bg-blue-400 text-white px-3 py-1 rounded hover:bg-blue-500 transition">Tư vấn món ăn</button>
+        <button @click="quickChat('Tôi muốn liên hệ với nhân viên hỗ trợ.')"
+          class="bg-blue-400 text-white px-3 py-1 rounded hover:bg-blue-500 transition">Liên hệ hỗ trợ</button>
       </div>
 
       <!-- Nội dung chat -->
@@ -156,6 +166,11 @@ function formatMessage(text) {
   })
 
   return htmlLines.join('')
+}
+// Hàm xử lý nút chat nhanh
+const quickChat = (text) => {
+  message.value = text
+  sendMessage()
 }
 </script>
 

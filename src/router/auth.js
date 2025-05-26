@@ -16,7 +16,7 @@ const authRoutes = [
   },
   {
     path: "/reset-password",
-    name: "users-reset-password",
+    name: "reset-password",
     component: () => import("../pages/loginclient/resetPassword.vue"),
   },
 ];

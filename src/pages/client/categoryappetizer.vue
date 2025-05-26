@@ -2,13 +2,13 @@
   <div class="container-cartegoryaooetizer">
     <h1>Danh Sách Menu</h1>
     <div class="search-wrapper" style="text-align: center; margin-bottom: 1rem;">
-          <input
-            type="text"
-            v-model="searchTerm"
-            placeholder="Tìm kiếm món ăn... 🔎"
-            class="search-input"
-          />
-        </div>
+      <input
+        type="text"
+        v-model="searchTerm"
+        placeholder="Tìm kiếm món ăn... 🔎"
+        class="search-input"
+      />
+    </div>
 
     <!-- Icon giỏ hàng cố định -->
     <div class="gio-hang-icon">
@@ -55,8 +55,8 @@
           </button>
         </div>
 
-        <div class="food-items" v-if="selectedCategory && filteredDishes.length > 0">
-          <h2>{{ selectedCategory.name }}</h2>
+        <div class="food-items">
+          <h2>{{ selectedCategory ? selectedCategory.name : 'Tất cả món ăn' }}</h2>
           <div class="menu-grid">
             <div class="card-menu" v-for="(dish, dishIndex) in filteredDishes" :key="dishIndex">
               <img :src="getImageUrl(dish.image)" alt="Ảnh món ăn" style="width: 100%; height: 200px;" />
@@ -64,7 +64,7 @@
                 <div class="card-name" @click="handleShowRating(dish)">
                   <strong>{{ dish.name }}</strong>
                 </div>
-                <div class="card-cost"><strong>{{ dish.cost }}</strong></div>
+                <div class="card-cost"><strong>{{ dish.cost }} VNĐ</strong></div>
 
                 <div class="card-title">{{ dish.detail }}</div>
                 <div class="card-price">
@@ -80,10 +80,6 @@
               </div>
             </div>
           </div>
-        </div>
-
-        <div class="food-items" v-else>
-          <p>Vui lòng chọn danh mục để xem món ăn hoặc không tìm thấy món ăn phù hợp.</p>
         </div>
       </div>
     </div>
@@ -103,14 +99,16 @@ import api from '../../services/api'
 import { cartItems, addToCart } from '../../stores/cartStore'
 import DishRating from './DishRating.vue'
 import { useToast } from 'vue-toastification'
-const toast =useToast();
+const toast = useToast()
+
 const categories = ref([])
 const selectedCategoryIndex = ref(null)
 const selectedDish = ref(null)
 const showRating = ref(false)
 const searchTerm = ref('')
 const selectedPriceRangeIndex = ref(null)
-const sortOrder = ref('asc') 
+const sortOrder = ref('asc')
+const allDishes = ref([]) // Lưu trữ tất cả món ăn
 
 // Định nghĩa các khoảng giá
 const priceRanges = ref([
@@ -125,16 +123,17 @@ const gioHangIcon = ref(null)
 onMounted(async () => {
   gioHangIcon.value = document.querySelector('.gio-hang-icon')
 
-  // Lấy danh mục trước để có tên category cho món
-  const res = await api.get('/client/categories')
-  categories.value = res.data
-
   try {
+    // Lấy danh mục
+    const res = await api.get('/client/categories')
+    categories.value = res.data
+
+    // Lấy tất cả món ăn
     const response = await api.get('/client/foods')
-    const foods = response.data
-    categories.value = categorizeFoods(foods)
+    allDishes.value = response.data
+    categories.value = categorizeFoods(allDishes.value)
   } catch (error) {
-    console.error('Lỗi khi tải món ăn:', error)
+    console.error('Lỗi khi tải dữ liệu:', error)
   }
 })
 
@@ -163,8 +162,10 @@ const selectedCategory = computed(() => {
 })
 
 const filteredDishes = computed(() => {
-  if (!selectedCategory.value) return []
-  let dishes = [...selectedCategory.value.dsMon] 
+  // Nếu không có danh mục được chọn, hiển thị tất cả món ăn
+  let dishes = selectedCategory.value
+    ? [...selectedCategory.value.dsMon]
+    : [...allDishes.value]
 
   // Lọc theo từ khóa tìm kiếm
   if (searchTerm.value.trim()) {
@@ -243,17 +244,18 @@ function animateAddToCart(imageUrl, event) {
     img.remove()
   }
 }
+
 function handleAddToCart(dish, event) {
-  toast.success('đã thêm món ăn vào giỏ ')
+  toast.success('Đã thêm món ăn vào giỏ')
   addToCart(dish)
   animateAddToCart(getImageUrl(dish.image), event)
 }
+
 function handleShowRating(dish) {
   selectedDish.value = dish
   showRating.value = true
 }
 </script>
-
 <style scoped>
 html,
 body {

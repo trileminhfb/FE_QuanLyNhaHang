@@ -17,17 +17,6 @@
                             <input class="w-full border h-12 px-2" v-model="foodData.cost" type="number"
                                 placeholder="Giá">
                         </div>
-                        <div class="w-full flex flex-row gap-5">
-                            <div class="flex flex-row gap-5">
-                                <p>Best Seller</p>
-                                <SwitchButton :status="foodData.best_seller"
-                                    @toggle="() => toggleField('best_seller')" />
-                            </div>
-                            <div class="flex flex-row gap-5">
-                                <p>Mở bán</p>
-                                <SwitchButton :status="foodData.status" @toggle="() => toggleField('status')" />
-                            </div>
-                        </div>
                         <div class="w-full">
                             <p>Mô tả món ăn</p>
                             <textarea class="w-full border mt-2 h-[300px] px-2 py-2 resize-none"

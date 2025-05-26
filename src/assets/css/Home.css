@@ -73,7 +73,7 @@ body {
     justify-content: center;
     align-items: center;
     gap: 20px;
-}
+}a
 .content p{
     font-size: 25px;
     color: black;
@@ -91,3 +91,44 @@ body {
     padding: 20px;
     text-align: center;
 }
+@media screen and (max-width: 992px) {
+    .content {
+      flex-direction: column;
+      padding: 20px;
+    }
+  
+    .content .col-left,
+    .content .col-right {
+      flex: 100%;
+      padding: 10px;
+    }
+  
+    .content p {
+      font-size: 18px;
+    }
+  
+    .introduce {
+      flex-direction: column;
+      align-items: center;
+    }
+  
+    .introduce p {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+  
+    .introduce img {
+      height: 40px;
+      margin: 0 auto;
+    }
+  
+    .text {
+      font-size: 1.5rem !important;
+      margin-left: 20px;
+      text-align: center;
+    }
+  
+    .background {
+      padding: 30px 10px;
+    }
+  }

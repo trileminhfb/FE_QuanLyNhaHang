@@ -19,11 +19,11 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in paginatedItems" :key="item.id" class="border-2 border-gray-300">
+          <tr v-for="(item, index) in paginatedItems" :key="item.id || index" class="border-2 border-gray-300">
             <td>
               <div class="h-full flex flex-row justify-start items-center">
                 <div class="h-20 flex flex-row justify-center items-center">
-                  <div class="ps-5 flex flex-row gap-5">
+                  <div class="ps-5 flex flex-col gap-1">
                     <p class="hover:cursor-pointer">{{ item.name }}</p>
                     <div class="flex flex-row gap-2 items-center">
                       <SwitchButton :model-value="item.status" @toggle="() => toggleStatus(item)" />

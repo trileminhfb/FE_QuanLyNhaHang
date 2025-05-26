@@ -20,15 +20,16 @@
 
 						<div class="w-full flex flex-row gap-5">
 							<div class="flex flex-row gap-5">
-								<p>Best Seller</p>
-								<SwitchButton v-model="foodData.best_seller"
-									@toggle="(val) => console.log('Trạng thái mới:', val)" />
-							</div>
-							<div class="flex flex-row gap-5">
 								<p>Mở bán</p>
 								<SwitchButton v-model="foodData.status"
 									@toggle="(val) => console.log('Trạng thái mới:', val)" />
 							</div>
+							<div class="flex flex-row gap-5">
+								<p>Best Seller</p>
+								<SwitchButton v-model="foodData.bestSeller"
+									@toggle="(val) => console.log('Trạng thái mới:', val)" />
+							</div>
+
 						</div>
 
 						<div class="w-full">
@@ -42,7 +43,7 @@
 					<div class="border flex flex-1 gap-2 flex-col items-center p-2 rounded-e-lg">
 						<div class="flex flex-col gap-2 justify-center items-center">
 							<div class="h-[200px] w-[200px] border rounded-lg overflow-hidden">
-								<img class="object-cover w-full h-full" :src="img.preview" alt="Hình ảnh hiển thị" />
+								<img class="object-cover w-full h-full" :src="img?.preview" alt="Hình ảnh hiển thị" />
 							</div>
 							<input ref="imageInput" type="file" id="change-picture-input" class="hidden"
 								@change="onFileChange" accept="image/*" />
@@ -154,7 +155,7 @@ const foodData = reactive({
 	id: null,
 	name: "",
 	cost: 0,
-	best_seller: 0,
+	bestSeller: 0,
 	status: 1,
 	detail: "",
 	image: "",
@@ -277,25 +278,34 @@ function onFileChange(e) {
 }
 
 async function goSave() {
-	const formData = new FormData()
-	formData.append('_method', 'PUT')
-	formData.append('name', foodData.name)
-	formData.append('id_type', foodData.type.id)
-	// formData.append('bestSeller', foodData.best_seller === 1)
-	formData.append('cost', foodData.cost)
-	formData.append('detail', foodData.detail)
-	formData.append('status', foodData.status)
-	formData.append('category_ids', foodData.category_ids)
-	formData.append('image', foodData.image)
-	formData.append('originImg', img.origin)
+	const formData = new FormData();
+	formData.append('_method', 'PUT');
+	formData.append('name', foodData.name);
+	formData.append('id_type', foodData.type.id);
+	formData.append('cost', foodData.cost);
+	formData.append('detail', foodData.detail);
+	formData.append('status', foodData.status);
+	formData.append('bestSeller', foodData.bestSeller);
+
+	// Gửi danh sách category đúng cách
+	foodData.categories.forEach((catId, index) => {
+		formData.append(`category_ids[${index}]`, catId);
+	});
+
+	// Ảnh
+	if (foodData.image && foodData.image !== img.origin) {
+		formData.append('image', foodData.image);
+	}
+	formData.append('originImg', img.origin);
 
 	try {
 		await axios.post(`http://127.0.0.1:8000/api/admin/foods/${foodData.id}`, formData);
 		alert("Cập nhật thành công!");
 		router.push({ name: "admin-foods" });
 	} catch (error) {
-		console.error("Lỗi khi lưu:", error);
+		console.error("Lỗi khi lưu:", error.response?.data || error);
 		alert("Đã xảy ra lỗi khi lưu dữ liệu.");
 	}
 }
+
 </script>

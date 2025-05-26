@@ -53,7 +53,11 @@
         <SwiperSlide v-for="(category, index) in danhSachDanhMucNoiBat" :key="'category-' + index">
           <div class="food-card bg-white rounded-lg shadow-md p-4 text-center">
             <div class="info-food">
+              <router-link 
+              :to="{name: 'users-category'}">
               <div class="food-name font-bold text-lg">{{ category.name }}</div>
+
+            </router-link>
             </div>
           </div>
         </SwiperSlide>
@@ -188,7 +192,8 @@ import 'aos/dist/aos.css'
 import 'swiper/css'
 import 'swiper/css/pagination'
 import '../../assets/css/MenuCard.css'
-
+import { useToast } from 'vue-toastification'
+const toast =useToast();
 const allItems = ref([]) // For sales
 const categories = ref([]) // For categories
 const bestSellerFoods = ref([])
@@ -312,10 +317,16 @@ const scrollRight = () => {
 }
 
 function handleAddToCart(mon) {
-  addToCart(mon)
-  soLuonggiohang.value++
-  router.push('/shoppingCart')
+  try {
+    addToCart(mon)
+    soLuonggiohang.value++
+    toast.success('Đã thêm vào giỏ')
+  } catch (error) {
+    toastError('Không thể thêm vào giỏ hàng!')
+    console.error(error)
+  }
 }
+
 
 const formatDate = (dateString) => {
   const date = new Date(dateString)
@@ -337,54 +348,517 @@ const xemThemMon = () => {
 }
 </script>
 
-<style>
+<style scoped>
 /* Custom class to hide scrollbar across browsers for promo section */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
 
 .no-scrollbar {
-  -ms-overflow-style: none;
-  /* IE and Edge */
-  scrollbar-width: none;
-  /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
 
 /* Style the scrollbar for tab-links */
 .tab-links::-webkit-scrollbar {
-  height: 8px;
+  height: 6px; /* Giảm chiều cao thanh cuộn cho thanh lịch */
 }
 
 .tab-links::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 4px;
+  background: #f5f5f5; /* Màu nền nhẹ, phù hợp cả dark/light theme */
+  border-radius: 6px; /* Bo tròn nhẹ */
+  margin: 4px; /* Khoảng cách hai bên */
 }
 
 .tab-links::-webkit-scrollbar-thumb {
-  background: #ff6f61;
-  border-radius: 4px;
+  background: #ff4500; /* Màu đỏ chủ đạo của theme */
+  border-radius: 6px;
 }
 
 .tab-links::-webkit-scrollbar-thumb:hover {
-  background: #e65b50;
+  background: #e03e00; /* Hiệu ứng hover đậm hơn */
 }
 
 /* Style the scrollbar for menu-grid-wrapper */
 .menu-grid-wrapper::-webkit-scrollbar {
-  height: 8px;
+  width: 8px; /* Thanh cuộn dọc mảnh hơn */
 }
 
 .menu-grid-wrapper::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f5f5f5;
   border-radius: 4px;
 }
 
 .menu-grid-wrapper::-webkit-scrollbar-thumb {
-  background: #ff6f61;
+  background: #ff4500;
   border-radius: 4px;
 }
 
 .menu-grid-wrapper::-webkit-scrollbar-thumb:hover {
-  background: #e65b50;
+  background: #e03e00;
+}
+
+/* Title section */
+.title {
+  margin-top: 30px;
+  margin-bottom: 20px;
+}
+
+.title p {
+  font-family: "Dancing Script", cursive;
+  font-size: 1.75rem; /* Tăng nhẹ kích thước chữ */
+  color: #333; /* Màu tối hơn cho dễ đọc */
+}
+
+/* Swiper pagination */
+.swiper-pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+  gap: 10px;
+}
+
+.swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: #666; /* Màu xám nhẹ cho trạng thái không active */
+  opacity: 0.7;
+  border-radius: 50%; /* Hình tròn thay vì vuông */
+  transition: background 0.3s, transform 0.3s;
+}
+
+.swiper-pagination-bullet-active {
+  background: #ff4500;
+  opacity: 1;
+  transform: scale(1.2); /* Phóng to nhẹ khi active */
+}
+
+/* Container */
+.container,
+.container-fluid {
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Food card */
+.card-food {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.name-food {
+  white-space: nowrap;
+  font-weight: 600;
+  color: #333;
+}
+
+.list-food {
+  display: flex;
+  gap: 30px; /* Giảm gap để responsive tốt hơn */
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.food-item {
+  border: 1px solid #ddd; /* Viền nhẹ hơn */
+  width: 280px; /* Giảm kích thước để phù hợp mobile */
+  height: 320px;
+  text-align: center;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s;
+}
+
+.food-item:hover {
+  transform: translateY(-5px); /* Hiệu ứng nâng nhẹ khi hover */
+}
+
+.food-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.food-item::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.4));
+  z-index: 1;
+}
+
+.detail {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  font-size: 1.25rem;
+  padding: 12px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+  z-index: 2;
+}
+
+.food-item:hover .detail {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.food-info {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 1.25rem;
+  max-width: 90%;
+  padding: 0 10px;
+  word-wrap: break-word;
+  z-index: 2;
+}
+
+.food-info p {
+  margin: 0;
+  font-weight: 500;
+}
+
+/* Food grid */
+.food-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding-bottom: 30px;
+  margin-top: 20px;
+  gap: 20px; /* Thêm khoảng cách giữa các card */
+}
+
+.food-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 300px; /* Giảm nhẹ kích thước */
+  padding: 15px;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  transition: transform 0.3s, box-shadow 0.3s;
+  background: #fff;
+}
+
+.food-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.food-card img {
+  height: 180px; /* Giảm chiều cao ảnh để cân đối */
+  width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+/* Tab wrapper */
+.tab-wrapper {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px 10px;
+}
+
+.tab-links {
+  display: flex;
+  list-style: none;
+  justify-content: center; /* Căn giữa các tab */
+  margin-bottom: 20px;
+  border-bottom: 2px solid #e0e0e0;
+  overflow-x: auto;
+  gap: 10px;
+}
+
+.tab-link {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  border: none;
+  background-color: transparent;
+  transition: color 0.3s, border-bottom 0.3s;
+  color: #333;
+  white-space: nowrap;
+}
+
+.tab-link.current {
+  color: #ff4500;
+  border-bottom: 3px solid #ff4500;
+}
+
+.tab-content {
+  padding: 20px;
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  background: #fafafa; /* Nền nhạt hơn */
+}
+
+/* Menu list */
+.menu-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: center;
+  padding: 20px 0;
+}
+
+/* Menu grid */
+.menu-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsive grid */
+  gap: 20px;
+  padding: 10px;
+}
+
+.card-menu {
+  border: 1px solid #f0f0f0;
+  width: 260px;
+  padding: 12px;
+  margin: 10px auto;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  border-radius: 16px;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.card-menu:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card-menu img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.info-card {
+  text-align: center;
+  padding: 10px 0;
+}
+
+/* Menu card */
+.menu-card {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.3s;
+}
+
+.menu-card:hover {
+  transform: translateY(-5px);
+}
+
+.menu-card img {
+  width: 100%;
+  height: 160px; /* Giảm chiều cao để cân đối */
+  object-fit: cover;
+}
+
+.menu-info {
+  padding: 12px;
+  text-align: center;
+  word-wrap: break-word;
+}
+
+/* View more button */
+.xemthem-btn {
+  padding: 10px 24px;
+  font-weight: 600;
+  background-color: #ff4500;
+  border: none;
+  color: white;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.3s;
+}
+
+.xemthem-btn:hover {
+  background-color: #e03e00;
+}
+
+/* Review section */
+.review-section {
+  width: 100%;
+  padding: 20px 10px;
+}
+
+.review-card {
+  background: #fafafa;
+  padding: 15px;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 140px; /* Tăng nhẹ chiều cao */
+}
+
+.review-content {
+  flex: 0 0 65%;
+  padding-right: 10px;
+}
+
+.review-image {
+  flex: 0 0 35%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.review-image img {
+  width: 80px; /* Kích thước ảnh tròn nhỏ hơn */
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+h3 {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+p {
+  font-size: 0.9rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+/* Buttons */
+.btn-oder,
+.btn-add {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: background 0.3s;
+}
+
+.btn-oder {
+  background-color: #ff5a5f;
+  color: white;
+}
+
+.btn-add {
+  background-color: #00b894; /* Màu xanh lá tương phản */
+  color: white;
+}
+
+.btn-oder:hover,
+.btn-add:hover {
+  filter: brightness(90%);
+}
+
+.btn-wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .container,
+  .container-fluid {
+    padding: 0 10px;
+  }
+
+  .food-item {
+    width: 100%;
+    max-width: 300px;
+    height: 280px;
+  }
+
+  .food-card {
+    width: 100%;
+    max-width: 280px;
+  }
+
+  .card-menu {
+    width: 100%;
+    max-width: 240px;
+  }
+
+  .menu-grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+
+  .tab-links {
+    justify-content: flex-start;
+  }
+
+  .tab-link {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+
+  .review-card {
+    flex-direction: column;
+    height: auto;
+    padding: 10px;
+  }
+
+  .review-content {
+    flex: 1;
+    padding-right: 0;
+    text-align: center;
+  }
+
+  .review-image {
+    margin-top: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title p {
+    font-size: 1.5rem;
+  }
+
+  .swiper-pagination-bullet {
+    width: 8px;
+    height: 8px;
+  }
+
+  .food-card img,
+  .card-menu img {
+    height: 140px;
+  }
+
+  .menu-card img {
+    height: 120px;
+  }
+
+  .xemthem-btn {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
 }
 </style>
