@@ -177,7 +177,7 @@ async function fetchUserProfile() {
       throw new Error('No authentication token found.');
     }
 
-    const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+    const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -316,7 +316,7 @@ const paginatedItems = computed(() => {
 
 async function fetchBooking() {
   try {
-    const response = await axios.get("http://127.0.0.1:8000/api/admin/bookings");
+    const response = await axios.get("http:// 192.168.1.53:8888/api/admin/bookings");
     allItems.value = response.data.data;
   } catch (error) {
     console.error("Lỗi khi lấy dữ liệu đặt bàn:", error);

@@ -20,33 +20,29 @@
       <div v-else>
         <!-- BƯỚC CHỌN HÀNH ĐỘNG -->
         <div class="col-left" v-if="formStage === 'choose'">
-          <h3 style="color: white; font-size: 30px;">🎉Bạn Đặt bàn thành công🎉</h3>
-          <p style="color: white; font-size: 20px; margin-bottom: 10px;">
-            Bạn muốn làm gì tiếp theo?
-          </p>
-          <button @click="formStage = 'deposit'" class="btn-oder" style="margin-bottom: 10px;">💵 Đặt tiền cọc</button>
+          <h3 class="success-title">🎉 Bạn Đặt bàn thành công 🎉</h3>
+          <p class="action-text">Bạn muốn làm gì tiếp theo?</p>
+          <button @click="formStage = 'deposit'" class="btn-oder">💵 Đặt tiền cọc</button>
           <button @click="startOrder" class="btn-oder">🍽️ Đặt món</button>
         </div>
         <!-- FORM ĐẶT TIỀN CỌC -->
         <div class="col-left" v-if="formStage === 'deposit'">
-          <h3 style="color: white;">💵 Đặt tiền cọc</h3>
+          <h3 class="section-title">💵 Đặt tiền cọc</h3>
           <div class="form-row" v-if="foodForm.length">
             <label>Gợi ý tổng tiền cọc:</label>
-            <p style="color: yellow; font-weight: bold;">
+            <p class="deposit-info">
               {{ calculateTotalDeposit(foodForm).toLocaleString() }} VNĐ
               <br />
               <small>(bao gồm 30% giá món + 50.000 tiền bàn)</small>
             </p>
           </div>
-          <div class="form-row">
-          </div>
           <button @click="submitDeposit" class="btn-oder">Xác nhận đặt cọc</button>
-          <button @click="formStage = 'choose'" style="margin-top: 10px;">⬅️ Quay lại</button>
+          <button @click="formStage = 'choose'" class="btn-back">⬅️ Quay lại</button>
         </div>
         <!-- FORM ĐẶT MÓN ĂN -->
         <div class="col-left" v-if="formStage === 'order'">
-          <h3 style="color: white; font-size: 30px; padding-bottom: 10px;">🍽️ Chọn món ăn </h3>
-          <p style="font-size: 25px; color: white; font-weight: bold; margin-bottom: 10px;">Chào ,<strong style="color: red;">{{ userName }}</strong></p>
+          <h3 class="section-title">🍽️ Chọn món ăn</h3>
+          <p class="greeting">Chào, <strong class="highlight">{{ userName }}</strong></p>
           <div v-for="(item, index) in foodForm" :key="index" class="form-row">
             <label>Món ăn {{ index + 1 }}:</label>
             <select v-model="item.id_foods">
@@ -55,38 +51,37 @@
                 {{ food.name }} - {{ food.cost.toLocaleString() }} VNĐ
               </option>
             </select>
-            
             <label>Số lượng:</label>
-            <input type="number" v-model="item.quantity" min="1" style="width: 80px;" />
-            <button @click="removeFoodItem(index)" v-if="foodForm.length > 1" style="margin-left: 10px;">❌</button>
+            <input type="number" v-model="item.quantity" min="1" class="quantity-input" />
+            <button @click="removeFoodItem(index)" v-if="foodForm.length > 1" class="remove-btn">❌</button>
           </div>
-          <button @click="addFoodItem" class="btn-oder" style="margin-top: 10px;">➕ Thêm món</button>
-          <button @click="submitFoodOrder" class="btn-oder" style="margin-top: 10px;">💵Xác nhận đặt món</button>
-          <button @click="formStage = 'choose'" style="margin-top: 10px;">⬅️ Quay lại</button>
+          <button @click="addFoodItem" class="btn-oder">➕ Thêm món</button>
+          <button @click="submitFoodOrder" class="btn-oder">💵 Xác nhận đặt món</button>
+          <button @click="formStage = 'choose'" class="btn-back">⬅️ Quay lại</button>
         </div>
         <!-- THÔNG TIN XÁC NHẬN & MÃ QR -->
         <div v-if="formStage === 'confirmation'" class="col-left card-info">
-          <button @click="formStage = 'choose'" style="margin-top: 10px;">⬅️ Quay lại</button>
-
-          <h3 style="color: white; display: flex; justify-content: center;margin-bottom: 20px; font-size: 30px;">Thông tin đặt bàn của bạn</h3>
+          <button @click="formStage = 'choose'" class="btn-back">⬅️ Quay lại</button>
+          <h3 class="section-title">Thông tin đặt bàn của bạn</h3>
           <div class="user-info">
             <img :src="userInfo.avatar" alt="Ảnh đại diện" class="avatar" />
             <p><strong>Tên người dùng:</strong> {{ userInfo.name }}</p>
             <p><strong>Email:</strong> {{ userInfo.email }}</p>
             <p><strong>ID Booking:</strong> {{ bookingId }}</p>
             <div v-if="qrCode">
-              <p style="display: flex; justify-content: center; margin-top: 15px;"> <strong>Mã QR:</strong></p>
+              <p class="qr-label"><strong>Mã QR:</strong></p>
               <img :src="qrCode" alt="QR Code" class="qr-code" />
             </div>
           </div>
         </div>
       </div>
       <div class="col-right">
-        <img style="border-radius: 50%; margin-bottom: 50px;" src="/imageicon/phefood.png" alt="Hình ảnh" />
+        <img src="/imageicon/phefood.png" alt="Hình ảnh" class="right-image" />
       </div>
     </div>
   </div>
 </template>
+
 <script setup>
 import { ref, reactive, onMounted } from 'vue';
 import api from '../../services/api';
@@ -95,16 +90,17 @@ import QRCode from 'qrcode';
 import { useBookingHistoryStore } from '../../stores/bookingHistoryStore';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
-const toast =useToast();
+
+const toast = useToast();
 const bookingStore = useBookingHistoryStore();
 const bookingSuccess = ref(false);
 const formStage = ref('choose');
 const errors = ref({});
-const router =useRouter();
+const router = useRouter();
 const bookingId = ref(null);
-const userName = ref() 
+const userName = ref('');
 const form = reactive({
-  timeBooking: ''
+  timeBooking: '',
 });
 const depositAmount = ref(0);
 const foodForm = ref([{ id_foods: '', quantity: 1 }]);
@@ -112,9 +108,10 @@ const foodList = ref([]);
 const userInfo = reactive({
   name: '',
   email: '',
-  avatar: 'imageicon/phefood.png'
+  avatar: '/imageicon/phefood.png',
 });
 const qrCode = ref('');
+
 const generateQRCode = () => {
   const data = `Tên: ${userInfo.name}, Email: ${userInfo.email}`;
   QRCode.toDataURL(data, (err, url) => {
@@ -122,27 +119,35 @@ const generateQRCode = () => {
     qrCode.value = url;
   });
 };
+
 onMounted(() => {
   generateQRCode();
+  userName.value = localStorage.getItem('FullName') || '';
+  getFoods();
 });
+
 const addFoodItem = () => {
   foodForm.value.push({ id_foods: '', quantity: 1 });
-}
+};
+
 const removeFoodItem = (index) => {
   if (foodForm.value.length > 1) {
     foodForm.value.splice(index, 1);
   }
 };
+
 const calculateFoodDeposit = (foods) => {
   if (!Array.isArray(foods) || !foods.length || !foodList.value.length) return 0;
   return foods.reduce((total, item) => {
-    const food = foodList.value.find(f => f.id === item.id_foods);
+    const food = foodList.value.find((f) => f.id === item.id_foods);
     return food ? total + item.quantity * food.cost : total;
   }, 0) * 0.3;
 };
+
 const calculateTotalDeposit = (foods) => {
   return Math.floor(calculateFoodDeposit(foods) + 50000);
 };
+
 const formatDateTime = (datetime) => {
   const date = new Date(datetime);
   const y = date.getFullYear();
@@ -152,6 +157,7 @@ const formatDateTime = (datetime) => {
   const min = String(date.getMinutes()).padStart(2, '0');
   return `${y}-${m}-${d} ${h}:${min}:00`;
 };
+
 const createBooking = () => {
   const token = localStorage.getItem('auth_token');
   errors.value = {};
@@ -162,27 +168,23 @@ const createBooking = () => {
   }
 
   const payload = {
-    timeBooking: formatDateTime(form.timeBooking)
+    timeBooking: formatDateTime(form.timeBooking),
   };
 
-  api.post('/client/bookings/create', payload)
+  api
+    .post('/client/bookings/create', payload)
     .then((res) => {
       if (res.status === 201) {
         toast.success('Bạn đã đặt bàn thành công', {
-          toastClassName: 'vue-toastification__toast'
+          toastClassName: 'vue-toastification__toast',
         });
 
         bookingSuccess.value = true;
         formStage.value = 'choose';
         bookingStore.addBooking(res.data.booking);
-        
-        // Lưu booking_id vào localStorage
         bookingId.value = res.data.booking.id;
-        localStorage.setItem('booking_id', res.data.booking.id); // Thêm dòng này
-
-        // Lưu bookingHistory
+        localStorage.setItem('booking_id', res.data.booking.id);
         localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
-
         getFoods();
       }
     })
@@ -197,342 +199,418 @@ const createBooking = () => {
       }
     });
 };
-  const submitFoodOrder = () => {
-    localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
-    const invalid = foodForm.value.some(item => !item.id_foods || item.quantity < 1);
-    if (invalid) {
-      alert('Vui lòng chọn món và số lượng hợp lệ cho tất cả các món.');
-      return;
-    }
 
-    const payload = {
-      id_booking: bookingId.value,
-      foods: foodForm.value.map(item => ({
-        id_foods: item.id_foods,
-        quantity: item.quantity
-      }))
-    };
+const submitFoodOrder = () => {
+  localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
+  const invalid = foodForm.value.some((item) => !item.id_foods || item.quantity < 1);
+  if (invalid) {
+    alert('Vui lòng chọn món và số lượng hợp lệ cho tất cả các món.');
+    return;
+  }
 
-    api.post('/client/booking-food', payload)
-    
-      .then(() => {
-        toast.success('Đặt món thành công!');
-        localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
-
-        // Cập nhật lịch sử đặt bàn với danh sách món đã chọn
-        const updatedBooking = {
-          id: bookingId.value,
-          foods: foodForm.value.map(item => ({
-            id_foods: item.id_foods,
-            quantity: item.quantity
-          }))
-        };
-
-        bookingStore.updateBookingFoods(updatedBooking);
-        localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
-
-        router.push({ name: 'users-home' });
-      })
-      .catch((err) => {
-        console.log('Lỗi đặt món:', err.response?.data || err.message);
-      });
+  const payload = {
+    id_booking: bookingId.value,
+    foods: foodForm.value.map((item) => ({
+      id_foods: item.id_foods,
+      quantity: item.quantity,
+    })),
   };
+
+  api
+    .post('/client/booking-food', payload)
+    .then(() => {
+      toast.success('Đặt món thành công!');
+      localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
+
+      const updatedBooking = {
+        id: bookingId.value,
+        foods: foodForm.value.map((item) => ({
+          id_foods: item.id_foods,
+          quantity: item.quantity,
+        })),
+      };
+
+      bookingStore.updateBookingFoods(updatedBooking);
+      localStorage.setItem('bookingHistory', JSON.stringify(bookingStore.bookings.value));
+      router.push({ name: 'users-home' });
+    })
+    .catch((err) => {
+      console.log('Lỗi đặt món:', err.response?.data || err.message);
+    });
+};
 
 const submitDeposit = () => {
   userInfo.name = localStorage.getItem('customer_name') || 'Chưa có tên';
   userInfo.email = localStorage.getItem('customer_email') || 'Chưa có email';
   userInfo.avatar = localStorage.getItem('customer_avatar') || '/images/avatar.png';
-
   generateQRCode();
   formStage.value = 'confirmation';
 };
+
 const getFoods = () => {
   api.get('/client/foods').then((res) => {
     foodList.value = res.data;
   });
 };
+
 const startOrder = () => {
   if (!bookingId.value) {
-    console.error('bookingId is missing!', bookingId.value); // để debug
-    alert('Không tìm thấy ID booking! Vui lòng đặt bàn trước.');
+    console.error('Chưa có ID đặt bàn');
+    toast.error('Chưa có ID đặt bàn!');
     return;
   }
+
   formStage.value = 'order';
 };
-onMounted(() => {
-  userName.value = localStorage.getItem('FullName') || '';
-});
+
+
 </script>
+
 <style scoped>
-.error-message {
-    color: red;
-    font-size: 14px;
-}
-.container {
-    max-width: 1200px;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 15px;
-    display: flex;
-    justify-content: center;
-}
-
-.order-table {
-    width: 100%;
-    height: auto;
-    background: #143b36;
-    border-radius: 60px;
-    display: flex;
-    align-items: center;
-    padding: 30px;
-    gap: 40px;
-}
-
-.col-left {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.col-right {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-.col-right img {
-    width: 100%;
-    max-width: 500px;
-    object-fit: contain;
-    margin-top: 100px;
-}
-
-.title-oder {
-    font-family: "Dancing Script", cursive;
-    text-align: center;
-    color: white;
-    margin-bottom: 20px;
-}
-
-.input-text {
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-}
-
-.form-row {
-    display: flex;
-    gap: 20px;
-    justify-content: space-between;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-}
-
-label {
-    color: white;
-    margin-bottom: 6px;
-    font-size: 20px;
-    font-weight: 500;
-    text-align: left;
-}
-
-input {
-    background: #fff;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.3s ease;
-}
-
-.oder-introduce {
-    margin-top: 15px;
-    text-align: center;
-}
-
-.oder-introduce p {
-
-    font-size: 16px;
-    color: white;
-}
-
-.number-phone {
-    color: yellow;
-}
-
-.oder-btn {
-    background: white;
-    width: 200px;
-    display: flex;
-    justify-content: center;
-    margin: 20px auto 0;
-    border-radius: 10px;
-    font-size: 25px;
-}
-
-.oder-btn:hover {
-    background: yellow;
-}
-.error-message {
-    color: red;
-    font-size: 14px;
-    margin-top: 10px;
-    text-align: center;
+/* General Reset */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 .container {
-    max-width: 1200px;
-    display: flex;
-    justify-content: center;
+  max-width: 100%;
+  width: 100%;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
 }
 
 .order-table {
-    width: 100%;
-    background: #143b36;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    padding: 30px 40px;
-    padding-right: 120px;
-    gap: 50px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 1200px;
+  background: #143b36;
+  border-radius: 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 1.5rem;
+  gap: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .col-left {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .col-right {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-.col-right img {
-    width: 100%;
-    max-width: 400px;
-    object-fit: contain;
-    margin-top: 50px;
-    transition: transform 0.3s ease-in-out;
+.col-right img.right-image {
+  width: 100%;
+  max-width: 400px;
+  object-fit: contain;
+  border-radius: 50%;
+  transition: transform 0.3s ease-in-out;
 }
 
-.col-right img:hover {
-    transform: scale(1.05);
+.col-right img.right-image:hover {
+  transform: scale(1.05);
 }
 
 .title-oder {
-    font-family: "Dancing Script", cursive;
-    text-align: center;
-    color: white;
-    margin-bottom: 30px;
-    font-size: 32px;
+  font-family: 'Dancing Script', cursive;
+  text-align: center;
+  color: white;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.success-title {
+  color: white;
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.action-text {
+  color: white;
+  font-size: 1.2rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.section-title {
+  color: white;
+  font-size: 1.8rem;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.greeting {
+  font-size: 1.5rem;
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.greeting .highlight {
+  color: red;
 }
 
 .form-row {
-    display: flex;
-    gap: 20px;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 label {
-    color: white;
-    margin-bottom: 6px;
-    font-size: 18px;
-    font-weight: 500;
-    text-align: left;
+  color: white;
+  font-size: 1rem;
+  font-weight: 500;
+  text-align: left;
 }
 
 input,
 select {
-    background: #fff;
-    border: 2px solid #ccc;
-    border-radius: 8px;
-    font-size: 16px;
-    outline: none;
-    transition: border-color 0.3s ease;
-    width: 100%;
+  background: #fff;
+  border: 2px solid #ccc;
+  border-radius: 8px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.3s ease;
+  width: 100%;
 }
 
-input[type="datetime-local"] {
-    background: #f0f0f0;
+input[type='datetime-local'] {
+  background: #f0f0f0;
 }
 
 input:focus,
 select:focus {
-    border-color: #ffcc00;
+  border-color: #ffcc00;
+}
+
+.quantity-input {
+  width: 80px;
+}
+
+.remove-btn {
+  background: #ff4d4d;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem;
+  cursor: pointer;
+}
+
+.remove-btn:hover {
+  background: #cc0000;
 }
 
 button {
-    background: #ffcc00;
-    color: #fff;
-    padding: 5px;
-    width: 100%;
-    max-width: 200px;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+  background: #ffcc00;
+  color: #fff;
+  padding: 0.5rem;
+  width: 100%;
+  max-width: 200px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin: 0.5rem auto;
 }
 
 button:hover {
-    background-color: #e6b800;
+  background-color: #e6b800;
 }
 
 button:disabled {
-    background-color: #ddd;
-    cursor: not-allowed;
+  background-color: #ddd;
+  cursor: not-allowed;
 }
 
-p a {
-    color: #ffcc00;
-    text-decoration: none;
+.btn-oder {
+  background: green;
 }
 
-p a:hover {
-    text-decoration: underline;
+.btn-back {
+  background: #555;
 }
-.btn-oder{
-    background: green;
+
+.deposit-info {
+  color: yellow;
+  font-weight: bold;
+  text-align: center;
 }
-.user-info{
-  width: auto;
-  height: auto;
-  color: black;
+
+.deposit-info small {
+  color: white;
+  font-size: 0.8rem;
+}
+
+.user-info {
   background: white;
+  color: black;
   display: flex;
-  justify-content: center;
   flex-direction: column;
   align-items: center;
   border-radius: 5px;
-  padding: 10px;
+  padding: 1rem;
 }
-.user-info .avatar{
-  border-radius: 50% ;
+
+.user-info .avatar {
+  border-radius: 50%;
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  margin-bottom: 1rem;
 }
+
+.qr-label {
+  color: black;
+  font-weight: bold;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.qr-code {
+  width: 150px;
+  height: 150px;
+  margin-top: 0.5rem;
+}
+
+.error-message {
+  color: red;
+  font-size: 0.9rem;
+  text-align: center;
+  margin-top: 0.5rem;
+}
+
 .vue-toastification__toast {
   font-size: 0.75rem;
   padding: 0.5em 1em;
   border-radius: 6px;
   min-height: unset;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .order-table {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .col-left,
+  .col-right {
+    width: 100%;
+  }
+
+  .col-right img.right-image {
+    max-width: 250px;
+    margin-top: 1rem;
+  }
+
+  .title-oder,
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .success-title {
+    font-size: 1.4rem;
+  }
+
+  .action-text,
+  .greeting {
+    font-size: 1rem;
+  }
+
+  button {
+    max-width: 100%;
+    font-size: 0.9rem;
+  }
+
+  .form-row {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .quantity-input {
+    width: 100%;
+  }
+
+  .user-info .avatar {
+    width: 80px;
+    height: 80px;
+  }
+
+  .qr-code {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+@media (max-width: 480px) {
+  .container {
+    padding: 0.5rem;
+  }
+
+  .order-table {
+    border-radius: 10px;
+    padding: 0.75rem;
+  }
+
+  .title-oder,
+  .section-title {
+    font-size: 1.2rem;
+  }
+
+  .success-title {
+    font-size: 1.1rem;
+  }
+
+  .action-text,
+  .greeting {
+    font-size: 0.9rem;
+  }
+
+  label {
+    font-size: 0.9rem;
+  }
+
+  input,
+  select {
+    font-size: 0.9rem;
+    padding: 0.4rem;
+  }
+
+  button {
+    font-size: 0.8rem;
+    padding: 0.4rem;
+  }
+
+  .col-right img.right-image {
+    max-width: 200px;
+  }
+
+  .user-info .avatar {
+    width: 60px;
+    height: 60px;
+  }
+
+  .qr-code {
+    width: 100px;
+    height: 100px;
+  }
 }
 </style>

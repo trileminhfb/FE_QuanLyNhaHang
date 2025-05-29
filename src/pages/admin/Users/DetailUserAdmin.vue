@@ -116,7 +116,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -151,7 +151,7 @@ async function confirmDelete() {
     showConfirm.value = false
 
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/admin/users/delete/${userData.id}`)
+        await axios.delete(`http:// 192.168.1.53:8888/api/admin/users/delete/${userData.id}`)
         alert('Đã xoá thành công!')
         router.push({ name: 'admin-users' })
     } catch (error) {

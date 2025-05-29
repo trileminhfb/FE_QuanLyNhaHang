@@ -175,7 +175,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -210,7 +210,7 @@ async function fetchManagerProfile() {
         const token = localStorage.getItem('auth_token')
         if (!token) throw new Error('No authentication token found.')
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -242,9 +242,9 @@ onMounted(async () => {
     try {
         if (foodData && foodData.id) {
             // Gọi API đánh giá
-            const ratesRes = await axios.get(`http://127.0.0.1:8000/api/admin/rates`)
+            const ratesRes = await axios.get(`http:// 192.168.1.53:8888/api/admin/rates`)
             // Gọi API phản hồi của quản lý
-            const repliesRes = await axios.get(`http://127.0.0.1:8000/api/admin/review-management`)
+            const repliesRes = await axios.get(`http:// 192.168.1.53:8888/api/admin/review-management`)
 
             if (ratesRes.data.status === 1 && Array.isArray(ratesRes.data.data)) {
                 const rates = ratesRes.data.data.filter(review => review.id_food === foodData.id)
@@ -319,7 +319,7 @@ async function submitReply(index) {
                 comment: review.replyComment
             };
 
-            const response = await axios.post('http://127.0.0.1:8000/api/admin/review-management/create', payload);
+            const response = await axios.post('http:// 192.168.1.53:8888/api/admin/review-management/create', payload);
 
             if (response.data.status === 1) {
                 review.managerReply = {

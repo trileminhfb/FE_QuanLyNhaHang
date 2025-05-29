@@ -55,7 +55,7 @@ const form = ref({
 
 async function goSave() {
     try {
-        const response = await axios.put(`http://127.0.0.1:8000/api/admin/types/${typeData.id}`, {
+        const response = await axios.put(`http:// 192.168.1.53:8888/api/admin/types/${typeData.id}`, {
             name: form.value.name,
             status: form.value.status
         })
@@ -83,7 +83,7 @@ async function confirmDelete() {
     showConfirm.value = false
 
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/admin/types/${typeData.id}`)
+        await axios.delete(`http:// 192.168.1.53:8888/api/admin/types/${typeData.id}`)
         alert('Đã xoá kiểu thành công!')
         router.push({ name: 'admin-types' })
     } catch (error) {
@@ -108,7 +108,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

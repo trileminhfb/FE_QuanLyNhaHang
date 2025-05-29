@@ -264,7 +264,7 @@ const changePassword = async () => {
     passError.value = '';
     try {
         const token = localStorage.getItem('auth_token');
-        await axios.put('http://127.0.0.1:8000/api/admin/users/change-password', changePassForm.value, {
+        await axios.put('http:// 192.168.1.53:8888/api/admin/users/change-password', changePassForm.value, {
             headers: { Authorization: `Bearer ${token}` },
         });
         message.value = 'Đổi mật khẩu thành công!';

@@ -22,20 +22,20 @@
                             <!-- Số lượng nhập -->
                             <div class="flex flex-row w-full items-center px-5 gap-4">
                                 <p class="flex-1">Số lượng nhập:</p>
-                                <input v-model="form?.quantity" type="number" min="0"
+                                <input v-model="form.quantity" type="number" min="0"
                                     class="border rounded px-4 py-2 w-[200px]" />
                             </div>
 
                             <div class="flex flex-row w-full items-center px-5 gap-4">
                                 <p class="flex-1">Giá tiền:</p>
-                                <input v-model="form?.price" type="number" min="0"
+                                <input v-model="form.price" type="number" min="0"
                                     class="border rounded px-4 py-2 w-[200px]" />
                             </div>
 
                             <!-- Ngày nhập -->
                             <div class="flex flex-row w-full items-center px-5 gap-4">
                                 <p class="flex-1">Ngày nhập:</p>
-                                <input v-model="form?.stock_in_date" type="date"
+                                <input v-model="form.stock_in_date" type="date"
                                     class="border rounded px-4 py-2 w-[200px]" />
                             </div>
 
@@ -94,7 +94,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -132,7 +132,7 @@ async function goSave() {
 
     isSaving.value = true;
     try {
-        const response = await axios.post('http://127.0.0.1:8000/api/admin/warehouse-invoices/create', form.value);
+        const response = await axios.post('http:// 192.168.1.53:8888/api/admin/warehouse-invoices/create', form.value);
         if (response.data.status === 1) {
             alert('Đã thêm mới thành công!');
             router.push({ name: 'import-warehouse-admin' });
@@ -150,7 +150,7 @@ async function goSave() {
 
 const fetchIngredient = async () => {
     try {
-        const response = await axios.get("http://127.0.0.1:8000/api/admin/ingredients");
+        const response = await axios.get("http:// 192.168.1.53:8888/api/admin/ingredients");
         allItems.value = response.data.data;
     } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);

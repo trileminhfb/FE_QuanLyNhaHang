@@ -3,39 +3,39 @@
     <div class="header">
       <ul class="menu">
         <a href="" class="logo">
-          <img src="/imageicon/phefood.png" alt="" />
+          <img src="/imageicon/phefood.png" alt="Logo" />
         </a>
-        <li>
+        <li class="nav-item">
           <router-link class="router-home" :to="{ name: 'users-home' }"><strong>HOME</strong></router-link>
         </li>
-        <li class="servicefood">
+        <li class="nav-item servicefood">
           <router-link class="router-introduce" :to="{ name: 'users-introduce' }">INTRODUCE</router-link>
         </li>
-        <li class="servicefood">
-          <router-link :to="{name :'users-category'}">MENU</router-link>
+        <li class="nav-item servicefood">
+          <router-link :to="{ name: 'users-category' }">MENU</router-link>
         </li>
-        <li class="servicefood">
+        <li class="nav-item servicefood">
           <router-link :to="{ name: 'users-news' }">NEWS</router-link>
         </li>
-        <li class="servicefood">
+        <li class="nav-item servicefood">
           <router-link to="/booking">BOOKING TABLE</router-link>
         </li>
-        <li class="servicefood">
+        <li class="nav-item servicefood">
           <router-link to="/contact">CONTACT</router-link>
         </li>
-        <div class="flex-1 justify-end flex me-10 items-center">
-        
-          <!-- Thêm biểu tượng thanh toán -->
-          <li>
+        <div class="flex-1 justify-end flex items-center nav-icons">
+          <!-- Payment Icon -->
+          <li class="nav-item">
             <div class="payment-icon">
               <router-link :to="{ name: 'users-payment' }">
                 <i class="fa-solid fa-credit-card"></i>
               </router-link>
             </div>
           </li>
-          <li>
+          <!-- User Info -->
+          <li class="nav-item">
             <div class="cart-user">
-              <span style="font-size: 15px; font-weight: bold;" v-if="userEmail" class="user-email">Xin chào, {{ userName }}</span>
+              <span v-if="userEmail" class="user-email">Xin chào, {{ userName }}</span>
               <i v-else class="fa-solid fa-user"></i>
               <div class="user-info">
                 <router-link v-if="!userEmail" :to="{ name: 'users-login' }">Đăng nhập</router-link>
@@ -43,7 +43,8 @@
               </div>
             </div>
           </li>
-          <li>
+          <!-- Shopping Cart -->
+          <li class="nav-item">
             <div class="cart-shopping" ref="cartIcon">
               <router-link :to="{ name: 'users-shoppingCart' }">
                 <i class="fa-solid fa-cart-shopping"></i>
@@ -51,15 +52,16 @@
               </router-link>
             </div>
           </li>
-          <li>
-            <input type="checkbox" id="menu-toggle" hidden>
+          <!-- Hamburger Menu Toggle -->
+          <li class="nav-item menu-toggle-wrapper">
+            <input type="checkbox" id="menu-toggle" hidden  >
             <label for="menu-toggle" class="menu-toggle">
               <i class="fa-solid fa-bars"></i>
             </label>
             <div class="user-menu">
               <div class="menu-header">
                 <label for="menu-toggle">
-                  <i class="fa-solid fa-bars"></i>
+                  <i class="fa-solid fa-times"></i>
                 </label>
                 <h2>Menu</h2>
               </div>
@@ -69,23 +71,65 @@
                   <h2>Home</h2>
                 </div>
               </router-link>
-              <div class="menu-item">
-                <i class="fa-solid fa-user"></i>
-                <router-link :to="{ name: 'users-personalinformation' }">Account</router-link>
-              </div>
-              <div class="menu-item">
-                <i class="fa-solid fa-ranking-star"></i>
-                <router-link :to="{ name: 'users-rank' }">Rank</router-link>
-              </div>
+              <router-link :to="{ name: 'users-introduce' }">
+                <div class="menu-item">
+                  <i class="fa-solid fa-info-circle"></i>
+                  <h2>Introduce</h2>
+                </div>
+              </router-link>
+              <router-link :to="{ name: 'users-category' }">
+                <div class="menu-item">
+                  <i class="fa-solid fa-utensils"></i>
+                  <h2>Menu</h2>
+                </div>
+              </router-link>
+              <router-link :to="{ name: 'users-news' }">
+                <div class="menu-item">
+                  <i class="fa-solid fa-newspaper"></i>
+                  <h2>News</h2>
+                </div>
+              </router-link>
+              <router-link to="/booking">
+                <div class="menu-item">
+                  <i class="fa-solid fa-calendar-check"></i>
+                  <h2>Booking Table</h2>
+                </div>
+              </router-link>
+              <router-link to="/contact">
+                <div class="menu-item">
+                  <i class="fa-solid fa-envelope"></i>
+                  <h2>Contact</h2>
+                </div>
+              </router-link>
+              <router-link :to="{ name: 'users-personalinformation' }">
+                <div class="menu-item">
+                  <i class="fa-solid fa-user"></i>
+                  <h2>Account</h2>
+                </div>
+              </router-link>
+              <router-link :to="{ name: 'users-rank' }">
+                <div class="menu-item">
+                  <i class="fa-solid fa-ranking-star"></i>
+                  <h2>Rank</h2>
+                </div>
+              </router-link>
               <router-link :to="{ name: 'users-evaluation' }">
                 <div class="menu-item">
                   <i class="fas fa-pen"></i>
                   <h2>Rates</h2>
                 </div>
               </router-link>
-              <router-link :to="{ name: 'booking-history' }" class="menu-item">
-                <i class="fas fa-history"></i>
-                <h2>History-Booking</h2>
+              <router-link :to="{ name: 'booking-history' }">
+                <div class="menu-item">
+                  <i class="fas fa-history"></i>
+                  <h2>History-Booking</h2>
+                </div>
+              </router-link>
+              <router-link :to="{ name: 'users-historypayment' }">
+                <div class="menu-item">
+                  <i class="fas fa-history"></i>
+                  <h2>History-Payment</h2>
+                </div>
               </router-link>
               <div class="menu-item" @click="handleLogout">
                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -100,17 +144,13 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import Swal from 'sweetalert2';
 import '../../assets/css/Header.css';
 import { cartCount } from '../../stores/cartStore';
 import api from '../../services/api';
 import { useRouter } from 'vue-router';
 
-const currentImage = ref('/imageicon/default.png');
-const isSearch = ref(false);
-const tuKhoa = ref('')
-const monTimDuoc = ref([]);
 const userEmail = ref(null);
 const userName = ref(null);
 const types = ref([]);
@@ -120,9 +160,6 @@ const avatar = ref(localStorage.getItem('avatar') || '/default-avatar.png');
 window.addEventListener('storage', () => {
   avatar.value = localStorage.getItem('avatar') || '/default-avatar.png';
 });
-
-
-
 
 const handleLogout = async () => {
   const result = await Swal.fire({
@@ -145,23 +182,7 @@ const handleLogout = async () => {
           confirmButtonText: 'OK',
         });
 
-        localStorage.removeItem('users-login');
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('customer_id');
-        localStorage.removeItem('customer_email');
-        localStorage.removeItem('customer_password');
-        localStorage.removeItem('customer_phoneNumber');
-        localStorage.removeItem('customer_fullName');
-        localStorage.removeItem('customer_birth');
-        localStorage.removeItem('customer_image');
-        localStorage.removeItem('customer_point');
-        localStorage.removeItem('customer_id_rank');
-        localStorage.removeItem('customer_rank');
-        localStorage.removeItem('customer_nameRank');
-        localStorage.removeItem('customer_imageRank');
-        localStorage.removeItem('customer_isActive');
-        localStorage.removeItem('customer_updated_at');
-        localStorage.removeItem('customer_created_at');
+        localStorage.clear();
         sessionStorage.clear();
         router.push('/users-login');
       }
@@ -184,118 +205,90 @@ onMounted(async () => {
   } catch (error) {
     console.error('Lỗi khi lấy loại món ăn:', error);
   }
-});
-onMounted(() => {
   userEmail.value = localStorage.getItem('customer_email') || '';
   userName.value = localStorage.getItem('customer_fullName') || '';
 });
-
-function logout() {
-  localStorage.removeItem('customer_email');
-  userEmail.value = '';
-}
 </script>
+
 <style scoped>
-.List li:hover a {
-  transform: scale(1.1);
-  transition: transform 0.2s ease;
-  /* độ mượt */
-}
-
-.search-box {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: white;
-  border-radius: 30px;
-  padding: 6px 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  overflow: hidden;
-  cursor: pointer;
-}
-
-.search-box input {
-  border: none;
-  outline: none;
-  background: transparent;
+.navbar {
   width: 100%;
-  font-size: 14px;
-  padding-left: 20px;
-}
-
-.search-box i {
-  position: absolute;
-  left: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 16px;
-  color: #333;
-  transition: color 0.3s ease;
-}
-
-.search-box:hover i {
-  color: #007bff;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  padding: 14px;
-  transition: all 0.1s;
-  cursor: pointer;
-  color: #333;
-  gap: 20px;
-}
-
-.menu-item:hover {
-  background: #eee;
-}
-
-.menu-item i {
-  text-align: center;
-  width: 20px;
-  font-size: 22px;
-}
-
-.menu-item span {
-  font-weight: 500;
-  margin-right: 20px;
-}
-
-.user-menu {
-  position: fixed;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: sticky;
   top: 0;
-  right: 0px;
-  height: 100%;
-  width: 260px;
-  padding: 20px;
-  background: white;
-  display: flex;
   z-index: 1000;
-  flex-direction: column;
-  gap: 20px;
-  transition: transform 0.3s;
-  transform: translateX(100%);
 }
 
-.menu-header {
-  font-size: 20px;
-  margin-bottom: 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid #cccc;
-  color: #333;
+.header {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.menu {
   display: flex;
   align-items: center;
-  gap: 20px;
-  margin-left: 15px;
-  font-weight: bold;
+  justify-content: space-between;
+  padding: 10px 0;
+  list-style: none;
+  margin: 0;
 }
 
-#menu-toggle:checked~.user-menu {
-  transform: translateX(0);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+.logo img {
+  height: 50px;
+  width: auto;
+  object-fit: contain;
+}
+
+.nav-item {
+  margin: 0 10px;
+}
+
+.nav-item a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  font-size: 14px;
+  transition: color 0.3s;
+}
+
+.nav-item a:hover {
+  color: #e67e22;
+}
+
+.servicefood {
+  position: relative;
+}
+
+.servicefood > a::after {
+  content: "";
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  width: 0;
+  height: 3px;
+  background-color: yellow;
+  transition: width 0.3s ease, left 0.3s ease;
+  transform: translateX(-50%);
+}
+
+.servicefood > a:hover::after {
+  width: 100%;
+  left: 50%;
+}
+
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.payment-icon i,
+.cart-shopping i,
+.cart-user i {
+  font-size: 18px;
+  color: #333;
 }
 
 .cart-user {
@@ -304,14 +297,11 @@ function logout() {
   cursor: pointer;
 }
 
-.cart-user i,
-.cart-user .user-email {
-  font-size: 18px;
-  color: #333;
-  padding: 5px 10px;
+.user-email {
+  font-size: 14px;
+  font-weight: bold;
 }
 
-/* Menu đăng nhập / đăng xuất */
 .user-info {
   position: absolute;
   top: 100%;
@@ -325,7 +315,6 @@ function logout() {
   white-space: nowrap;
 }
 
-/* Hiện menu khi hover vào .cart-user */
 .cart-user:hover .user-info {
   display: block;
 }
@@ -349,53 +338,85 @@ function logout() {
   color: #d69c52;
 }
 
-
-
-.servicefood>a::after {
-  content: "";
-  position: absolute;
-  bottom: -6px;
-  left: 50%;
-  width: 0;
-  height: 3px;
-  background-color: yellow;
-  transition: width 0.3s ease, left 0.3s ease;
-  transform: translateX(-50%);
-
-}
-
-.servicefood>a:hover::after {
-  width: 100%;
-  left: 50%;
-}
-
-
-.servicefood {
+.cart-shopping {
   position: relative;
 }
 
-.title-menu li {
+.cart-count {
+  position: absolute;
+  top: -6px;
+  right: -15px;
+  background-color: red;
+  color: white;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.menu-toggle-wrapper {
+  display: block;
+}
+
+.user-menu {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: 260px;
+  padding: 20px;
+  background: white;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  gap: 20px;
+  transition: transform 0.3s;
+  transform: translateX(100%);
+  z-index: 1000;
+  overflow: auto;
 }
 
-.servicefood>a {
-  position: relative;
-  display: inline-block;
-  text-decoration: none;
+#menu-toggle:checked ~ .user-menu {
+  transform: translateX(0);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.menu-header {
   display: flex;
-  color: #333;
+  align-items: center;
+  gap: 20px;
+  font-size: 20px;
   font-weight: bold;
-  transition: color 0.3s;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #ccc;
 }
 
-.servicefood>a:hover {
-  color: #e67e22;
+.menu-item {
+  display: flex;
+  align-items: center;
+  padding: 14px;
+  transition: background 0.1s;
+  cursor: pointer;
+  color: #333;
+  gap: 20px;
 }
 
-/* Mega menu container */
+.menu-item:hover {
+  background: #eee;
+}
+
+.menu-item i {
+  width: 20px;
+  font-size: 22px;
+  text-align: center;
+}
+
+.menu-item h2 {
+  font-size: 16px;
+  margin: 0;
+}
+
+/* Mega Menu */
 .mega-menu {
   position: absolute;
   top: 100%;
@@ -403,17 +424,21 @@ function logout() {
   width: 900px;
   background: white;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  display: flex;
+  display: none;
   flex-direction: column;
   z-index: 999;
+}
+
+.servicefood:hover .mega-menu {
+  display: flex;
 }
 
 .menu-row {
   display: flex;
   justify-content: space-between;
+  padding: 20px;
 }
 
-/* Bên trái: danh sách loại món */
 .menu-list {
   flex: 3;
 }
@@ -433,11 +458,11 @@ function logout() {
   font-weight: bold;
   margin-bottom: 10px;
   color: #222;
-  transition: 0.2s ease;
 }
 
 .title-header:hover {
   transform: scale(1.1);
+  transition: transform 0.2s ease;
 }
 
 .dish-list {
@@ -453,14 +478,12 @@ function logout() {
   text-decoration: none;
   font-size: 14px;
   color: #444;
-  transition: color 0.3s;
 }
 
 .dish-list a:hover {
   color: #e67e22;
 }
 
-/* Bên phải: ảnh */
 .menu-image {
   flex: 1;
   display: flex;
@@ -476,27 +499,93 @@ function logout() {
   border: 1px solid #ccc;
 }
 
-.cart-shopping {
-  position: relative;
-  display: inline-block;
+/* Responsive Design */
+@media (max-width: 768px) {
+  .menu {
+    flex-wrap: wrap;
+    position: relative;
+  }
+
+  .nav-item:not(.menu-toggle-wrapper):not(.nav-icons .nav-item) {
+    display: none;
+  }
+
+  .menu-toggle-wrapper {
+    display: block;
+  }
+
+  .nav-icons {
+    gap: 10px;
+  }
+
+  .logo img {
+    height: 40px;
+  }
+
+  .user-email {
+    font-size: 12px;
+  }
+
+  .cart-user i,
+  .cart-shopping i,
+  .payment-icon i {
+    font-size: 16px;
+  }
+
+  .mega-menu {
+    width: 100%;
+    left: 0;
+    padding: 10px;
+  }
+
+  .menu-row {
+    flex-direction: column;
+  }
+
+  .col-type {
+    width: 100%;
+  }
+
+  .menu-image img {
+    width: 100%;
+    height: auto;
+  }
 }
 
-.cart-shopping .cart-count {
-  position: absolute;
-  top: -6px;
-  right: -15px;
-  background-color: red;
-  color: white;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 2px 6px;
-  border-radius: 50%;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
-  user-select: none;
-  pointer-events: none;
-}
+@media (max-width: 480px) {
+  .header {
+    padding: 0 10px;
+  }
 
-.user-info-logout {
-  z-index: 1;
+  .nav-item {
+    margin: 0 5px;
+  }
+
+  .user-info {
+    padding: 8px 10px;
+  }
+
+  .user-info a,
+  .user-info button {
+    font-size: 12px;
+  }
+
+  .cart-count {
+    font-size: 10px;
+    padding: 1px 4px;
+  }
+
+  .user-menu {
+    width: 100%;
+    padding: 15px;
+  }
+
+  .menu-item h2 {
+    font-size: 14px;
+  }
+
+  .menu-item i {
+    font-size: 18px;
+  }
 }
 </style>

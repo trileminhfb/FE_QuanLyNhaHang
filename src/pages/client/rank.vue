@@ -1,46 +1,55 @@
 <template>
   <div class="restaurant-ranking">
     <h1 class="main-title">🏆 Bảng Xếp Hạng Khách Hàng</h1>
-    <div class="ranking-container">
+
+    <!-- Hiển thị thông báo lỗi nếu API thất bại -->
+    <div v-if="errorMessage" class="error-message">
+      <p>{{ errorMessage }}</p>
+      <button class="retry-button" @click="fetchCustomers">Thử Lại</button>
+    </div>
+
+    <!-- Hiển thị nội dung chính nếu không có lỗi -->
+    <div v-else class="ranking-container">
       <!-- Phần trái: Carousel khách hàng -->
       <div class="featured-dishes">
         <h2 class="section-title">Khách Hàng Nổi Bật</h2>
-        <div class="carousel">
-          <div class="carousel-item" v-for="(dish, index) in featuredDishes" :key="index" :class="{ active: currentDishIndex === index }">
-            <img :src="dish.image" :alt="dish.name" />
+        <div class="carousel" v-if="featuredDishes.length > 0">
+          <div class="carousel-item" v-for="(customer, index) in featuredDishes" :key="index" :class="{ active: currentDishIndex === index }">
+            <img :src="customer.image || '/imageicon/default_user.png'" :alt="customer.FullName" />
             <div class="dish-info">
-              <h3>{{ dish.name }}</h3>
-              <p>{{ dish.description }}</p>
+              <h3>{{ customer.FullName }}</h3>
+              <p>{{ customer.description || `Khách hàng với ${customer.point} điểm tích lũy.` }}</p>
             </div>
           </div>
           <button class="carousel-control prev" @click="prevDish">❮</button>
           <button class="carousel-control next" @click="nextDish">❯</button>
         </div>
+        <p v-else class="no-data">Không có khách hàng nổi bật để hiển thị.</p>
       </div>
 
       <!-- Phần phải: Bảng xếp hạng -->
       <div class="ranking-list">
         <h2 class="section-title">Top Khách Hàng</h2>
-        <div class="danh-sach-rank">
+        <div class="danh-sach-rank" v-if="ranks.length > 0">
           <div
-            v-for="(rank, index) in ranks"
-            :key="rank.id"
+            v-for="(customer, index) in ranks"
+            :key="customer.id"
             class="rank-card"
             :class="'hang-' + (index + 1)"
           >
             <div class="rank-medal">
               <i :class="['fas', getMedalIcon(index)]"></i>
             </div>
-            <img :src="rank.image" :alt="rank.nameRank" />
+            <img :src="customer.image || '/imageicon/default_user.png'" :alt="customer.FullName" />
             <div class="rank-info">
               <div class="ten-rank">
-                #{{ index + 1 }} - {{ rank.nameRank }}
+                #{{ index + 1 }} - {{ customer.FullName }} ({{ customer.rank.nameRank }})
               </div>
-              <p class="rank-description">{{ rank.description }}</p>
-              <button class="view-details" @click="viewDishDetails(rank)">Xem Chi Tiết</button>
+              <p class="rank-description">{{ customer.description || `Điểm tích lũy: ${customer.point}` }}</p>
             </div>
           </div>
         </div>
+        <p v-else class="no-data">Không có khách hàng nào trong bảng xếp hạng.</p>
       </div>
     </div>
 
@@ -50,12 +59,14 @@
         <button class="close-button" @click="closeModal">
           <i class="fas fa-times"></i>
         </button>
-        <h2>{{ selectedRank.nameRank }}</h2>
-        <img :src="selectedRank.image" :alt="selectedRank.nameRank" class="modal-image" />
-        <p>{{ selectedRank.description }}</p>
-        <p><strong>Số Đơn Hàng:</strong> {{ selectedRank.orderCount }}</p>
-        <p><strong>Điểm Tích Lũy:</strong> {{ selectedRank.points }} điểm</p>
-        <button class="add-to-cart" @click="addToCart(selectedRank)">Xem Hồ Sơ</button>
+        <h2>{{ selectedCustomer.FullName }}</h2>
+        <img :src="selectedCustomer.image || '/imageicon/default_user.png'" :alt="selectedCustomer.FullName" class="modal-image" />
+        <p>{{ selectedCustomer.description || `Khách hàng với ${selectedCustomer.point} điểm tích lũy.` }}</p>
+        <p><strong>Số Điểm:</strong> {{ selectedCustomer.point }} điểm</p>
+        <p><strong>Hạng:</strong> {{ selectedCustomer.rank.nameRank }}</p>
+        <p><strong>Email:</strong> {{ selectedCustomer.mail }}</p>
+        <p><strong>Số Điện Thoại:</strong> {{ selectedCustomer.phoneNumber }}</p>
+        <button class="add-to-cart" @click="viewProfile(selectedCustomer)">Xem Hồ Sơ</button>
       </div>
     </div>
   </div>
@@ -65,34 +76,47 @@
 import { ref, onMounted } from 'vue'
 import api from '../../services/api'
 
-const ranks = ref([
-  { id: 1, nameRank: 'Nguyễn Văn An', image: '/imageicon/vuadaubep1.png', description: 'Khách hàng thân thiết, mua sắm thường xuyên.', orderCount: 120, points: 1500 },
-  { id: 2, nameRank: 'Trần Thị Bình', image: '/imageicon/vuadaubep2.png', description: 'Yêu thích các sản phẩm chất lượng cao.', orderCount: 95, points: 1200 },
-  { id: 3, nameRank: 'Lê Minh Châu', image: '/imageicon/vuadaubep3.png', description: 'Tham gia nhiều chương trình khuyến mãi.', orderCount: 80, points: 1000 },
-  { id: 4, nameRank: 'Phạm Quốc Dũng', image: '/imageicon/vuadaubep4.png', description: 'Khách hàng mới nhưng rất tích cực.', orderCount: 50, points: 600 }
-])
-
-const featuredDishes = ref([
-  { name: 'Nguyễn Văn An', image: '/imageicon/vuadaubep1.png', description: 'Khách hàng thân thiết với hơn 100 đơn hàng.' },
-  { name: 'Trần Thị Bình', image: '/imageicon/vuadaubep2.png', description: 'Yêu thích các sản phẩm cao cấp.' },
-  { name: 'Lê Minh Châu', image: '/imageicon/vuadaubep3.png', description: 'Thích săn các chương trình ưu đãi.' }
-])
-
+const ranks = ref([])
+const featuredDishes = ref([])
 const currentDishIndex = ref(0)
 const showModal = ref(false)
-const selectedRank = ref(null)
+const selectedCustomer = ref(null)
+const errorMessage = ref(null)
 
-onMounted(async () => {
+const fetchCustomers = async () => {
   try {
-    const response = await api.get('client/ranks')
-    ranks.value = response.data.map(item => ({
-      ...item,
-      image: item.image ? `http://localhost:8000/images/ranks/${item.image}` : '/imageicon/default_user.png'
+    errorMessage.value = null // Xóa thông báo lỗi trước khi thử lại
+    const response = await api.get('/client/customers')
+    const customers = response.data.customers
+      .filter(customer => customer.isActive)
+      .sort((a, b) => b.point - a.point)
+
+    ranks.value = customers.map(customer => ({
+      id: customer.id,
+      FullName: customer.FullName,
+      image: customer.image || '/imageicon/default_user.png',
+      description: `Khách hàng với ${customer.point} điểm tích lũy.`,
+      point: customer.point,
+      rank: customer.rank,
+      mail: customer.mail,
+      phoneNumber: customer.phoneNumber
+    }))
+
+    featuredDishes.value = ranks.value.slice(0, 3).map(customer => ({
+      FullName: customer.FullName,
+      image: customer.image,
+      description: customer.description,
+      point: customer.point
     }))
   } catch (error) {
-    console.error('Lỗi khi lấy dữ liệu rank:', error)
+    console.error('Lỗi khi lấy dữ liệu khách hàng:', error)
+    errorMessage.value = 'Không thể tải danh sách khách hàng. Vui lòng thử lại sau.'
+    ranks.value = []
+    featuredDishes.value = []
   }
-})
+}
+
+onMounted(fetchCustomers)
 
 function getMedalIcon(index) {
   return index === 0 ? 'fa-medal' : index === 1 ? 'fa-trophy' : index === 2 ? 'fa-award' : ''
@@ -106,18 +130,18 @@ function nextDish() {
   currentDishIndex.value = (currentDishIndex.value + 1) % featuredDishes.value.length
 }
 
-function viewDishDetails(rank) {
-  selectedRank.value = rank
+function viewCustomerDetails(customer) {
+  selectedCustomer.value = customer
   showModal.value = true
 }
 
 function closeModal() {
   showModal.value = false
-  selectedRank.value = null
+  selectedCustomer.value = null
 }
 
-function addToCart(dish) {
-  alert(`Đang xem hồ sơ của ${dish.nameRank}!`)
+function viewProfile(customer) {
+  alert(`Đang xem hồ sơ của ${customer.FullName}!`)
   closeModal()
 }
 </script>
@@ -125,45 +149,75 @@ function addToCart(dish) {
 <style scoped>
 .restaurant-ranking {
   background: linear-gradient(135deg, #143b36 0%, #1a4b46 100%);
-  padding: 40px 24px;
-  border-radius: 24px;
+  padding: 2rem 1.5rem;
+  border-radius: 1.5rem;
   width: 100%;
-  height: auto;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+  max-width: 1200px;
+  margin: 0 auto;
 }
 
 .main-title {
   text-align: center;
-  font-size: 36px;
+  font-size: clamp(1.75rem, 5vw, 2.25rem);
   font-weight: 800;
   color: #ffd700;
-  margin-bottom: 32px;
+  margin-bottom: 2rem;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.error-message {
+  text-align: center;
+  color: #ff4d4f;
+  background: rgba(255, 77, 79, 0.1);
+  padding: 1rem;
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.error-message p {
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  margin: 0 0 1rem;
+}
+
+.retry-button {
+  background: #4caf50;
+  color: #ffffff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
+  transition: background 0.3s ease;
+}
+
+.retry-button:hover {
+  background: #388e3c;
 }
 
 .ranking-container {
   display: flex;
-  gap: 32px;
+  gap: 2rem;
   flex-wrap: wrap;
 }
 
 .featured-dishes {
   flex: 1;
-  min-width: 300px;
+  min-width: 280px;
 }
 
 .section-title {
-  font-size: 24px;
+  font-size: clamp(1.25rem, 4vw, 1.5rem);
   font-weight: 700;
   color: #f0f4f8;
-  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
   text-align: center;
 }
 
 .carousel {
   position: relative;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
@@ -178,9 +232,9 @@ function addToCart(dish) {
 
 .carousel-item img {
   width: 100%;
-  height: 300px;
+  height: clamp(180px, 40vw, 300px);
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: 1rem;
 }
 
 .dish-info {
@@ -190,18 +244,18 @@ function addToCart(dish) {
   right: 0;
   background: rgba(20, 59, 54, 0.8);
   color: #f0f4f8;
-  padding: 16px;
-  border-bottom-left-radius: 16px;
-  border-bottom-right-radius: 16px;
+  padding: 1rem;
+  border-bottom-left-radius: 1rem;
+  border-bottom-right-radius: 1rem;
 }
 
 .dish-info h3 {
-  font-size: 20px;
-  margin: 0 0 8px;
+  font-size: clamp(1rem, 3vw, 1.25rem);
+  margin: 0 0 0.5rem;
 }
 
 .dish-info p {
-  font-size: 14px;
+  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
   margin: 0;
 }
 
@@ -212,8 +266,8 @@ function addToCart(dish) {
   background: rgba(0, 0, 0, 0.5);
   border: none;
   color: #f0f4f8;
-  font-size: 24px;
-  padding: 10px;
+  font-size: clamp(1rem, 3vw, 1.5rem);
+  padding: 0.5rem;
   cursor: pointer;
   border-radius: 50%;
   transition: background 0.3s ease;
@@ -224,31 +278,31 @@ function addToCart(dish) {
 }
 
 .prev {
-  left: 10px;
+  left: 0.625rem;
 }
 
 .next {
-  right: 10px;
+  right: 0.625rem;
 }
 
 .ranking-list {
   flex: 1;
-  min-width: 300px;
+  min-width: 280px;
 }
 
 .danh-sach-rank {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 1rem;
 }
 
 .rank-card {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 1rem;
   background: #ffffff;
-  padding: 16px;
-  border-radius: 12px;
+  padding: 1rem;
+  border-radius: 0.75rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -259,7 +313,7 @@ function addToCart(dish) {
 }
 
 .rank-medal i {
-  font-size: 28px;
+  font-size: clamp(1.25rem, 4vw, 1.75rem);
   color: #ffd700;
 }
 
@@ -272,10 +326,10 @@ function addToCart(dish) {
 }
 
 .rank-card img {
-  width: 80px;
-  height: 80px;
+  width: clamp(50px, 15vw, 80px);
+  height: clamp(50px, 15vw, 80px);
   object-fit: cover;
-  border-radius: 12px;
+  border-radius: 0.75rem;
 }
 
 .rank-info {
@@ -283,26 +337,26 @@ function addToCart(dish) {
 }
 
 .ten-rank {
-  font-size: 22px;
+  font-size: clamp(1rem, 3.5vw, 1.375rem);
   font-weight: 700;
   color: #143b36;
-  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
 }
 
 .rank-description {
-  font-size: 14px;
+  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
   color: #666;
-  margin: 0 0 8px;
+  margin: 0 0 0.5rem;
 }
 
 .view-details {
   background: #4caf50;
   color: #ffffff;
   border: none;
-  padding: 8px 16px;
-  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  font-size: 14px;
+  font-size: clamp(0.75rem, 2.5vw, 0.875rem);
   transition: background 0.3s ease;
 }
 
@@ -341,10 +395,10 @@ function addToCart(dish) {
 
 .modal-content {
   background: #ffffff;
-  border-radius: 16px;
-  padding: 24px;
-  max-width: 500px;
-  width: 90%;
+  border-radius: 1rem;
+  padding: clamp(1rem, 5vw, 1.5rem);
+  max-width: clamp(300px, 90vw, 500px);
+  width: 100%;
   position: relative;
   text-align: center;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
@@ -353,11 +407,11 @@ function addToCart(dish) {
 
 .close-button {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 0.75rem;
+  right: 0.75rem;
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: clamp(1rem, 3vw, 1.25rem);
   color: #143b36;
   cursor: pointer;
   transition: color 0.3s ease;
@@ -369,25 +423,32 @@ function addToCart(dish) {
 
 .modal-image {
   width: 100%;
-  height: 200px;
+  height: clamp(150px, 35vw, 200px);
   object-fit: cover;
-  border-radius: 12px;
-  margin: 16px 0;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
 }
 
 .add-to-cart {
   background: #4caf50;
   color: #ffffff;
   border: none;
-  padding: 12px 24px;
-  border-radius: 8px;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
   cursor: pointer;
-  font-size: 16px;
+  font-size: clamp(0.875rem, 3vw, 1rem);
   transition: background 0.3s ease;
 }
 
 .add-to-cart:hover {
   background: #388e3c;
+}
+
+.no-data {
+  text-align: center;
+  font-size: clamp(0.875rem, 3vw, 1rem);
+  color: #f0f4f8;
+  margin: 1rem 0;
 }
 
 @keyframes fadeIn {
@@ -406,31 +467,39 @@ function addToCart(dish) {
   }
 
   .carousel-item img {
-    height: 200px;
+    height: clamp(150px, 35vw, 200px);
   }
 
   .rank-card img {
-    width: 60px;
-    height: 60px;
+    width: clamp(40px, 12vw, 60px);
+    height: clamp(40px, 12vw, 60px);
   }
 
   .ten-rank {
-    font-size: 18px;
+    font-size: clamp(0.875rem, 3vw, 1.125rem);
   }
 }
 
 @media (max-width: 480px) {
   .main-title {
-    font-size: 28px;
+    font-size: clamp(1.5rem, 4.5vw, 1.75rem);
   }
 
   .section-title {
-    font-size: 20px;
+    font-size: clamp(1rem, 3.5vw, 1.25rem);
   }
 
   .modal-content {
-    width: 95%;
-    padding: 16px;
+    padding: 0.75rem;
+  }
+
+  .error-message {
+    padding: 0.75rem;
+  }
+
+  .retry-button {
+    padding: 0.5rem 0.75rem;
+    font-size: clamp(0.75rem, 2.5vw, 0.875rem);
   }
 }
 </style>

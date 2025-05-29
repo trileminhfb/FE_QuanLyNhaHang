@@ -85,7 +85,7 @@ async function goSave() {
         }
 
         const response = await axios.put(
-            `http://127.0.0.1:8000/api/admin/warehouses/update/${menuWarehouseData.id}`,
+            `http:// 192.168.1.53:8888/api/admin/warehouses/update/${menuWarehouseData.id}`,
             {
                 id_ingredient: form.value.id_ingredient,
                 quantity: quantity.toString() // gửi dưới dạng string giống dữ liệu mẫu bạn cung cấp
@@ -118,7 +118,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http://192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -168,7 +168,7 @@ async function confirmDelete() {
     }
 
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/admin/warehouses/delete/${itemToDelete.value.id}`)
+        await axios.delete(`http:// 192.168.1.53:8888/api/admin/warehouses/delete/${itemToDelete.value.id}`)
         alert('Đã xoá thành công!')
         router.push({ name: 'menu-warehouse-admin' }) // quay lại danh sách
     } catch (error) {

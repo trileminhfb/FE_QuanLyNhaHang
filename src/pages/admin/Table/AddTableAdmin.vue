@@ -76,7 +76,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -106,7 +106,7 @@ watch(() => user.value.role, (newRole) => {
 
 async function goSave() {
     try {
-        await axios.post('http://127.0.0.1:8000/api/admin/tables/create', form.value)
+        await axios.post('http:// 192.168.1.53:8888/api/admin/tables/create', form.value)
         alert('Đã thêm bàn mới thành công!')
         router.push({ name: 'admin-tables' })
     } catch (error) {

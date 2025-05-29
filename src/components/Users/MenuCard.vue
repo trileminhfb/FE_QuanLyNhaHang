@@ -226,7 +226,7 @@ onMounted(async () => {
 
 const fetchSale = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/client/sales')
+    const response = await axios.get('http://192.168.1.53:8888/api/client/sales')
     allItems.value = response.data.data || []
   } catch (error) {
     console.error('Lỗi khi lấy dữ liệu khuyến mãi:', error)
@@ -235,7 +235,7 @@ const fetchSale = async () => {
 
 const fetchFoodBestSeller = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/client/foods?status=1&bestSeller=1')
+    const response = await axios.get('http://192.168.1.53:8888/api/client/foods?status=1&bestSeller=1')
     console.log('Best seller foods response:', response.data)
     bestSellerFoods.value = response.data || []
     console.log('abc', bestSellerFoods.value);
@@ -248,7 +248,7 @@ const fetchFoodBestSeller = async () => {
 
 const fetchReviews = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/client/rates')
+    const response = await axios.get('http://192.168.1.53:8888/api/client/rates')
     danhSachDanhGia.value = response.data.data.map(review => ({
       ten: review.customer.FullName,
       soSao: review.star,
@@ -264,7 +264,7 @@ const fetchReviews = async () => {
 
 const fetchCategory = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/client/categories')
+    const response = await axios.get('http://192.168.1.53:8888/api/client/categories')
     categories.value = response.data || []
     danhSachDanhMucNoiBat.value = response.data || []
     // Initialize tabs with category data and their foods

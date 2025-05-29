@@ -113,7 +113,7 @@ const allItems = ref([]);
 
 const fetchSale = async () => {
     try {
-        const response = await axios.get("http://127.0.0.1:8000/api/admin/sales");
+        const response = await axios.get("http:// 192.168.1.53:8888/api/admin/sales");
         allItems.value = response.data.data;
     } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
@@ -137,7 +137,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -207,7 +207,7 @@ function sortBy(key, direction) {
 async function toggleStatus(item) {
     const newStatus = item.status === 1 ? 0 : 1
     try {
-        await axios.put(`http://127.0.0.1:8000/api/admin/sales/${item.id}`, {
+        await axios.put(`http:// 192.168.1.53:8888/api/admin/sales/${item.id}`, {
             ...item,
             status: newStatus
         })
@@ -231,7 +231,7 @@ async function confirmDelete() {
     }
 
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/admin/sales/${itemToDelete.value.id}`)
+        await axios.delete(`http:// 192.168.1.53:8888/api/admin/sales/${itemToDelete.value.id}`)
         alert('Đã xoá thành công!')
         allItems.value = allItems.value.filter(item => item.id !== itemToDelete.value.id)
         itemToDelete.value = null

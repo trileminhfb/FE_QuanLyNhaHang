@@ -147,7 +147,7 @@ const filteredItems = computed(() => {
 
 const fetchFoods = async () => {
   try {
-    const response = await axios.get("http://127.0.0.1:8000/api/admin/foods");
+    const response = await axios.get("http:// 192.168.1.53:8888/api/admin/foods");
 
     if (Array.isArray(response.data)) {
       allItems.value = response.data;
@@ -174,7 +174,7 @@ async function toggleStatus(item) {
   }
   const newStatus = item.status === 1 ? 0 : 1;
   try {
-    await axios.put(`http://127.0.0.1:8000/api/admin/foods/${item.id}`, {
+    await axios.put(`http:// 192.168.1.53:8888/api/admin/foods/${item.id}`, {
       status: newStatus
     });
     item.status = newStatus;
@@ -192,7 +192,7 @@ async function toggleBestSeller(item) {
   }
   const newBestSeller = item.bestSeller === 1 ? 0 : 1;
   try {
-    await axios.put(`http://127.0.0.1:8000/api/admin/foods/${item.id}`, {
+    await axios.put(`http:// 192.168.1.53:8888/api/admin/foods/${item.id}`, {
       bestSeller: newBestSeller
     });
     item.bestSeller = newBestSeller;

@@ -188,7 +188,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -217,7 +217,7 @@ watch(() => user.value.role, (newRole) => {
 
 async function acceptBooking() {
     try {
-        await axios.put(`http://127.0.0.1:8000/api/admin/bookings/${bookingData.id}`, {
+        await axios.put(`http:// 192.168.1.53:8888/api/admin/bookings/${bookingData.id}`, {
             status: 2, // Thành công
             phoneNumber: bookingData?.customer.phoneNumber // nếu API yêu cầu số điện thoại xác thực
         });
@@ -231,7 +231,7 @@ async function acceptBooking() {
 
 async function rejectBooking() {
     try {
-        await axios.put(`http://127.0.0.1:8000/api/admin/bookings/${bookingData.id}`, {
+        await axios.put(`http:// 192.168.1.53:8888/api/admin/bookings/${bookingData.id}`, {
             status: 3, // Từ chối
             phoneNumber: bookingData?.customer.phoneNumber
         });

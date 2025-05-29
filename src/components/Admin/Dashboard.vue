@@ -101,7 +101,7 @@ let dailyChartInstance = null
 
 const fetchFood = async () => {
     try {
-        const response = await axios.get("http://127.0.0.1:8000/api/admin/foods")
+        const response = await axios.get("http://192.168.1.53:8888/api/admin/foods")
         totalFoods.value = response.data.length
     } catch (error) {
         console.error("Lỗi khi lấy dữ liệu món ăn:", error)
@@ -110,7 +110,7 @@ const fetchFood = async () => {
 
 const fetchCustomer = async () => {
     try {
-        const response = await axios.get("http://127.0.0.1:8000/api/admin/customers")
+        const response = await axios.get("http://192.168.1.53:8888/api/admin/customers")
         totalCustomers.value = response.data.customers.length
     } catch (error) {
         console.error("Lỗi khi lấy dữ liệu khách hàng:", error)
@@ -119,7 +119,7 @@ const fetchCustomer = async () => {
 
 const fetchInvoice = async () => {
     try {
-        const response = await axios.get("http://127.0.0.1:8000/api/admin/invoices")
+        const response = await axios.get("http://192.168.1.53:8888/api/admin/invoices")
         invoices.value = response.data.data
 
         totalRevenue.value = invoices.value

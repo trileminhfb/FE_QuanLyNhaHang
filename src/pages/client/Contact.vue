@@ -3,47 +3,39 @@
         <div class="container">
             <div class="col-left">
                 <div class="contact">
-                    <h3 style="height: auto;     margin-left: auto;
-    margin-right: auto; color: white; padding: 10px; border-radius:5px ; width: 600px;  background-color: #d69c52;
-"><strong>Nhà hàng PHÊ FOOD</strong></h3>
+                    <h3><strong>Nhà hàng PHÊ FOOD</strong></h3>
                     <div class="info-contact">
                         <p>Nhà hàng chúng tôi luôn luôn đặt khách hàng lên hàng đầu, tận tâm phục vụ, mang lại cho khách
-                            hàng những trãi nghiệm tuyệt với nhất. Các món ăn với công thức độc quyền sẽ mang lại hương
-                            vị
-                            mới mẻ cho thực khách. Dola Restaurant xin chân thành cảm ơn.</p>
-                        <p><strong>Của hàng chính </strong></p>
+                            hàng những trải nghiệm tuyệt vời nhất. Các món ăn với công thức độc quyền sẽ mang lại hương
+                            vị mới mẻ cho thực khách. Dola Restaurant xin chân thành cảm ơn.</p>
+                        <p><strong>Cửa hàng chính</strong></p>
                         <ul>
                             <li>
-                                <p>Địa chỉ: 52 Giáp Văn Cương </p>
+                                <p>Địa chỉ: 52 Giáp Văn Cương</p>
                             </li>
                             <li>
                                 <p>Điện thoại: <strong style="color: yellow;">1900 6750</strong></p>
                             </li>
                             <li>
                                 <p>Email: <strong style="color: yellow;">tranvankhanh23122003@gmail.com</strong></p>
-
                             </li>
                         </ul>
-                        <Button class="btn-seeStore">Hệ Thống của hàng</Button>
+                        <Button class="btn-seeStore">Hệ Thống cửa hàng</Button>
                     </div>
                 </div>
             </div>
             <div class="col-right">
                 <div class="form-contact">
-                    <h3 style="height: auto; color: white; padding: 10px; border-radius:5px ; width: 600px;  background-color: #d69c52;
-"><strong>Liên Hệ Với Chúng Tôi</strong></h3>
+                    <h3><strong>Liên Hệ Với Chúng Tôi</strong></h3>
                     <div class="group-contact">
                         <input class="input-name" type="text" placeholder="Họ và tên">
                         <input class="input-email" type="text" placeholder="Email">
                         <input class="input-phone" type="text" placeholder="Số điện thoại">
-                        <input class="input-content" type="text" name="" id="" placeholder="Nội dung">
+                        <input class="input-content" type="text" placeholder="Nội dung">
                         <Button class="btn-sendInfo">Gửi Thông Tin</Button>
-                        
-
                     </div>
                 </div>
             </div>
-
         </div>
         <div class="map">
             <iframe
@@ -52,119 +44,214 @@
                 referrerpolicy="no-referrer-when-downgrade"></iframe>
         </div>
     </div>
-
 </template>
+
 <style scoped>
 .web-contact {
     background: #143b36;
     width: 100%;
-    height: 850px;
+    min-height: 100vh;
+    padding: 1.5rem;
+    box-sizing: border-box;
 }
 
 .container {
-    max-width: 1600px;
+    max-width: 1200px;
     width: 100%;
     margin: 0 auto;
-    padding: 0 15px;
+    padding: 0 1rem;
     display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
 }
 
-.contact {
-    margin: 30px 0 0 30px;
+.col-left,
+.col-right {
+    flex: 1;
+    min-width: 300px;
 }
 
+.contact,
 .form-contact {
-    margin: 30px 0 0 30px;
+    margin: 1.5rem 0;
+}
 
+.contact h3,
+.form-contact h3 {
+    color: white;
+    background-color: #d69c52;
+    padding: 0.75rem;
+    border-radius: 5px;
+    font-size: clamp(1.2rem, 4vw, 1.5rem);
+    text-align: center;
+    margin: 0 auto;
+    width: 100%;
+    max-width: 600px;
+}
+
+.info-contact {
+    border: 1px solid red;
+    margin-top: 1rem;
+    padding: 1rem;
+    color: white;
+    font-size: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.info-contact ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.info-contact p {
+    margin: 0;
 }
 
 .group-contact {
     border: 1px solid red;
-    margin-top: 10px;
-    width: 600px;
+    margin-top: 1rem;
+    padding: 1rem;
     color: white;
-    font-size: 15px;
-    padding: 15px;
+    font-size: 1rem;
     display: flex;
     flex-direction: column;
-    gap: 16px;
-
+    gap: 1rem;
+    width: 100%;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .input-name,
 .input-email,
-.input-phone {
-    height: 35px;
-    border-radius: 10px;
-}
-
+.input-phone,
 .input-content {
-    height: 70px;
-    border-radius: 10px;
-
+    width: 100%;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.9rem;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
 }
 
 .input-name::placeholder,
 .input-email::placeholder,
 .input-phone::placeholder,
 .input-content::placeholder {
-    padding-left: 20px;
+    padding-left: 0.5rem;
+    color: #888;
 }
 
-.info-contact {
-    border: 1px solid red;
-    margin-top: 10px;
-    width: 600px;
-    color: white;
-    font-size: 15px;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    margin-left: auto;
-    margin-right: auto;
-
-}
-
-.col-left {
-    width: 50%;
-}
-
-.col-right {
-    width: 50%;
+.input-content {
+    height: auto;
 }
 
 .btn-seeStore,
 .btn-sendInfo {
     color: #fff;
     background-color: #d69c52;
-    padding: 10px 15px;
-    font-size: 14px;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
     border-radius: 5px;
     box-shadow: 0 3px 6px #a37b44;
-    margin-top: 10px;
-    height: 40px;
-    width: 200px;
-    transition: box-shadow 0.3s ease;
-
+    border: none;
+    cursor: pointer;
+    transition: box-shadow 0.3s ease, background-color 0.3s ease;
+    width: 100%;
+    max-width: 200px;
 }
 
 .btn-seeStore:hover,
 .btn-sendInfo:hover {
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
-    /* Bóng mờ khi hover */
     background-color: #c98e3b;
+    box-shadow: 0 5px 10px #a37b44;
 }
 
 .map {
-    margin: 20px 0 20px 0;
+    margin: 1.5rem 0;
+    padding: 0 1rem;
     width: 100%;
-    padding: 0 45px;
 }
 
 .map iframe {
     width: 100%;
     height: 400px;
     border: 0;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+    .col-left,
+    .col-right {
+        min-width: unset;
+        width: 100%;
+    }
+
+    .contact h3,
+    .form-contact h3 {
+        font-size: 1.2rem;
+        max-width: 100%;
+    }
+
+    .info-contact,
+    .group-contact {
+        max-width: 100%;
+    }
+
+    .map iframe {
+        height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    .web-contact {
+        padding: 1rem;
+    }
+
+    .contact,
+    .form-contact {
+        margin: 1rem 0;
+    }
+
+    .contact h3,
+    .form-contact h3 {
+        font-size: 1rem;
+    }
+
+    .info-contact,
+    .group-contact {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+
+    .input-name,
+    .input-email,
+    .input-phone,
+    .input-content {
+        padding: 0.5rem;
+        font-size: 0.85rem;
+    }
+
+    .input-content {
+        height: 80px;
+    }
+
+    .btn-seeStore,
+    .btn-sendInfo {
+        font-size: 0.85rem;
+        padding: 0.5rem;
+        max-width: 100%;
+    }
+
+    .map iframe {
+        height: 250px;
+    }
 }
 </style>

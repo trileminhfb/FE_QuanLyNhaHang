@@ -88,7 +88,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -118,7 +118,8 @@ watch(() => user.value.role, (newRole) => {
 // Tạo URL QR
 const tableId = tableData.id
 const baseUrl = window.location.origin
-const qrUrl = `${baseUrl}/scan?id=${tableId}`
+const qrUrl = `http:// 192.168.1.53:3000/scan?id=${tableId}`
+// const qrUrl = `${baseUrl}/scan?id=${tableId}`
 
 function goBack() {
     router.push({ name: 'admin-tables' })
@@ -132,7 +133,7 @@ async function confirmDelete() {
     showConfirm.value = false
 
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/admin/tables/${tableData.id}`)
+        await axios.delete(`http:// 192.168.1.53:8888/api/admin/tables/${tableData.id}`)
         alert('Đã xoá bàn thành công!')
         router.push({ name: 'admin-tables' })
     } catch (error) {

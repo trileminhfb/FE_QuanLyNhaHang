@@ -100,7 +100,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -140,7 +140,7 @@ onMounted(() => {
 
 async function goSave() {
     try {
-        const response = await axios.put(`http://127.0.0.1:8000/api/admin/sales/${saleData.id}`, {
+        const response = await axios.put(`http:// 192.168.1.53:8888/api/admin/sales/${saleData.id}`, {
             nameSale: form.value.nameSale,
             percent: form.value.percent, // ✅ THÊM DÒNG NÀY
             status: form.value.status,
@@ -169,7 +169,7 @@ async function confirmDelete() {
     showConfirm.value = false
 
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/admin/sales/${saleData.id}`)
+        await axios.delete(`http:// 192.168.1.53:8888/api/admin/sales/${saleData.id}`)
         alert('Đã xoá thành công!')
         router.push({ name: 'admin-sales' })
     } catch (error) {

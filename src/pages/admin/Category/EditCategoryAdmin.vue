@@ -121,7 +121,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -158,7 +158,7 @@ function populateFormFromCategory(data) {
 
 const fetchType = async () => {
     try {
-        const res = await axios.get('http://127.0.0.1:8000/api/admin/types');
+        const res = await axios.get('http:// 192.168.1.53:8888/api/admin/types');
         allItemsTypes.value = res.data.data;
     } catch (err) {
         console.error('Lỗi khi lấy types:', err);
@@ -167,7 +167,7 @@ const fetchType = async () => {
 
 const fetchFoods = async () => {
     try {
-        const res = await axios.get('http://127.0.0.1:8000/api/admin/foods');
+        const res = await axios.get('http:// 192.168.1.53:8888/api/admin/foods');
         allFoods.value = res.data;
     } catch (err) {
         console.error('Lỗi khi lấy foods:', err);
@@ -213,7 +213,7 @@ function goDelete() {
 async function confirmDelete() {
     showConfirm.value = false;
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/admin/categories/${form.id}`);
+        await axios.delete(`http:// 192.168.1.53:8888/api/admin/categories/${form.id}`);
         alert('Đã xoá thành công!');
         router.push({ name: 'admin-categories' });
     } catch (err) {
@@ -228,7 +228,7 @@ function cancelDelete() {
 
 async function goSave() {
     try {
-        await axios.put(`http://127.0.0.1:8000/api/admin/categories/${form.id}`, {
+        await axios.put(`http:// 192.168.1.53:8888/api/admin/categories/${form.id}`, {
             name: form.name,
             id_type: form.id_type,
             status: form.status,

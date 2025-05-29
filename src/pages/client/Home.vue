@@ -38,7 +38,7 @@
 import Header from '../../layout/client/Header.vue'
 import MenuCard from '../../components/Users/MenuCard.vue';
 import Footer from '../../layout/client/Footer.vue';
-import '../../assets/css/Home.css'
+// import '../../assets/css/Home.css'
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 

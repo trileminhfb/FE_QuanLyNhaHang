@@ -105,7 +105,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -141,7 +141,7 @@ async function goSave() {
     formData.append('unit', form.unit)
 
     try {
-        await axios.post('http://127.0.0.1:8000/api/admin/ingredients/create', formData, {
+        await axios.post('http:// 192.168.1.53:8888/api/admin/ingredients/create', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data'
             }

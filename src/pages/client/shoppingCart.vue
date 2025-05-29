@@ -1,10 +1,9 @@
-```vue
 <template>
   <div class="shopping-cart">
     <div class="container-shoppingCart">
       <!-- Cột trái: Giỏ hàng -->
       <div class="col-left">
-        <h3 style="font-size: 30px;">Giỏ hàng của bạn 🛒</h3>
+        <h3>Giỏ hàng của bạn 🛒</h3>
         <div class="order-cart">
           <div v-if="cartItems.length === 0">Chưa có mặt hàng nào</div>
           <div v-else>
@@ -47,7 +46,7 @@
               </div>
             </div>
             <div class="order-btn-wrapper">
-              <p style="color: white;"> Tổng tiền: <strong>{{ tongTien.toLocaleString() }}₫</strong></p>
+              <p>Tổng tiền: <strong>{{ tongTien.toLocaleString() }}₫</strong></p>
               <button class="btn-orderItem" @click="datHang">Đặt Món</button>
             </div>
           </div>
@@ -81,6 +80,7 @@
 </template>
 
 <script setup>
+// The script remains unchanged as it handles functionality, not layout
 import { cartItems, clearCart, addToCart } from '../../stores/cartStore';
 import api from '../../services/api';
 import { computed, ref, onMounted } from 'vue';
@@ -96,7 +96,7 @@ const note = ref("");
 const bestSellerItems = ref([]);
 const sales = ref([]);
 const selectedSale = ref(null);
-const selectedSaleId = ref(""); // Lưu ID của mã giảm giá được chọn trong dropdown
+const selectedSaleId = ref("");
 
 // Lọc mã giảm giá còn hiệu lực
 const filteredSales = computed(() => {
@@ -107,10 +107,9 @@ const filteredSales = computed(() => {
     return start <= currentDate && end >= currentDate;
   });
 });
-
 const fetchFoodBestSeller = async () => {
   try {
-    const response = await axios.get('http://127.0.0.1:8000/api/client/foods?status=1&bestSeller=1');
+    const response = await axios.get('http://192.168.1.53:8888/api/client/foods?status=1&bestSeller=1');
     bestSellerItems.value = response.data.map(item => ({
       id: item.id,
       name: item.name,
@@ -122,7 +121,6 @@ const fetchFoodBestSeller = async () => {
     bestSellerItems.value = [];
   }
 };
-
 const fetchSales = async () => {
   try {
     const response = await api.get('client/sales');
@@ -219,7 +217,7 @@ const datHang = async () => {
   }
 
   const tableId = Number(localStorage.getItem("table_id"));
-  const customerId = localStorage.getItem("customer_id"); // Lấy customer_id từ localStorage
+  const customerId = localStorage.getItem("customer_id");
   if (!tableId || isNaN(tableId)) {
     toast.error("Không tìm thấy thông tin bàn.");
     return;
@@ -240,7 +238,6 @@ const datHang = async () => {
       image: item.image
     }));
 
-    // Gửi hóa đơn lên backend
     const res = await api.post('/client/invoices', {
       id_table: tableId,
       id_customer: customerId ? Number(customerId) : null,
@@ -256,19 +253,13 @@ const datHang = async () => {
       return;
     }
 
-    // Xóa giỏ hàng backend theo bàn
     await api.delete(`/client/carts/by-table/${tableId}`);
-
-    // Xóa giỏ hàng phía frontend
     cartItems.value = [];
     localStorage.removeItem('shoppingCart');
 
-    // Kiểm tra xem có customer_id hay không
     if (!customerId) {
-      // Khách vãng lai: Hiển thị thông báo thành công
       toast.success('Bạn đã đặt món thành công!');
     } else {
-      // Người dùng đăng nhập: Điều hướng sang trang thanh toán
       router.push({
         path: '/payment',
         query: {
@@ -306,29 +297,36 @@ onMounted(() => {
 <style scoped>
 .shopping-cart {
   background-color: #143b36;
-  height: auto;
-  padding: 20px;
+  min-height: 100vh;
+  padding: 1.5rem;
 }
 
 .container-shoppingCart {
   margin: 0 auto;
-  width: 1300px;
+  max-width: 1200px;
   display: flex;
-  justify-content: space-between;
-  gap: 20px;
+  flex-direction: row;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
 .col-left {
-  width: 65%;
+  flex: 1;
+  min-width: 300px;
   color: white;
   box-sizing: border-box;
 }
 
+.col-left h3 {
+  font-size: clamp(1.5rem, 5vw, 1.8rem);
+  margin-bottom: 1rem;
+}
+
 .order-cart {
-  margin-top: 20px;
+  margin-top: 1rem;
   border: 1px solid white;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 1rem;
+  border-radius: 8px;
   background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -337,26 +335,25 @@ onMounted(() => {
   color: white;
   font-weight: bold;
   border-bottom: 2px solid white;
-  padding-bottom: 10px;
+  padding-bottom: 0.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .header-cart li {
   list-style: none;
   text-align: center;
-  flex: 2 1 40%;
-}
-
-.header-cart li:nth-child(2),
-.header-cart li:nth-child(3),
-.header-cart li:nth-child(4) {
-  flex: 1 1 20%;
+  flex: 1;
+  min-width: 100px;
 }
 
 .order-item {
   display: flex;
   align-items: center;
-  padding: 15px 0;
+  padding: 0.75rem 0;
   border-bottom: 1px solid #ccc;
+  flex-wrap: wrap;
+  gap: 0.5rem;
 }
 
 .item-col {
@@ -364,35 +361,30 @@ onMounted(() => {
   align-items: center;
   justify-content: center;
   color: white;
+  flex: 1;
+  min-width: 100px;
 }
 
 .item-col.info {
-  flex: 2 1 40%;
   justify-content: flex-start;
-  gap: 10px;
-}
-
-.item-col.price,
-.item-col.quantity,
-.item-col.total {
-  flex: 1 1 20%;
+  gap: 0.5rem;
 }
 
 .item-col.info img {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   object-fit: cover;
-  margin-left: 10px;
+  border-radius: 4px;
 }
 
 .btn-quantity {
   background-color: #d69c52;
   color: white;
   border: none;
-  padding: 5px 10px;
+  padding: 0.3rem 0.6rem;
   cursor: pointer;
   border-radius: 4px;
-  margin: 0 5px;
+  margin: 0 0.3rem;
   transition: background-color 0.3s ease;
 }
 
@@ -401,7 +393,7 @@ onMounted(() => {
 }
 
 .btn-delete {
-  margin-left: 10px;
+  margin-left: 0.5rem;
   color: red;
   background: none;
   border: none;
@@ -414,32 +406,27 @@ onMounted(() => {
 }
 
 .sale-section {
-  margin-top: 20px;
+  margin-top: 1rem;
 }
 
 .sale-dropdown {
-  margin-top: 10px;
+  margin-top: 0.5rem;
 }
 
 .sale-select {
   width: 100%;
-  max-width: 400px;
-  padding: 12px 16px;
+  padding: 0.75rem;
   border-radius: 8px;
   border: 2px solid #ffffff;
   background-color: rgba(255, 255, 255, 0.15);
   color: #ffffff;
-  font-size: 16px;
-  font-weight: 500;
+  font-size: 1rem;
   cursor: pointer;
   transition: all 0.3s ease;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
   background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
   background-repeat: no-repeat;
-  background-position: right 16px center;
-  background-size: 20px;
+  background-position: right 0.75rem center;
+  background-size: 1.2rem;
 }
 
 .sale-select:hover {
@@ -454,33 +441,29 @@ onMounted(() => {
   box-shadow: 0 0 8px rgba(214, 156, 82, 0.3);
 }
 
-.sale-select option {
-  background-color: #143b36;
-  color: #ffffff;
-  font-size: 14px;
-  padding: 10px;
-}
-
 .order-btn-wrapper {
   display: flex;
-  margin-top: 20px;
+  margin-top: 1rem;
   flex-direction: column;
   align-items: flex-end;
+  gap: 0.5rem;
+}
+
+.order-btn-wrapper p {
+  color: white;
+  font-size: 1.1rem;
 }
 
 .btn-orderItem {
   color: #fff;
   background-color: #d69c52;
-  padding: 10px 15px;
-  font-size: 16px;
+  padding: 0.6rem 1rem;
+  font-size: 1rem;
   border-radius: 5px;
   box-shadow: 0 3px 6px #a37b44;
-  height: 40px;
-  width: 200px;
+  width: 100%;
+  max-width: 200px;
   transition: box-shadow 0.3s ease, background-color 0.3s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
   border: none;
 }
 
@@ -490,22 +473,22 @@ onMounted(() => {
 }
 
 .col-right {
-  width: 35%;
-  padding: 20px;
+  flex: 1;
+  min-width: 300px;
+  padding: 1rem;
   background-color: #f1f5f4;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  box-sizing: border-box;
+  gap: 1.5rem;
 }
 
 .suggested-items h4,
 .note-section h4 {
   color: #143b36;
-  font-size: 18px;
-  margin-bottom: 8px;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
 }
 
 .suggested-items ul {
@@ -516,17 +499,17 @@ onMounted(() => {
 .suggested-items li {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 0.75rem;
   background-color: #ffffff;
-  padding: 10px;
+  padding: 0.6rem;
   border-radius: 8px;
-  margin-bottom: 12px;
+  margin-bottom: 0.75rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .suggested-items img {
-  width: 60px;
-  height: 60px;
+  width: 50px;
+  height: 50px;
   border-radius: 8px;
   object-fit: cover;
   border: 1px solid #ccc;
@@ -545,30 +528,127 @@ onMounted(() => {
 
 .suggested-items span {
   color: #666;
-  font-size: 14px;
+  font-size: 0.9rem;
 }
 
 .suggested-items button {
-  margin-top: 4px;
+  margin-top: 0.3rem;
   align-self: flex-start;
   background-color: #143b36;
   color: #fff;
   border: none;
-  padding: 6px 12px;
+  padding: 0.4rem 0.8rem;
   border-radius: 4px;
   cursor: pointer;
-  font-size: 13px;
+  font-size: 0.85rem;
 }
 
 .note-section textarea {
   width: 100%;
-  height: 100px;
-  padding: 10px;
+  height: 80px;
+  padding: 0.6rem;
   border-radius: 8px;
   border: 1px solid #ccc;
   resize: none;
-  font-size: 14px;
+  font-size: 0.9rem;
   font-family: inherit;
 }
+
+/* Media Queries for Responsive Design */
+@media (max-width: 768px) {
+  .container-shoppingCart {
+    flex-direction: column;
+  }
+
+  .col-left,
+  .col-right {
+    width: 100%;
+    min-width: unset;
+  }
+
+  .header-cart li,
+  .item-col {
+    font-size: 0.9rem;
+    min-width: 80px;
+  }
+
+  .item-col.info img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .btn-orderItem {
+    max-width: 100%;
+  }
+
+  .suggested-items img {
+    width: 40px;
+    height: 40px;
+  }
+
+  .sale-select {
+    font-size: 0.9rem;
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .shopping-cart {
+    padding: 1rem;
+  }
+
+  .col-left h3 {
+    font-size: 1.2rem;
+  }
+
+  .header-cart {
+    display: none; /* Hide headers on very small screens */
+  }
+
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .item-col {
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .item-col.total {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .btn-quantity {
+    padding: 0.2rem 0.5rem;
+  }
+
+  .btn-delete {
+    font-size: 0.85rem;
+  }
+
+  .suggested-items h4,
+  .note-section h4 {
+    font-size: 1rem;
+  }
+
+  .suggested-items li {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .suggested-items img {
+    width: 100%;
+    height: auto;
+    max-width: 100px;
+  }
+
+  .note-section textarea {
+    height: 60px;
+    font-size: 0.85rem;
+  }
+}
 </style>
-```

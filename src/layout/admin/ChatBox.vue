@@ -1,4 +1,3 @@
-chat box
 <template>
     <div class="fixed right-10 bottom-10 h-16 w-16 bg-blue-500 rounded-full flex justify-center items-center">
       <!-- ICON mở chat -->

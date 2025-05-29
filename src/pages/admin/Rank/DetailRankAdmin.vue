@@ -82,7 +82,7 @@ async function confirmDelete() {
     showConfirm.value = false
 
     try {
-        await axios.delete(`http://127.0.0.1:8000/api/admin/ranks/${rankData.id}`)
+        await axios.delete(`http:// 192.168.1.53:8888/api/admin/ranks/${rankData.id}`)
         alert('Đã xoá rank thành công!')
         router.push({ name: 'admin-ranks' })
     } catch (error) {
@@ -103,7 +103,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

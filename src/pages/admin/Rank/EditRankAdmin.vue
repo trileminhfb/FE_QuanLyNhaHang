@@ -103,7 +103,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -126,7 +126,7 @@ onMounted(async () => {
 
 onMounted(async () => {
     try {
-        const response = await axios.get(`http://127.0.0.1:8000/api/admin/ranks/${id}`)
+        const response = await axios.get(`http:// 192.168.1.53:8888/api/admin/ranks/${id}`)
         rank.value = response.data
         form.id = response.data.id
         form.nameRank = response.data.nameRank
@@ -188,7 +188,7 @@ async function goSave() {
 
     try {
         const response = await axios.post(
-            `http://127.0.0.1:8000/api/admin/ranks/${form.id}`,
+            `http:// 192.168.1.53:8888/api/admin/ranks/${form.id}`,
             formData,
             { headers: { 'Content-Type': 'multipart/form-data' } }
         )
@@ -209,7 +209,7 @@ async function goSave() {
 async function confirmDelete() {
     showConfirm.value = false
     try {
-        const response = await axios.delete(`http://127.0.0.1:8000/api/admin/ranks/${form.id}`)
+        const response = await axios.delete(`http:// 192.168.1.53:8888/api/admin/ranks/${form.id}`)
         if (response.data.status === 1) {
             alert('Đã xoá rank thành công!')
             router.push({ name: 'admin-ranks' })

@@ -51,7 +51,7 @@ const form = ref({
 
 async function goSave() {
     try {
-        await axios.post('http://127.0.0.1:8000/api/admin/types/create', form.value)
+        await axios.post('http:// 192.168.1.53:8888/api/admin/types/create', form.value)
         alert('Đã thêm kiểu mới thành công!')
         router.push({ name: 'admin-types' })
     } catch (error) {
@@ -72,7 +72,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },

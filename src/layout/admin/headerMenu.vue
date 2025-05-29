@@ -80,7 +80,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http://192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -110,7 +110,7 @@ const totalBooking = computed(() =>
 
 async function fetchInvoice() {
     try {
-        const response = await axios.get("http://127.0.0.1:8000/api/admin/invoices")
+        const response = await axios.get("http://192.168.1.53:8888/api/admin/invoices")
         console.log('Invoice API response:', response.data)
         const invoiceData = response.data.data
         allItemsInvoice.value = Array.isArray(invoiceData) ? invoiceData : []
@@ -122,7 +122,7 @@ async function fetchInvoice() {
 
 async function fetchBooking() {
     try {
-        const response = await axios.get("http://127.0.0.1:8000/api/admin/bookings")
+        const response = await axios.get("http://192.168.1.53:8888/api/admin/bookings")
         console.log('Booking API response:', response.data)
         allItemsBooking.value = Array.isArray(response.data.data) ? response.data.data : []
     } catch (error) {

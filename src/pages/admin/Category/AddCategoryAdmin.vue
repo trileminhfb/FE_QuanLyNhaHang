@@ -105,7 +105,7 @@ async function fetchUserProfile() {
             throw new Error('No authentication token found.');
         }
 
-        const response = await axios.get('http://127.0.0.1:8000/api/admin/users/profile', {
+        const response = await axios.get('http:// 192.168.1.53:8888/api/admin/users/profile', {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -175,7 +175,7 @@ async function goSave() {
             status: form.value.status,
             food_ids: form.value.foods
         };
-        await axios.post('http://127.0.0.1:8000/api/admin/categories/create', payload);
+        await axios.post('http:// 192.168.1.53:8888/api/admin/categories/create', payload);
         alert('Thêm loại thành công!');
         router.push({ name: 'admin-categories' });
     } catch (error) {
@@ -191,10 +191,10 @@ function goBack() {
 // On mount
 onMounted(async () => {
     try {
-        const resTypes = await axios.get('http://127.0.0.1:8000/api/admin/types');
+        const resTypes = await axios.get('http:// 192.168.1.53:8888/api/admin/types');
         allItemsTypes.value = resTypes.data.data;
 
-        const resFoods = await axios.get('http://127.0.0.1:8000/api/admin/foods');
+        const resFoods = await axios.get('http:// 192.168.1.53:8888/api/admin/foods');
         allFoods.value = resFoods.data;
     } catch (err) {
         console.error('Lỗi khi tải dữ liệu:', err);
